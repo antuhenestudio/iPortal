@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iPortal — Encontrá tu propiedad ideal con IA</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink:    { 900:'#111111', 800:'#242424', 700:'#4A4A4A', 300:'#9C9C9C' },
+          paper:  { DEFAULT:'#FAFAF7', 50:'#FDFDFC' },
+          brand:  { 700:'#128A3E', 600:'#16A34A', 500:'#22B156', 400:'#5FD180', 100:'#DCFCE7' },
+        },
+        fontFamily: {
+          display: ['"Fraunces"', 'ui-serif', 'Georgia', 'serif'],
+          sans: ['"Space Grotesk"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        },
+        fontSize: {
+          'display-lg': ['2.75rem', { lineHeight: '1.08', letterSpacing: '-0.01em' }],
+          'display-md': ['2.125rem', { lineHeight: '1.15', letterSpacing: '-0.005em' }],
+        },
+        borderRadius: { '2.5xl': '1.375rem' },
+      }
+    }
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif; line-height: 1.6; }
+  .font-display { font-family: 'Fraunces', ui-serif, Georgia, serif; }
+  .font-data { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  .grid-texture {
+    background-image: radial-gradient(circle at 1px 1px, rgba(17,17,17,0.09) 1px, transparent 0);
+    background-size: 26px 26px;
+  }
+
+  .gradient-text {
+    background: linear-gradient(100deg, #111111 15%, #16A34A 85%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  .aurora { position: absolute; inset: -50% -10% auto -10%; height: 260px; z-index: 0; filter: blur(60px); pointer-events: none; }
+  .aurora span { position: absolute; border-radius: 999px; opacity: .13; animation: auroraDrift 16s ease-in-out infinite; }
+  .aurora span:nth-child(1) { width: 320px; height: 320px; left: 6%; top: 0; background: #16A34A; }
+  .aurora span:nth-child(2) { width: 280px; height: 280px; right: 8%; top: 8%; background: #111111; animation-delay: -6s; }
+  .aurora span:nth-child(3) { width: 240px; height: 240px; left: 42%; top: 4%; background: #5FD180; animation-delay: -11s; }
+  @keyframes auroraDrift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(3%,4%) scale(1.08); } }
+
+  .ticker-item { animation: tickerCycle 9s infinite; opacity: 0; }
+  .ticker-item:nth-child(1) { animation-delay: 0s; }
+  .ticker-item:nth-child(2) { animation-delay: 3s; }
+  .ticker-item:nth-child(3) { animation-delay: 6s; }
+  @keyframes tickerCycle { 0%,100% { opacity:0; transform:translateY(4px);} 4%,29% {opacity:1; transform:translateY(0);} 33%{opacity:0; transform:translateY(-4px);} }
+
+  .status-ring { position: relative; }
+  .status-ring::before { content:''; position:absolute; inset:-5px; border-radius:999px; border:1.5px solid #16A34A; opacity:.55; animation: ringPulse 2.4s ease-out infinite; }
+  @keyframes ringPulse { 0%{transform:scale(.7);opacity:.6;} 100%{transform:scale(2.1);opacity:0;} }
+
+  .property-photo img { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+  .property-card:hover .property-photo img { transform: scale(1.05); }
+
+  :focus-visible { outline: 3px solid #16A34A; outline-offset: 2px; }
+  .btn { min-height: 48px; }
+  .glow-brand { box-shadow: 0 8px 24px -8px rgba(22,163,74,.4); }
+  .glow-ink   { box-shadow: 0 0 0 1px rgba(17,17,17,.08), 0 8px 28px -10px rgba(17,17,17,.28); }
+
+  /* ---- Tarjeta de propiedad ---- */
+  .property-card { transition: box-shadow .25s ease, border-color .25s ease, transform .25s ease; }
+  .property-card.is-active, .property-card:hover { box-shadow: 0 14px 34px -14px rgba(17,17,17,.22); border-color: rgba(22,163,74,.35); }
+  .fav-btn i { transition: transform .2s ease; }
+  .fav-btn.is-fav i { transform: scale(1.12); }
+  .carousel-dot { width: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,.55); transition: all .2s ease; }
+  .carousel-dot.is-active { background: #fff; width: 14px; }
+
+  /* ---- Mapa ilustrado (sin dependencias externas) ---- */
+  .map-canvas { background: linear-gradient(180deg, #EAF3EE 0%, #F4F7F3 38%, #F8F9F6 100%); }
+  .map-pin {
+    position: absolute; transform: translate(-50%,-100%); cursor: pointer;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+    background: #111111; color: #fff; padding: 5px 9px; border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(17,17,17,.25); white-space: nowrap;
+    transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease;
+    border: 2px solid #fff;
+  }
+  .map-pin::after {
+    content:''; position:absolute; left:50%; bottom:-6px; transform:translateX(-50%);
+    border-left:5px solid transparent; border-right:5px solid transparent; border-top:6px solid #111111;
+  }
+  .map-pin.is-active, .map-pin:hover, .map-pin:focus-visible {
+    background:#16A34A; transform: translate(-50%,-100%) scale(1.12); box-shadow: 0 8px 18px rgba(22,163,74,.4); z-index: 20;
+  }
+  .map-pin.is-active::after, .map-pin:hover::after { border-top-color:#16A34A; }
+
+  #mapOverlay { transition: opacity .25s ease, visibility .25s ease; }
+  #mapOverlay.hidden-map { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-item, .aurora span, .status-ring::before { animation: none !important; }
+    .ticker-item { opacity: 1 !important; }
+  }
+</style>
+</head>
+<body class="bg-white text-ink-900 antialiased text-base">
+
+<!-- NAV -->
+<nav class="bg-white/90 backdrop-blur-md border-b border-black/[0.06] sticky top-0 z-50">
+  <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center">
+    <div class="flex items-center gap-2.5">
+      <span class="status-ring w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center shrink-0">
+        <span class="font-display italic font-semibold text-white text-lg leading-none -mt-0.5">i</span>
+      </span>
+      <span class="font-display font-semibold text-xl tracking-tight"><span class="italic text-brand-600">i</span>Portal</span>
+    </div>
+
+    <div class="hidden md:flex items-center gap-7 text-base font-medium text-ink-800">
+      <a href="#" class="hover:text-brand-600 transition-colors">Comprar</a>
+      <a href="#" class="hover:text-brand-600 transition-colors">Alquilar</a>
+      <a href="#" class="hover:text-brand-600 transition-colors">Desarrollos</a>
+      <a href="#" class="hover:text-brand-600 transition-colors">Tasar con IA</a>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button class="btn hidden sm:flex bg-ink-900 hover:bg-ink-800 text-white px-5 rounded-full text-base font-semibold transition-colors items-center gap-2">
+        <i class="fa-solid fa-user text-sm"></i> Panel Agente
+      </button>
+      <button id="menuBtn" aria-label="Abrir menú" aria-expanded="false" class="md:hidden w-11 h-11 flex items-center justify-center rounded-full bg-paper hover:bg-black/5 transition-colors">
+        <i id="menuIcon" class="fa-solid fa-bars text-lg"></i>
+      </button>
+    </div>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden border-t border-black/[0.06] bg-white">
+    <div class="px-4 py-3 flex flex-col gap-1 text-base font-medium text-ink-800">
+      <a href="#" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Comprar</a>
+      <a href="#" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Alquilar</a>
+      <a href="#" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Desarrollos</a>
+      <a href="#" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Tasar con IA</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO COMPACTO — el foco está en llegar rápido al listado -->
+<section class="relative bg-white pt-8 pb-7 sm:pt-10 sm:pb-8 px-4 sm:px-6 overflow-hidden">
+  <div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="max-w-3xl mx-auto text-center relative z-10">
+    <span class="inline-flex items-center gap-2 bg-brand-100 text-brand-600 text-xs font-semibold px-3 py-1.5 rounded-full mb-4 font-data tracking-tight">
+      <span class="w-1.5 h-1.5 rounded-full bg-brand-600 animate-pulse"></span> IA EN LÍNEA
+    </span>
+    <h1 class="font-display font-medium text-2xl sm:text-display-md text-ink-900 text-balance">
+      Encontrá tu propiedad ideal mediante <em class="italic gradient-text">IA conversacional</em>
+    </h1>
+
+    <div class="bg-white rounded-2xl p-2 sm:p-2.5 shadow-xl shadow-ink-900/[0.08] border border-black/[0.06] text-ink-900 flex flex-col sm:flex-row gap-2 mt-6 focus-within:ring-2 focus-within:ring-brand-400 transition-shadow">
+      <div class="flex-1 flex items-center px-4 rounded-xl">
+        <i class="fa-solid fa-sparkles text-brand-600 text-lg mr-3 shrink-0"></i>
+        <input id="aiSearchInput" type="text" placeholder="Ej: casa de 3 dormitorios con jardín en zona céntrica…" class="w-full bg-transparent py-3.5 focus:outline-none text-base min-w-0 placeholder:text-ink-700/50">
+      </div>
+      <button onclick="buscarConIA()" class="btn glow-brand bg-brand-600 hover:bg-brand-700 text-white px-7 rounded-xl font-semibold text-base transition-colors shrink-0">
+        Buscar
+      </button>
+    </div>
+
+    <div class="mt-4 h-5 relative text-sm text-ink-700 font-medium font-data">
+      <span class="ticker-item absolute inset-x-0 flex items-center justify-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-600"></span>3 personas recibieron respuesta en los últimos 10 min</span>
+      <span class="ticker-item absolute inset-x-0 flex items-center justify-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-600"></span>Consultando disponibilidad en Barreal…</span>
+      <span class="ticker-item absolute inset-x-0 flex items-center justify-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-600"></span>Visita agendada para mañana a las 10:00</span>
+    </div>
+  </div>
+</section>
+
+<!-- BARRA DE FILTROS -->
+<div class="sticky top-[65px] z-40 bg-white border-y border-black/[0.06]">
+  <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 overflow-x-auto no-scrollbar">
+    <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Precio <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
+    <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Ambientes <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
+    <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Tipo de propiedad <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
+    <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors"><i class="fa-solid fa-sliders text-xs"></i> Más filtros</button>
+    <span class="flex-1"></span>
+    <span class="hidden sm:inline text-sm text-ink-700 font-data shrink-0">126 propiedades</span>
+    <button class="btn shrink-0 hidden sm:flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Relevancia <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
+  </div>
+</div>
+
+<!-- LISTADO + MAPA (estilo Zillow / ZonaProp) -->
+<main class="max-w-[1600px] mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_560px] gap-6">
+
+  <!-- LISTA -->
+  <section id="listPanel" class="space-y-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="cardsGrid"></div>
+  </section>
+
+  <!-- MAPA — sticky en desktop -->
+  <aside class="hidden lg:block sticky top-[124px] h-[calc(100vh-148px)]">
+    <div class="map-canvas relative w-full h-full rounded-2.5xl overflow-hidden border border-black/[0.08]" id="mapCanvasDesktop">
+    </div>
+  </aside>
+</main>
+
+<!-- Overlay de mapa para mobile (patrón Zillow: alternar lista/mapa) -->
+<div id="mapOverlay" class="hidden-map fixed inset-0 z-[60] bg-white lg:hidden">
+  <div class="absolute top-4 inset-x-4 z-10 flex items-center gap-2">
+    <button id="closeMap" class="btn w-12 px-0 rounded-full bg-white shadow-lg border border-black/[0.08] flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="flex-1 bg-white rounded-full shadow-lg border border-black/[0.08] px-4 py-3 text-sm text-ink-700 font-data">126 propiedades en el mapa</div>
+  </div>
+  <div class="map-canvas relative w-full h-full" id="mapCanvasMobile"></div>
+</div>
+
+<!-- CÓMO FUNCIONA -->
+<section class="grid-texture bg-paper py-12 sm:py-14 px-4 sm:px-6">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-display font-medium text-2xl sm:text-3xl text-center mb-10">Cómo funciona, en simple</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+      <div class="text-center sm:text-left bg-white/70 backdrop-blur-sm rounded-2.5xl p-5 border border-black/[0.05]">
+        <div class="w-11 h-11 rounded-full bg-white border-2 border-brand-600 text-brand-600 font-data font-semibold text-lg flex items-center justify-center mx-auto sm:mx-0 mb-4">1</div>
+        <h3 class="font-display font-medium text-lg mb-2">Contás lo que buscás</h3>
+        <p class="text-ink-700 text-base leading-relaxed">Como si le hablaras a una persona: "una casa con jardín, cerca del centro". Nada de filtros complicados.</p>
+      </div>
+      <div class="text-center sm:text-left bg-white/70 backdrop-blur-sm rounded-2.5xl p-5 border border-black/[0.05]">
+        <div class="w-11 h-11 rounded-full bg-white border-2 border-brand-600 text-brand-600 font-data font-semibold text-lg flex items-center justify-center mx-auto sm:mx-0 mb-4">2</div>
+        <h3 class="font-display font-medium text-lg mb-2">La IA te muestra opciones</h3>
+        <p class="text-ink-700 text-base leading-relaxed">Filtra entre cientos de propiedades y te deja solo las que realmente coinciden con lo que pediste.</p>
+      </div>
+      <div class="text-center sm:text-left bg-white/70 backdrop-blur-sm rounded-2.5xl p-5 border border-black/[0.05]">
+        <div class="w-11 h-11 rounded-full bg-white border-2 border-brand-600 text-brand-600 font-data font-semibold text-lg flex items-center justify-center mx-auto sm:mx-0 mb-4">3</div>
+        <h3 class="font-display font-medium text-lg mb-2">Agendás la visita por WhatsApp</h3>
+        <p class="text-ink-700 text-base leading-relaxed">Un toque y coordinás día y hora directo con el vendedor, sin llamadas ni esperas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Widget flotante del agente IA -->
+<div class="fixed bottom-5 right-5 z-[70] hidden sm:block">
+  <div id="aiPanel" class="hidden mb-3 w-80 glow-ink bg-ink-900 text-white rounded-2.5xl p-5 origin-bottom-right">
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center gap-2.5">
+        <span class="status-ring w-2.5 h-2.5 rounded-full bg-brand-500 shrink-0"></span>
+        <h3 class="font-display font-medium text-base">Agente de respuesta IA</h3>
+      </div>
+      <button id="closeAiPanel" class="text-ink-300 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <p class="text-xs text-ink-300 mb-3 leading-relaxed">Responde consultas y agenda visitas — sin que nadie del equipo tenga que estar disponible.</p>
+    <div class="bg-ink-800 rounded-2xl p-3.5 space-y-2.5 text-xs mb-3 max-h-44 overflow-y-auto">
+      <div class="bg-ink-700 rounded-xl rounded-tl-sm p-2.5 text-ink-300 max-w-[85%]">"¿Se puede financiar el depto de USD 75k?"</div>
+      <div class="bg-brand-600 rounded-xl rounded-tr-sm p-2.5 text-white max-w-[85%] ml-auto">"Sí, 60% de entrega y saldo en 12 cuotas. ¿Coordinamos una visita?"</div>
+    </div>
+    <div class="bg-ink-800 rounded-xl p-3 flex justify-between items-center text-xs">
+      <span class="text-ink-300">Personas atendidas hoy</span>
+      <span class="font-data font-semibold text-brand-400 text-base" id="leadCounter">0</span>
+    </div>
+  </div>
+  <button id="aiToggle" class="btn glow-brand w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center text-xl transition-colors">
+    <i class="fa-solid fa-sparkles"></i>
+  </button>
+</div>
+
+<!-- BARRA FIJA MOBILE -->
+<div class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-black/[0.08] px-4 py-3 flex gap-2.5">
+  <button id="openMapMobile" class="btn flex-1 bg-ink-900 text-white rounded-full text-base font-semibold flex items-center justify-center gap-2">
+    <i class="fa-solid fa-map-location-dot"></i> Mapa
+  </button>
+  <button id="aiToggleMobile" class="btn flex-1 bg-brand-600 text-white rounded-full text-base font-semibold flex items-center justify-center gap-2">
+    <i class="fa-solid fa-sparkles"></i> Asistente IA
+  </button>
+</div>
+<div class="h-20 lg:hidden"></div>
+
+<script>
+/* ---------------- Datos de propiedades ---------------- */
+const properties = [
+  { id:1, title:'Casa moderna con piscina', price:'USD 185.000', priceShort:'USD 185K', loc:'Barreal, zona residencial', badge:'ACM Calificado', badgeColor:'ink', specs:[['fa-bed','3 dorms'],['fa-bath','2 baños'],['fa-ruler-combined','210 m²']],
+    photos:['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80'],
+    pin:{top:'40%', left:'24%'} },
+  { id:2, title:'Departamento 2 ambientes centro', price:'USD 75.000', priceShort:'USD 75K', loc:'Centro urbano', badge:'Oportunidad', badgeColor:'brand', specs:[['fa-bed','1 dorm'],['fa-bath','1 baño'],['fa-ruler-combined','52 m²']],
+    photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=80'],
+    pin:{top:'58%', left:'62%'} },
+  { id:3, title:'Casa de campo con vista a la cordillera', price:'USD 210.000', priceShort:'USD 210K', loc:'Camino a Los Berros', badge:'Vista premium', badgeColor:'ink', specs:[['fa-bed','4 dorms'],['fa-bath','3 baños'],['fa-ruler-combined','320 m²']],
+    photos:['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=700&q=80'],
+    pin:{top:'18%', left:'72%'} },
+  { id:4, title:'Departamento a estrenar frente a la plaza', price:'USD 98.000', priceShort:'USD 98K', loc:'Plaza Barreal', badge:'A estrenar', badgeColor:'brand', specs:[['fa-bed','2 dorms'],['fa-bath','1 baño'],['fa-ruler-combined','64 m²']],
+    photos:['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=700&q=80'],
+    pin:{top:'66%', left:'36%'} },
+  { id:5, title:'Terreno con proyecto aprobado', price:'USD 42.000', priceShort:'USD 42K', loc:'Ruta 149', badge:'Apto crédito', badgeColor:'ink', specs:[['fa-draw-polygon','Lote 600 m²'],['fa-file-signature','Escritura lista'],['fa-road','Sobre ruta']],
+    photos:['https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=700&q=80'],
+    pin:{top:'78%', left:'58%'} },
+  { id:6, title:'Casa quinta con parque', price:'USD 265.000', priceShort:'USD 265K', loc:'Zona Las Hornillas', badge:'Exclusiva', badgeColor:'ink', specs:[['fa-bed','5 dorms'],['fa-bath','4 baños'],['fa-ruler-combined','540 m²']],
+    photos:['https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80'],
+    pin:{top:'30%', left:'46%'} },
+];
+
+function badgeClasses(color) {
+  return color === 'brand' ? 'bg-brand-600' : 'bg-ink-900';
+}
+
+/* ---------------- Render tarjetas ---------------- */
+const grid = document.getElementById('cardsGrid');
+grid.innerHTML = properties.map(p => `
+  <article class="property-card relative bg-white rounded-2.5xl border border-black/[0.08] overflow-hidden flex flex-col" data-id="${p.id}" tabindex="0">
+    <div class="property-photo relative h-52 bg-ink-700 overflow-hidden">
+      <img src="${p.photos[0]}" data-idx="0" alt="${p.title}" loading="lazy" class="w-full h-full object-cover">
+      <span class="absolute top-3 left-3 ${badgeClasses(p.badgeColor)} text-white text-xs font-semibold px-3 py-1.5 rounded-full">${p.badge}</span>
+      <button class="fav-btn absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-ink-800 hover:text-red-500 transition-colors" aria-label="Guardar propiedad">
+        <i class="fa-regular fa-heart"></i>
+      </button>
+      ${p.photos.length > 1 ? `<div class="absolute bottom-2.5 inset-x-0 flex justify-center gap-1.5">
+        ${p.photos.map((_,i)=>`<span class="carousel-dot ${i===0?'is-active':''}" data-idx="${i}"></span>`).join('')}
+      </div>
+      <button class="carousel-prev absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 text-ink-900 text-xs opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+      <button class="carousel-next absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 text-ink-900 text-xs opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>` : ''}
+    </div>
+    <div class="p-4 flex flex-col gap-3 flex-1">
+      <div>
+        <div class="flex items-start justify-between gap-2">
+          <h3 class="font-display font-medium text-lg text-ink-900 leading-snug">${p.title}</h3>
+        </div>
+        <p class="text-brand-600 font-semibold text-lg font-data mt-1">${p.price}</p>
+        <p class="text-ink-700 text-sm mt-1"><i class="fa-solid fa-location-dot mr-1.5 text-xs"></i>${p.loc}</p>
+        <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-ink-800 mt-3">
+          ${p.specs.map(s=>`<span><i class="fa-solid ${s[0]} mr-1.5 text-ink-700/60"></i>${s[1]}</span>`).join('')}
+        </div>
+      </div>
+      <div class="flex gap-2 border-t border-black/[0.06] pt-3 mt-auto">
+        <button onclick="abrirModalIA('${p.title.replace(/'/g, "\\'")}')" class="btn flex-1 bg-brand-600 hover:bg-brand-700 text-white rounded-full text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+          <i class="fa-brands fa-whatsapp"></i> Agendar por IA
+        </button>
+      </div>
+    </div>
+  </article>
+`).join('');
+
+/* ---------------- Render mapa (mismos pines en desktop y mobile) ---------------- */
+function mountainSVG(idBase) {
+  return `<svg class="absolute top-0 left-0 w-full h-24 opacity-[0.35]" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true">
+    <polygon points="0,100 0,55 40,20 80,60 130,10 180,50 230,25 280,58 330,15 400,50 400,100" fill="#111111" opacity="0.10"/>
+    <polygon points="0,100 0,72 60,40 120,68 190,35 260,66 340,38 400,68 400,100" fill="#16A34A" opacity="0.08"/>
+  </svg>
+  <svg class="absolute inset-0 w-full h-full opacity-[0.5]" preserveAspectRatio="none" aria-hidden="true">
+    <line x1="0%" y1="30%" x2="100%" y2="24%" stroke="#111111" stroke-opacity="0.08" stroke-width="2"/>
+    <line x1="0%" y1="55%" x2="100%" y2="60%" stroke="#111111" stroke-opacity="0.08" stroke-width="2"/>
+    <line x1="20%" y1="0%" x2="30%" y2="100%" stroke="#111111" stroke-opacity="0.07" stroke-width="2"/>
+    <line x1="68%" y1="0%" x2="60%" y2="100%" stroke="#111111" stroke-opacity="0.07" stroke-width="2"/>
+    <rect x="10%" y="35%" width="14%" height="12%" fill="#16A34A" opacity="0.06" rx="6"/>
+    <rect x="55%" y="65%" width="18%" height="14%" fill="#16A34A" opacity="0.06" rx="6"/>
+  </svg>`;
+}
+
+function renderMap(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = mountainSVG(containerId) + properties.map(p => `
+    <button class="map-pin" data-id="${p.id}" style="top:${p.pin.top}; left:${p.pin.left};">${p.priceShort}</button>
+  `).join('') + `
+    <div class="absolute bottom-3 right-3 flex flex-col gap-1.5">
+      <button class="w-8 h-8 rounded-lg bg-white shadow border border-black/[0.08] flex items-center justify-center text-sm font-semibold hover:bg-paper">+</button>
+      <button class="w-8 h-8 rounded-lg bg-white shadow border border-black/[0.08] flex items-center justify-center text-sm font-semibold hover:bg-paper">−</button>
+    </div>
+  `;
+}
+renderMap('mapCanvasDesktop');
+renderMap('mapCanvasMobile');
+
+/* ---------------- Sincronía tarjeta ↔ pin ---------------- */
+function setActive(id) {
+  document.querySelectorAll('.map-pin').forEach(pin => pin.classList.toggle('is-active', pin.dataset.id === String(id)));
+  document.querySelectorAll('.property-card').forEach(card => card.classList.toggle('is-active', card.dataset.id === String(id)));
+}
+function clearActive() {
+  document.querySelectorAll('.map-pin, .property-card').forEach(el => el.classList.remove('is-active'));
+}
+
+document.addEventListener('mouseover', (e) => {
+  const card = e.target.closest('.property-card');
+  if (card) setActive(card.dataset.id);
+  const pin = e.target.closest('.map-pin');
+  if (pin) setActive(pin.dataset.id);
+});
+document.addEventListener('mouseout', (e) => {
+  if (e.target.closest('.property-card') || e.target.closest('.map-pin')) clearActive();
+});
+document.addEventListener('click', (e) => {
+  const pin = e.target.closest('.map-pin');
+  if (pin) {
+    const card = document.querySelector(`.property-card[data-id="${pin.dataset.id}"]`);
+    if (card) { card.scrollIntoView({behavior:'smooth', block:'center'}); setActive(pin.dataset.id); }
+  }
+  const favBtn = e.target.closest('.fav-btn');
+  if (favBtn) {
+    favBtn.classList.toggle('is-fav');
+    const icon = favBtn.querySelector('i');
+    const isFav = favBtn.classList.contains('is-fav');
+    icon.classList.toggle('fa-regular', !isFav);
+    icon.classList.toggle('fa-solid', isFav);
+    favBtn.classList.toggle('text-red-500', isFav);
+  }
+  const dot = e.target.closest('.carousel-dot');
+  if (dot) {
+    const card = dot.closest('.property-card');
+    const id = card.dataset.id;
+    const p = properties.find(pr => pr.id === Number(id));
+    const idx = Number(dot.dataset.idx);
+    card.querySelector('img').src = p.photos[idx];
+    card.querySelectorAll('.carousel-dot').forEach((d,i) => d.classList.toggle('is-active', i === idx));
+  }
+  const prevBtn = e.target.closest('.carousel-prev');
+  const nextBtn = e.target.closest('.carousel-next');
+  if (prevBtn || nextBtn) {
+    const card = e.target.closest('.property-card');
+    const id = card.dataset.id;
+    const p = properties.find(pr => pr.id === Number(id));
+    const img = card.querySelector('img');
+    let idx = Number(img.dataset.idx);
+    idx = prevBtn ? (idx - 1 + p.photos.length) % p.photos.length : (idx + 1) % p.photos.length;
+    img.src = p.photos[idx]; img.dataset.idx = idx;
+    card.querySelectorAll('.carousel-dot').forEach((d,i) => d.classList.toggle('is-active', i === idx));
+  }
+});
+
+/* ---------------- Mapa mobile overlay ---------------- */
+const mapOverlay = document.getElementById('mapOverlay');
+document.getElementById('openMapMobile').addEventListener('click', () => mapOverlay.classList.remove('hidden-map'));
+document.getElementById('closeMap').addEventListener('click', () => mapOverlay.classList.add('hidden-map'));
+
+/* ---------------- Widget IA flotante ---------------- */
+const aiPanel = document.getElementById('aiPanel');
+const aiToggle = document.getElementById('aiToggle');
+function toggleAiPanel() { aiPanel.classList.toggle('hidden'); }
+aiToggle.addEventListener('click', toggleAiPanel);
+document.getElementById('closeAiPanel').addEventListener('click', toggleAiPanel);
+document.getElementById('aiToggleMobile')?.addEventListener('click', () => {
+  aiPanel.classList.remove('hidden');
+  aiPanel.classList.add('!fixed','!bottom-24','!right-4','!left-4','!w-auto','!mb-0');
+});
+
+/* ---------------- Utilidades varias ---------------- */
+function buscarConIA() {
+  const query = document.getElementById('aiSearchInput').value;
+  if (query.trim() === '') { alert('Ingresá una descripción de lo que querés buscar.'); return; }
+  alert('Procesando consulta con lenguaje natural: "' + query + '"\n\nFiltrando propiedades según intención y presupuesto...');
+}
+function abrirModalIA(propiedad) {
+  alert('Iniciando atención automatizada vía WhatsApp para:\n"' + propiedad + '"\n\nEl bot precalifica al cliente antes de derivarlo al vendedor.');
+}
+
+const menuBtn = document.getElementById('menuBtn');
+const menuIcon = document.getElementById('menuIcon');
+const mobileMenu = document.getElementById('mobileMenu');
+menuBtn.addEventListener('click', () => {
+  const willOpen = mobileMenu.classList.contains('hidden');
+  mobileMenu.classList.toggle('hidden');
+  menuBtn.setAttribute('aria-expanded', String(willOpen));
+  menuIcon.classList.toggle('fa-bars', !willOpen);
+  menuIcon.classList.toggle('fa-xmark', willOpen);
+});
+
+const counterEl = document.getElementById('leadCounter');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let counted = false;
+new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !counted) {
+      counted = true;
+      if (reduceMotion) { counterEl.textContent = '14 / 14'; return; }
+      let n = 0;
+      const step = setInterval(() => { n++; counterEl.textContent = n + ' / 14'; if (n >= 14) clearInterval(step); }, 70);
+    }
+  });
+}, { threshold: 0.5 }).observe(counterEl);
+</script>
+</body>
+</html>
