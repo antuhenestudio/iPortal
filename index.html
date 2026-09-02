@@ -427,9 +427,15 @@
     <div class="flex items-end justify-between mb-6 flex-wrap gap-2">
       <div>
         <h2 class="font-display font-medium text-2xl sm:text-3xl">Agentes y Personal Shoppers Inmobiliarios</h2>
-        <p class="text-ink-700 text-sm mt-1">Perfiles verificados, ordenados por calificación — tocá "Ver perfil" para el perfil completo</p>
+        <p class="text-ink-700 text-sm mt-1">Perfiles verificados — tocá "Ver perfil" para el perfil completo</p>
       </div>
-      <span class="text-xs text-ink-700 font-data hidden sm:inline"><i class="fa-solid fa-star text-[#D9A441] mr-1"></i>Ordenado por mejor calificación</span>
+      <span class="text-xs text-ink-700 font-data hidden sm:inline"><i class="fa-solid fa-star text-[#D9A441] mr-1"></i>Los perfiles con posicionamiento pago aparecen primero</span>
+    </div>
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-ink-700 mb-4">
+      <span class="font-semibold text-ink-800">Orden del listado:</span>
+      <span class="positioning-tag positioning-premium"><i class="fa-solid fa-star"></i>Premium</span>
+      <span class="positioning-tag positioning-medio"><i class="fa-solid fa-bolt"></i>Medio</span>
+      <span>Básico</span>
     </div>
     <div class="flex flex-wrap items-center gap-2.5 mb-6">
       <i class="fa-solid fa-location-dot text-ink-700 text-sm mr-0.5"></i>
@@ -458,7 +464,13 @@
   </div>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-24">
     <h1 class="font-display font-medium text-2xl sm:text-3xl mb-1">Agentes y Personal Shoppers Inmobiliarios</h1>
-    <p class="text-ink-700 text-sm mb-6">Buscá por ubicación y elegí entre agentes inmobiliarios o personal shoppers inmobiliarios</p>
+    <p class="text-ink-700 text-sm mb-3">Buscá por ubicación y elegí entre agentes inmobiliarios o personal shoppers inmobiliarios</p>
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-ink-700 mb-6">
+      <span class="font-semibold text-ink-800">Orden del listado:</span>
+      <span class="positioning-tag positioning-premium"><i class="fa-solid fa-star"></i>Premium</span>
+      <span class="positioning-tag positioning-medio"><i class="fa-solid fa-bolt"></i>Medio</span>
+      <span>Básico</span>
+    </div>
 
     <div class="flex flex-wrap items-center gap-2.5 mb-4">
       <i class="fa-solid fa-location-dot text-ink-700 text-sm mr-0.5"></i>
@@ -544,11 +556,12 @@
       <p id="loginModalSubtitle" class="text-sm text-ink-700 mb-5">Necesitás una cuenta de iPortal para acceder a los cursos de iEduca y que queden guardados en tu perfil.</p>
       <form id="loginForm" class="space-y-3">
         <input id="loginName" type="text" required placeholder="Nombre y apellido" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-600">
-        <input id="loginEmail" type="email" required placeholder="Email" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-600">
-        <input id="loginPassword" type="password" required placeholder="Contraseña" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-600">
+        <input id="loginEmail" type="text" required placeholder="Usuario" autocomplete="username" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-600">
+        <input id="loginPassword" type="password" required placeholder="Contraseña" autocomplete="current-password" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-600">
+        <p id="loginError" class="hidden text-xs text-red-600 font-medium">Usuario o contraseña incorrectos.</p>
         <button type="submit" class="btn w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-full text-sm font-semibold">Ingresar y continuar</button>
       </form>
-      <p class="text-[11px] text-ink-700 mt-4 text-center">Prototipo de demostración — no se procesa ningún dato real.</p>
+      <p class="text-[11px] text-ink-700 mt-4 text-center">Prototipo de demostración — usuario <strong>admin</strong> / contraseña <strong>1234</strong>.</p>
     </div>
   </div>
 </div>
@@ -813,7 +826,7 @@ function certBadgeHTML(cert) {
 const agents = [
   { id:1, name:'Valentina Ríos', initials:'VR', color:'#16A34A', rating:4.9, reviews:128, specialty:'Bardas Soleadas y Terrazas del Neuquén', sales:62, responseTime:'~10 min', verified:true, yearsExp:12,
     country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['house'], role:'agente',
-    fee:{ percent:'4%', terms:'50% de anticipo al iniciar la búsqueda y 50% al finalizar la operación' },
+    fee:{ percent:'4%', terms:'50% de anticipo al iniciar la búsqueda y 50% al finalizar la operación' }, positioning:'premium',
     social:{ instagram:'#', linkedin:'#', facebook:'#' },
     photos:['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=500&q=80'],
     bio:'12 años como agente en Neuquén Capital. Se especializa en casas familiares en las zonas norte de la ciudad, con foco en negociación de financiación directa con el propietario.',
@@ -834,7 +847,7 @@ const agents = [
     ]},
   { id:2, name:'Martín Aguirre', initials:'MA', color:'#111111', rating:4.8, reviews:94, specialty:'Confluencia y alrededores', sales:47, responseTime:'~25 min', verified:true, yearsExp:8,
     country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['land','house'], role:'agente',
-    fee:{ percent:'3%', terms:'50% de anticipo al iniciar la búsqueda y 50% al finalizar la operación' },
+    fee:{ percent:'3%', terms:'50% de anticipo al iniciar la búsqueda y 50% al finalizar la operación' }, positioning:'medio',
     social:{ instagram:'#', linkedin:'#', facebook:'#' },
     photos:['https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=500&q=80'],
     bio:'Corredor matriculado, trabaja principalmente la zona de Confluencia Urbana y Rural. Fuerte en operaciones de terrenos y proyectos aprobados.',
@@ -852,7 +865,7 @@ const agents = [
     ]},
   { id:3, name:'Sol Bertone', initials:'SB', color:'#16A34A', rating:5.0, reviews:61, specialty:'Departamentos a estrenar, Centro', sales:38, responseTime:'~15 min', verified:true, yearsExp:5,
     country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['apt'], role:'agente',
-    fee:{ percent:'4%', terms:'50% de anticipo al iniciar la búsqueda y 50% al finalizar la operación' },
+    fee:{ percent:'4%', terms:'50% de anticipo al iniciar la búsqueda y 50% al finalizar la operación' }, positioning:'premium',
     social:{ instagram:'#', linkedin:'#' },
     photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=500&q=80'],
     bio:'Especialista en pozo y unidades a estrenar en el área Centro. Trabaja con varios desarrollos y conoce los planes de financiación de cada uno.',
@@ -869,7 +882,7 @@ const agents = [
     ]},
   { id:4, name:'Ezequiel Paz', initials:'EP', color:'#111111', rating:4.7, reviews:52, specialty:'Terrenos y quintas, zona rural', sales:29, responseTime:'~40 min', verified:false, yearsExp:6,
     country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['land','house'], role:'agente',
-    fee:{ percent:'3.5%', terms:'50% de anticipo al iniciar la búsqueda y 50% al finalizar la operación' },
+    fee:{ percent:'3.5%', terms:'50% de anticipo al iniciar la búsqueda y 50% al finalizar la operación' }, positioning:'basico',
     social:{ facebook:'#' },
     photos:['https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=500&q=80'],
     bio:'Enfocado en quintas y terrenos grandes en las zonas rurales de Neuquén. Ideal para quienes buscan más superficie y tranquilidad.',
@@ -883,7 +896,7 @@ const agents = [
     ]},
   { id:5, name:'Camila Suárez', initials:'CS', color:'#16A34A', rating:4.9, reviews:73, specialty:'Casas y duplex en Cipolletti', sales:41, responseTime:'~20 min', verified:true, yearsExp:7,
     country:'Argentina', province:'Río Negro', city:'Cipolletti', specializesIn:['house'], role:'personal_shopper',
-    fee:{ percent:'4%', terms:'50% de anticipo al iniciar la búsqueda y 50% al finalizar la operación' },
+    fee:{ percent:'4%', terms:'50% de anticipo al iniciar la búsqueda y 50% al finalizar la operación' }, positioning:'medio',
     social:{ instagram:'#', linkedin:'#', facebook:'#' },
     photos:['https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80'],
     bio:'Trabaja del otro lado del río, en Cipolletti. Conoce bien la demanda de quienes buscan alternativas más económicas cerca de Neuquén Capital.',
@@ -898,7 +911,7 @@ const agents = [
     ]},
   { id:6, name:'Federico Lanús', initials:'FL', color:'#111111', rating:4.6, reviews:35, specialty:'Departamentos en CABA', sales:22, responseTime:'~30 min', verified:false, yearsExp:4,
     country:'Argentina', province:'Ciudad Autónoma de Buenos Aires', city:'Buenos Aires', specializesIn:['apt'], role:'personal_shopper',
-    fee:{ percent:'4.5%', terms:'30% de anticipo al iniciar la búsqueda y 70% al finalizar la operación' },
+    fee:{ percent:'4.5%', terms:'30% de anticipo al iniciar la búsqueda y 70% al finalizar la operación' }, positioning:'basico',
     social:{ instagram:'#' },
     photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=500&q=80'],
     bio:'Agente porteño, especializado en departamentos usados en Buenos Aires. Ideal para inversores que buscan renta en la capital.',
@@ -1089,9 +1102,31 @@ function roleLabel(role) {
     : '<span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-ink-900/5 text-ink-800 rounded-full px-2 py-0.5"><i class="fa-solid fa-id-badge"></i>Agente Inmobiliario</span>';
 }
 
+/* ---------------- Posicionamiento pago también para agentes y personal shoppers ---------------- */
+function agentCompletenessScore(a) {
+  let score = 0;
+  if (a.verified) score += 1;
+  if (a.certifications && a.certifications.length >= 3) score += 1;
+  if (a.social && Object.keys(a.social).length >= 2) score += 1;
+  if (a.reviewsList && a.reviewsList.length >= 2) score += 1;
+  return score;
+}
+function sortAgentsByPositioning(list) {
+  return [...list].sort((a, b) => {
+    const diff = (POSITIONING_RANK[b.positioning] || 0) - (POSITIONING_RANK[a.positioning] || 0);
+    if (diff !== 0) return diff;
+    return agentCompletenessScore(b) - agentCompletenessScore(a);
+  });
+}
+
 function agentCardTemplate(a) {
+  const posClass = a.positioning === 'premium' ? 'ring-2 ring-[#D9A441] border-transparent'
+    : a.positioning === 'medio' ? 'ring-1 ring-ink-900/30 border-transparent'
+    : 'border border-black/[0.08]';
   return `
-  <div class="agent-card bg-white border border-black/[0.08] rounded-2.5xl p-5 hover:shadow-lg transition-shadow cursor-pointer" data-agent-id="${a.id}">
+  <div class="agent-card relative bg-white ${posClass} rounded-2.5xl p-5 hover:shadow-lg transition-shadow cursor-pointer" data-agent-id="${a.id}">
+    ${a.positioning === 'premium' ? '<span class="positioning-tag positioning-premium absolute -top-2.5 left-4"><i class="fa-solid fa-star"></i>Posicionamiento Premium</span>' : ''}
+    ${a.positioning === 'medio' ? '<span class="positioning-tag positioning-medio absolute -top-2.5 left-4"><i class="fa-solid fa-bolt"></i>Posicionamiento Medio</span>' : ''}
     <div class="flex items-center gap-3 mb-3">
       <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-display font-semibold text-lg shrink-0" style="background:${a.color}">${a.initials}</div>
       <div class="min-w-0">
@@ -1125,8 +1160,9 @@ function agentCardTemplate(a) {
 }
 
 function renderCardsInto(gridEl, countEl, list, emptyMsg) {
-  gridEl.innerHTML = list.length
-    ? list.map(agentCardTemplate).join('')
+  const sorted = sortAgentsByPositioning(list);
+  gridEl.innerHTML = sorted.length
+    ? sorted.map(agentCardTemplate).join('')
     : `<div class="col-span-full text-center py-12 text-ink-700">
          <i class="fa-solid fa-user-tie text-3xl mb-3 text-ink-300"></i>
          <p class="font-medium">${emptyMsg}</p>
@@ -1535,6 +1571,7 @@ function requireLogin(action, context) {
     subtitle.textContent = 'Necesitás una cuenta de iPortal para acceder a los cursos de iEduca y que queden guardados en tu perfil.';
   }
   loginModal.classList.remove('hidden-modal');
+  document.getElementById('loginError').classList.add('hidden');
 }
 function closeLoginModal() { loginModal.classList.add('hidden-modal'); }
 document.getElementById('closeLoginModal').addEventListener('click', closeLoginModal);
@@ -1550,9 +1587,19 @@ function updateLoginUI() {
 updateLoginUI();
 document.getElementById('loginForm').addEventListener('submit', (e) => {
   e.preventDefault();
+  const usuario = document.getElementById('loginEmail').value.trim();
+  const contrasena = document.getElementById('loginPassword').value;
+  const errorMsg = document.getElementById('loginError');
+
+  if (usuario.toLowerCase() !== 'admin' || contrasena !== '1234') {
+    errorMsg.classList.remove('hidden');
+    return;
+  }
+  errorMsg.classList.add('hidden');
+
   currentUser = {
     name: document.getElementById('loginName').value.trim(),
-    email: document.getElementById('loginEmail').value.trim(),
+    email: usuario,
   };
   loggedIn = true;
   saveCurrentUser(currentUser);
