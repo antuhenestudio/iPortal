@@ -97,6 +97,11 @@
   .app-tab i { font-size: 18px; }
   .app-tab:active { background: rgba(17,17,17,.05); }
   .app-tab.is-active { color: #16A34A; }
+
+  /* ---- Etiquetas de posicionamiento de publicaciones ---- */
+  .positioning-tag { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; padding:4px 10px; border-radius:999px; letter-spacing:.01em; }
+  .positioning-premium { background:#D9A441; color:#111111; box-shadow:0 2px 6px rgba(217,164,65,.5); }
+  .positioning-medio { background:#111111; color:#fff; }
   .dir-specialty-btn.is-active { background: #111111 !important; color: #fff !important; border-color: transparent !important; }
   .course-cat-btn.is-active { background: #111111 !important; color: #fff !important; border-color: transparent !important; }
 
@@ -275,6 +280,13 @@
 
   <!-- LISTA -->
   <section id="listPanel" class="space-y-4">
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-ink-700">
+      <span class="font-semibold text-ink-800">Orden de publicación:</span>
+      <span class="inline-flex items-center gap-1.5"><span class="positioning-tag positioning-premium"><i class="fa-solid fa-star"></i>Premium</span></span>
+      <span class="inline-flex items-center gap-1.5"><span class="positioning-tag positioning-medio"><i class="fa-solid fa-bolt"></i>Medio</span></span>
+      <span class="inline-flex items-center gap-1.5">Básico</span>
+      <span>— y dentro de cada nivel, primero las fichas más completas (+10 fotos, video y 360°)</span>
+    </div>
     <div id="zoneBanner" class="hidden bg-brand-100 border border-brand-600/30 text-ink-900 rounded-2xl px-4 py-3 flex items-center justify-between gap-3 text-sm">
       <span class="font-medium"></span>
       <button class="btn shrink-0 bg-white hover:bg-paper text-ink-900 px-4 rounded-full text-xs font-semibold border border-black/[0.1]"><i class="fa-solid fa-xmark mr-1.5"></i>Quitar filtro</button>
@@ -907,39 +919,39 @@ const PET_IMG = {
 
 /* ---------------- Datos de propiedades ---------------- */
 const properties = [
-  { id:1, title:'Casa moderna con piscina', price:'USD 185.000', priceShort:'USD 185K', loc:'Bardas Soleadas, Neuquén', badge:'ACM Calificado', badgeColor:'ink', type:'house', agentId:1, specs:[['fa-bed','3 dorms'],['fa-bath','2 baños'],['fa-ruler-combined','210 m²']],
-    photos:['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80'],
+  { id:1, title:'Casa moderna con piscina', price:'USD 185.000', priceShort:'USD 185K', loc:'Bardas Soleadas, Neuquén', badge:'ACM Calificado', badgeColor:'ink', type:'house', agentId:1, positioning:'premium', specs:[['fa-bed','3 dorms'],['fa-bath','2 baños'],['fa-ruler-combined','210 m²']],
+    photos:['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9298, lng:-68.0745,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/NjV1w?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'Casa de dos plantas con piscina y parquización completa, en una de las zonas más buscadas de la ciudad. Living-comedor integrado, cocina con isla y dormitorio en suite.' },
-  { id:2, title:'Departamento 2 ambientes centro', price:'USD 75.000', priceShort:'USD 75K', loc:'Área Centro, Neuquén Capital', badge:'Oportunidad', badgeColor:'brand', type:'apt', agentId:3, specs:[['fa-bed','1 dorm'],['fa-bath','1 baño'],['fa-ruler-combined','52 m²']],
+  { id:2, title:'Departamento 2 ambientes centro', price:'USD 75.000', priceShort:'USD 75K', loc:'Área Centro, Neuquén Capital', badge:'Oportunidad', badgeColor:'brand', type:'apt', agentId:3, positioning:'medio', specs:[['fa-bed','1 dorm'],['fa-bath','1 baño'],['fa-ruler-combined','52 m²']],
     photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9522, lng:-68.0591,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/5GssB?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'A metros de la peatonal, ideal para renta o primera vivienda. Balcón, cocina separada y excelente iluminación natural todo el día.',
     pets:['dog','cat'] },
-  { id:3, title:'Casa con vista al río', price:'USD 210.000', priceShort:'USD 210K', loc:'Terrazas del Neuquén', badge:'Vista premium', badgeColor:'ink', type:'house', agentId:1, specs:[['fa-bed','4 dorms'],['fa-bath','3 baños'],['fa-ruler-combined','320 m²']],
-    photos:['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=700&q=80'],
+  { id:3, title:'Casa con vista al río', price:'USD 210.000', priceShort:'USD 210K', loc:'Terrazas del Neuquén', badge:'Vista premium', badgeColor:'ink', type:'house', agentId:1, positioning:'premium', specs:[['fa-bed','4 dorms'],['fa-bath','3 baños'],['fa-ruler-combined','320 m²']],
+    photos:['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9245, lng:-68.0958,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/h5Hpv?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'En la meseta alta, con vista abierta al Río Neuquén. Living con ventanales de piso a techo, quincho cubierto y cochera para 2 autos.' },
-  { id:4, title:'Departamento a estrenar frente a la plaza', price:'USD 98.000', priceShort:'USD 98K', loc:'Confluencia Urbana, Neuquén', badge:'A estrenar', badgeColor:'brand', type:'apt', agentId:2, specs:[['fa-bed','2 dorms'],['fa-bath','1 baño'],['fa-ruler-combined','64 m²']],
+  { id:4, title:'Departamento a estrenar frente a la plaza', price:'USD 98.000', priceShort:'USD 98K', loc:'Confluencia Urbana, Neuquén', badge:'A estrenar', badgeColor:'brand', type:'apt', agentId:2, positioning:'medio', specs:[['fa-bed','2 dorms'],['fa-bath','1 baño'],['fa-ruler-combined','64 m²']],
     photos:['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9581, lng:-68.0552,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/5GssB?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'Estrenar sin sorpresas: terminaciones a nuevo, amenities de edificio y frente a plaza arbolada. Apto crédito hipotecario.',
     pets:['dog'] },
-  { id:5, title:'Terreno con proyecto aprobado', price:'USD 42.000', priceShort:'USD 42K', loc:'Confluencia Rural, Neuquén', badge:'Apto crédito', badgeColor:'ink', type:'land', agentId:4, specs:[['fa-draw-polygon','Lote 600 m²'],['fa-file-signature','Escritura lista'],['fa-road','Sobre ruta']],
+  { id:5, title:'Terreno con proyecto aprobado', price:'USD 42.000', priceShort:'USD 42K', loc:'Confluencia Rural, Neuquén', badge:'Apto crédito', badgeColor:'ink', type:'land', agentId:4, positioning:'basico', specs:[['fa-draw-polygon','Lote 600 m²'],['fa-file-signature','Escritura lista'],['fa-road','Sobre ruta']],
     photos:['https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9812, lng:-68.0198,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:null,
     desc:'Lote plano, esquina, con todos los servicios en la vereda y proyecto de vivienda ya aprobado por catastro municipal.' },
-  { id:6, title:'Casa quinta con parque', price:'USD 265.000', priceShort:'USD 265K', loc:'Valentina Sur Rural, Neuquén', badge:'Exclusiva', badgeColor:'ink', type:'house', agentId:4, specs:[['fa-bed','5 dorms'],['fa-bath','4 baños'],['fa-ruler-combined','540 m²']],
+  { id:6, title:'Casa quinta con parque', price:'USD 265.000', priceShort:'USD 265K', loc:'Valentina Sur Rural, Neuquén', badge:'Exclusiva', badgeColor:'ink', type:'house', agentId:4, positioning:'basico', specs:[['fa-bed','5 dorms'],['fa-bath','4 baños'],['fa-ruler-combined','540 m²']],
     photos:['https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9765, lng:-68.0865,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
@@ -956,12 +968,46 @@ const grid = document.getElementById('cardsGrid');
 const compareSet = new Set(); // declarado acá arriba porque renderCards lo usa desde el primer render
 const favoritesSet = new Set();
 
+/* ---------------- Posicionamiento de publicaciones (lógica tipo ZonaProp) ---------------- */
+const POSITIONING_RANK = { premium: 3, medio: 2, basico: 1 };
+function completenessScore(p) {
+  let score = 0;
+  const photoCount = (p.photos || []).length;
+  if (photoCount > 10) score += 3;
+  else if (photoCount >= 5) score += 1;
+  if (p.video) score += 1;
+  if (p.tour360) score += 1;
+  if (FLOORPLANS[p.type]) score += 1;
+  return score; // máximo 6
+}
+function isCompleteListing(p) {
+  return (p.photos || []).length > 10 && !!p.video && !!p.tour360 && !!FLOORPLANS[p.type];
+}
+function sortByPositioning(list) {
+  return [...list].sort((a, b) => {
+    const diff = (POSITIONING_RANK[b.positioning] || 0) - (POSITIONING_RANK[a.positioning] || 0);
+    if (diff !== 0) return diff; // primero el nivel de posicionamiento pago
+    return completenessScore(b) - completenessScore(a); // dentro del mismo nivel, gana la ficha más completa
+  });
+}
+function positioningTag(p) {
+  if (p.positioning === 'premium') return '<span class="positioning-tag positioning-premium"><i class="fa-solid fa-star"></i>Posicionamiento Premium</span>';
+  if (p.positioning === 'medio') return '<span class="positioning-tag positioning-medio"><i class="fa-solid fa-bolt"></i>Posicionamiento Medio</span>';
+  return '';
+}
+
 function cardTemplate(p) {
+  const posClass = p.positioning === 'premium' ? 'ring-2 ring-[#D9A441] border-transparent'
+    : p.positioning === 'medio' ? 'ring-1 ring-ink-900/30 border-transparent'
+    : 'border border-black/[0.08]';
   return `
-  <article class="property-card relative bg-white rounded-2.5xl border border-black/[0.08] overflow-hidden flex flex-col" data-id="${p.id}" tabindex="0">
+  <article class="property-card relative bg-white rounded-2.5xl overflow-hidden flex flex-col ${posClass}" data-id="${p.id}" tabindex="0">
     <div class="property-photo open-detail relative h-52 bg-ink-700 overflow-hidden cursor-pointer" data-id="${p.id}">
       <img src="${p.photos[0]}" data-idx="0" alt="${p.title}" loading="lazy" class="w-full h-full object-cover">
-      <span class="absolute top-3 left-3 ${badgeClasses(p.badgeColor)} text-white text-xs font-semibold px-3 py-1.5 rounded-full">${p.badge}</span>
+      <div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+        <span class="${badgeClasses(p.badgeColor)} text-white text-xs font-semibold px-3 py-1.5 rounded-full">${p.badge}</span>
+        ${positioningTag(p)}
+      </div>
       <div class="absolute top-3 right-3 flex gap-2">
         <button class="compare-btn w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-ink-800 hover:text-brand-600 transition-colors" data-id="${p.id}" aria-label="Comparar propiedad" title="Comparar">
           <i class="fa-solid fa-code-compare text-sm"></i>
@@ -990,6 +1036,7 @@ function cardTemplate(p) {
         <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-ink-800 mt-3">
           ${p.specs.map(s=>`<span><i class="fa-solid ${s[0]} mr-1.5 text-ink-700/60"></i>${s[1]}</span>`).join('')}
         </div>
+        ${isCompleteListing(p) ? `<div class="flex items-center gap-1.5 text-[11px] font-semibold text-brand-700 mt-2"><i class="fa-solid fa-circle-check"></i>Ficha completa · +10 fotos, video y recorrido 360°</div>` : ''}
       </div>
       <div class="flex gap-2 border-t border-black/[0.06] pt-3 mt-auto">
         <button onclick="abrirModalIA('${p.title.replace(/'/g, "\\'")}')" class="btn flex-1 bg-brand-600 hover:bg-brand-700 text-white rounded-full text-sm font-semibold transition-colors flex items-center justify-center gap-2">
@@ -1004,8 +1051,9 @@ function cardTemplate(p) {
 }
 
 function renderCards(list) {
-  grid.innerHTML = list.length
-    ? list.map(cardTemplate).join('')
+  const sorted = sortByPositioning(list);
+  grid.innerHTML = sorted.length
+    ? sorted.map(cardTemplate).join('')
     : `<div class="col-span-full text-center py-16 text-ink-700">
          <i class="fa-solid fa-map-location-dot text-3xl mb-3 text-ink-300"></i>
          <p class="font-medium">No hay propiedades dentro de la zona dibujada.</p>
