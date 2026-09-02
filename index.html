@@ -97,6 +97,28 @@
   .app-tab i { font-size: 18px; }
   .app-tab:active { background: rgba(17,17,17,.05); }
   .app-tab.is-active { color: #16A34A; }
+  .dir-specialty-btn.is-active { background: #111111 !important; color: #fff !important; border-color: transparent !important; }
+
+  /* ---- Escudos de capacitación (Capacitación Público-Privado) ---- */
+  .cert-shield {
+    width: 52px; height: 60px; position: relative; flex-shrink: 0;
+    clip-path: polygon(50% 0%, 100% 16%, 100% 58%, 50% 100%, 0% 58%, 0% 16%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px;
+    box-shadow: 0 3px 10px rgba(17,17,17,.25);
+  }
+  .cert-shield::after {
+    content: ''; position: absolute; inset: 3px;
+    clip-path: polygon(50% 0%, 100% 16%, 100% 58%, 50% 100%, 0% 58%, 0% 16%);
+    border: 1px solid rgba(255,255,255,.35); pointer-events: none;
+  }
+  .cert-badge[data-status="por_vencer"] .cert-shield { box-shadow: 0 0 0 3px #FEF3C7, 0 3px 10px rgba(17,17,17,.25); }
+  .cert-badge[data-status="vencida"] .cert-shield { filter: grayscale(55%) brightness(0.92); box-shadow: 0 0 0 3px #FEE2E2, 0 3px 10px rgba(17,17,17,.25); }
+  .cert-shield .cert-alert {
+    position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; border-radius: 999px;
+    background: #DC2626; color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  }
   .carousel-dot { width: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,.55); transition: all .2s ease; }
   .carousel-dot.is-active { background: #fff; width: 14px; }
 
@@ -377,8 +399,49 @@
       <span id="agentLocationCount" class="text-xs text-ink-700 font-data ml-auto"></span>
     </div>
     <div id="agentsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+    <div class="flex justify-center mt-8">
+      <a href="#/agentes" class="btn bg-ink-900 hover:bg-ink-800 text-white px-6 rounded-full text-sm font-semibold inline-flex items-center gap-2">
+        Ver todos los agentes y personal shoppers <i class="fa-solid fa-arrow-right text-xs"></i>
+      </a>
+    </div>
   </div>
 </section>
+
+<!-- SUBPÁGINA: DIRECTORIO COMPLETO DE AGENTES Y PERSONAL SHOPPERS -->
+<div id="agentsDirectoryPage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
+  <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
+    <button id="agentsDirectoryBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+    <span class="text-sm text-ink-700 font-data">Agentes y Personal Shoppers Inmobiliarios</span>
+  </div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-24">
+    <h1 class="font-display font-medium text-2xl sm:text-3xl mb-1">Agentes y Personal Shoppers Inmobiliarios</h1>
+    <p class="text-ink-700 text-sm mb-6">Buscá por ubicación y por en qué tipo de propiedad se especializan</p>
+
+    <div class="flex flex-wrap items-center gap-2.5 mb-4">
+      <i class="fa-solid fa-location-dot text-ink-700 text-sm mr-0.5"></i>
+      <select id="dirPaisFilter" class="btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800"></select>
+      <select id="dirProvinciaFilter" class="btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800"></select>
+      <select id="dirCiudadFilter" class="btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800"></select>
+      <button id="dirLocationClear" class="hidden text-xs text-ink-700 hover:text-ink-900 underline underline-offset-2 ml-1">Quitar filtro</button>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2.5 mb-6">
+      <i class="fa-solid fa-house-chimney text-ink-700 text-sm mr-0.5"></i>
+      <span class="text-xs text-ink-700 mr-1">Se especializa en:</span>
+      <div id="dirSpecialtyFilter" class="flex flex-wrap gap-2">
+        <button class="dir-specialty-btn is-active btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-type="">Todos</button>
+        <button class="dir-specialty-btn btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-type="house">Casas</button>
+        <button class="dir-specialty-btn btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-type="apt">Departamentos</button>
+        <button class="dir-specialty-btn btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-type="land">Terrenos y quintas</button>
+      </div>
+      <span id="dirResultCount" class="text-xs text-ink-700 font-data ml-auto"></span>
+    </div>
+
+    <div id="agentsDirectoryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+  </div>
+</div>
 
 <!-- SUBPÁGINA: PERFIL COMPLETO DE AGENTE (estilo LinkedIn) -->
 <div id="agentProfilePage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
@@ -485,58 +548,140 @@ const FLOORPLANS = {
 };
 
 /* ---------------- Agentes / Personal shoppers mejor rankeados ---------------- */
+/* ---------------- Sistema de Capacitación Público-Privado (escudos por categoría) ---------------- */
+const CERT_CATEGORIES = {
+  'Normativa y Legal':        { color:'#111111', icon:'fa-scale-balanced' },
+  'Marketing Inmobiliario':   { color:'#16A34A', icon:'fa-bullhorn' },
+  'Tecnología y PropTech':    { color:'#2563EB', icon:'fa-laptop-code' },
+  'Ventas y Negociación':     { color:'#D9A441', icon:'fa-handshake' },
+  'Personal Shopper':         { color:'#7C3AED', icon:'fa-user-tie' },
+  'Tasación y Valuación':     { color:'#0D9488', icon:'fa-calculator' },
+  'Finanzas e Inversión':     { color:'#15803D', icon:'fa-sack-dollar' },
+  'Sustentabilidad':          { color:'#22C55E', icon:'fa-leaf' },
+  'Gestión Inmobiliaria':     { color:'#4B5563', icon:'fa-building' },
+  'Internacional':            { color:'#4338CA', icon:'fa-globe' },
+  'Seguridad y Compliance':   { color:'#DC2626', icon:'fa-shield-halved' },
+};
+
+const MES_CORTO = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+function fmtFecha(iso) {
+  const [y, m] = iso.split('-');
+  return `${MES_CORTO[Number(m) - 1]} ${y}`;
+}
+function certStatus(cert) {
+  if (!cert.validUntil) return 'vigente';
+  const diasRestantes = (new Date(cert.validUntil) - new Date()) / 86400000;
+  if (diasRestantes < 0) return 'vencida';
+  if (diasRestantes <= 90) return 'por_vencer';
+  return 'vigente';
+}
+function certBadgeHTML(cert) {
+  const cat = CERT_CATEGORIES[cert.category] || { color:'#111111', icon:'fa-award' };
+  const status = certStatus(cert);
+  const statusLabel = { vigente:'Vigente', por_vencer:'Por vencer', vencida:'Renovar' }[status];
+  const statusClass = { vigente:'text-brand-700', por_vencer:'text-[#B45309]', vencida:'text-red-600' }[status];
+  return `
+    <div class="cert-badge flex flex-col items-center text-center w-24" data-status="${status}" title="${cert.name}">
+      <div class="cert-shield" style="background:linear-gradient(160deg, ${cat.color}, #111111)">
+        <i class="fa-solid ${cat.icon}"></i>
+        ${status === 'vencida' ? '<span class="cert-alert">!</span>' : ''}
+      </div>
+      <p class="text-[11px] font-semibold text-ink-900 leading-tight mt-2 line-clamp-2">${cert.name}</p>
+      <p class="text-[10px] text-ink-700 mt-0.5">Completó: ${fmtFecha(cert.completedDate)}</p>
+      <p class="text-[10px] font-semibold mt-0.5 ${statusClass}">${cert.validUntil ? `${statusLabel} · ${fmtFecha(cert.validUntil)}` : 'Sin vencimiento'}</p>
+    </div>`;
+}
+
 const agents = [
   { id:1, name:'Valentina Ríos', initials:'VR', color:'#16A34A', rating:4.9, reviews:128, specialty:'Bardas Soleadas y Terrazas del Neuquén', sales:62, responseTime:'~10 min', verified:true, yearsExp:12,
-    country:'Argentina', province:'Neuquén', city:'Neuquén Capital',
+    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['house'],
     social:{ instagram:'#', linkedin:'#', facebook:'#' },
     photos:['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=500&q=80'],
     bio:'12 años como agente en Neuquén Capital. Se especializa en casas familiares en las zonas norte de la ciudad, con foco en negociación de financiación directa con el propietario.',
+    certifications:[
+      { name:'Normativas Inmobiliarias 2026', category:'Normativa y Legal', completedDate:'2026-02-10', validUntil:'2027-02-10' },
+      { name:'Ley de Alquileres Actualizada', category:'Normativa y Legal', completedDate:'2025-11-05', validUntil:'2026-11-05' },
+      { name:'Prevención de Lavado de Activos (UIF)', category:'Seguridad y Compliance', completedDate:'2025-10-20', validUntil:'2026-10-20' },
+      { name:'Técnicas de Negociación Inmobiliaria', category:'Ventas y Negociación', completedDate:'2024-06-15', validUntil:null },
+      { name:'Personal Shopper Inmobiliario', category:'Personal Shopper', completedDate:'2023-09-01', validUntil:null },
+      { name:'Marketing Inmobiliario Digital', category:'Marketing Inmobiliario', completedDate:'2025-03-12', validUntil:'2027-03-12' },
+      { name:'Home Staging', category:'Marketing Inmobiliario', completedDate:'2022-08-20', validUntil:null },
+      { name:'Tasación Inmobiliaria', category:'Tasación y Valuación', completedDate:'2023-01-15', validUntil:'2026-01-15' },
+    ],
     reviewsList:[
       {name:'Marcos T.', rating:5, sentiment:'positive', text:'Encontró exactamente lo que buscábamos en dos semanas. Muy clara con los tiempos.'},
       {name:'Julieta P.', rating:5, sentiment:'positive', text:'Nos ayudó a negociar el precio final. Recomendable.'},
       {name:'Nahuel S.', rating:4, sentiment:'positive', text:'Buena comunicación, aunque alguna vez tardó en confirmar horarios.'},
     ]},
   { id:2, name:'Martín Aguirre', initials:'MA', color:'#111111', rating:4.8, reviews:94, specialty:'Confluencia y alrededores', sales:47, responseTime:'~25 min', verified:true, yearsExp:8,
-    country:'Argentina', province:'Neuquén', city:'Neuquén Capital',
+    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['land','house'],
     social:{ instagram:'#', linkedin:'#', facebook:'#' },
     photos:['https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=500&q=80'],
     bio:'Corredor matriculado, trabaja principalmente la zona de Confluencia Urbana y Rural. Fuerte en operaciones de terrenos y proyectos aprobados.',
+    certifications:[
+      { name:'Fideicomisos Inmobiliarios', category:'Finanzas e Inversión', completedDate:'2025-05-10', validUntil:'2027-05-10' },
+      { name:'Boleto de Compraventa y Escrituración', category:'Normativa y Legal', completedDate:'2022-04-02', validUntil:null },
+      { name:'Financiamiento de Desarrollos Inmobiliarios', category:'Finanzas e Inversión', completedDate:'2025-07-18', validUntil:'2026-07-18' },
+      { name:'Análisis Comparativo de Mercado (CMA)', category:'Tasación y Valuación', completedDate:'2023-02-28', validUntil:null },
+      { name:'Habilitaciones Municipales para Corretaje', category:'Normativa y Legal', completedDate:'2025-08-01', validUntil:'2026-11-01' },
+      { name:'Prevención de Fraude Inmobiliario', category:'Seguridad y Compliance', completedDate:'2024-03-15', validUntil:'2026-03-15' },
+    ],
     reviewsList:[
       {name:'Denise A.', rating:5, sentiment:'positive', text:'Conoce muy bien la zona rural, nos evitó varios problemas de escritura.'},
       {name:'Ramiro G.', rating:3, sentiment:'negative', text:'Buena predisposición, pero muy lento para responder los fines de semana.'},
     ]},
   { id:3, name:'Sol Bertone', initials:'SB', color:'#16A34A', rating:5.0, reviews:61, specialty:'Departamentos a estrenar, Centro', sales:38, responseTime:'~15 min', verified:true, yearsExp:5,
-    country:'Argentina', province:'Neuquén', city:'Neuquén Capital',
+    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['apt'],
     social:{ instagram:'#', linkedin:'#' },
     photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=500&q=80'],
     bio:'Especialista en pozo y unidades a estrenar en el área Centro. Trabaja con varios desarrollos y conoce los planes de financiación de cada uno.',
+    certifications:[
+      { name:'Marketing Inmobiliario Digital', category:'Marketing Inmobiliario', completedDate:'2025-09-01', validUntil:'2027-09-01' },
+      { name:'Tours Virtuales 360°', category:'Tecnología y PropTech', completedDate:'2024-11-10', validUntil:null },
+      { name:'Créditos Hipotecarios', category:'Finanzas e Inversión', completedDate:'2025-06-22', validUntil:'2026-12-22' },
+      { name:'CRM Inmobiliario', category:'Tecnología y PropTech', completedDate:'2023-05-05', validUntil:null },
+      { name:'Experiencia del Cliente Inmobiliario', category:'Personal Shopper', completedDate:'2022-10-14', validUntil:null },
+    ],
     reviewsList:[
       {name:'Ivo N.', rating:5, sentiment:'positive', text:'Perfecta atención, nos mostró 4 opciones a estrenar en un día.'},
       {name:'Carla M.', rating:5, sentiment:'positive', text:'Excelente, todo por WhatsApp, muy cómodo.'},
     ]},
   { id:4, name:'Ezequiel Paz', initials:'EP', color:'#111111', rating:4.7, reviews:52, specialty:'Terrenos y quintas, zona rural', sales:29, responseTime:'~40 min', verified:false, yearsExp:6,
-    country:'Argentina', province:'Neuquén', city:'Neuquén Capital',
+    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['land','house'],
     social:{ facebook:'#' },
     photos:['https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=500&q=80'],
     bio:'Enfocado en quintas y terrenos grandes en las zonas rurales de Neuquén. Ideal para quienes buscan más superficie y tranquilidad.',
+    certifications:[
+      { name:'Valuación de Inmuebles Rurales', category:'Tasación y Valuación', completedDate:'2023-04-11', validUntil:null },
+      { name:'Normativas Inmobiliarias 2026', category:'Normativa y Legal', completedDate:'2025-01-20', validUntil:'2026-01-20' },
+    ],
     reviewsList:[
       {name:'Fernanda L.', rating:5, sentiment:'positive', text:'Buen conocimiento de las quintas de la zona sur.'},
       {name:'Hugo D.', rating:2, sentiment:'negative', text:'Tardó demasiado en confirmar la visita, casi perdemos el lote.'},
     ]},
   { id:5, name:'Camila Suárez', initials:'CS', color:'#16A34A', rating:4.9, reviews:73, specialty:'Casas y duplex en Cipolletti', sales:41, responseTime:'~20 min', verified:true, yearsExp:7,
-    country:'Argentina', province:'Río Negro', city:'Cipolletti',
+    country:'Argentina', province:'Río Negro', city:'Cipolletti', specializesIn:['house'],
     social:{ instagram:'#', linkedin:'#', facebook:'#' },
     photos:['https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80'],
     bio:'Trabaja del otro lado del río, en Cipolletti. Conoce bien la demanda de quienes buscan alternativas más económicas cerca de Neuquén Capital.',
+    certifications:[
+      { name:'Personal Shopper Inmobiliario', category:'Personal Shopper', completedDate:'2024-02-08', validUntil:null },
+      { name:'Relocation y Mudanzas Corporativas', category:'Personal Shopper', completedDate:'2025-04-19', validUntil:'2027-04-19' },
+      { name:'Redes Sociales para Agentes Inmobiliarios', category:'Marketing Inmobiliario', completedDate:'2025-07-02', validUntil:'2026-10-02' },
+    ],
     reviewsList:[
       {name:'Nicolás B.', rating:5, sentiment:'positive', text:'Nos mostró opciones que no encontrábamos solos. Muy atenta.'},
       {name:'Ayelén R.', rating:5, sentiment:'positive', text:'Rápida para responder y coordinar visitas.'},
     ]},
   { id:6, name:'Federico Lanús', initials:'FL', color:'#111111', rating:4.6, reviews:35, specialty:'Departamentos en CABA', sales:22, responseTime:'~30 min', verified:false, yearsExp:4,
-    country:'Argentina', province:'Ciudad Autónoma de Buenos Aires', city:'Buenos Aires',
+    country:'Argentina', province:'Ciudad Autónoma de Buenos Aires', city:'Buenos Aires', specializesIn:['apt'],
     social:{ instagram:'#' },
     photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=500&q=80'],
     bio:'Agente porteño, especializado en departamentos usados en Buenos Aires. Ideal para inversores que buscan renta en la capital.',
+    certifications:[
+      { name:'Inglés para Real Estate', category:'Internacional', completedDate:'2023-11-30', validUntil:null },
+      { name:'Renta Corta (Airbnb) como Inversión', category:'Finanzas e Inversión', completedDate:'2024-09-09', validUntil:'2026-09-09' },
+    ],
     reviewsList:[
       {name:'Lucía M.', rating:3, sentiment:'negative', text:'Buen conocimiento del mercado porteño, aunque tardó en cerrar la operación.'},
     ]},
@@ -674,6 +819,11 @@ function starIcons(rating) {
 
 const agentsGrid = document.getElementById('agentsGrid');
 
+function specialtyLabels(list) {
+  const map = { house:['fa-house','Casas'], apt:['fa-building','Deptos'], land:['fa-tree','Terrenos'] };
+  return (list || []).map(t => map[t] ? `<span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-paper text-ink-800 rounded-full px-2 py-0.5"><i class="fa-solid ${map[t][0]}"></i>${map[t][1]}</span>` : '').join('');
+}
+
 function agentCardTemplate(a) {
   return `
   <div class="agent-card bg-white border border-black/[0.08] rounded-2.5xl p-5 hover:shadow-lg transition-shadow cursor-pointer" data-agent-id="${a.id}">
@@ -688,79 +838,124 @@ function agentCardTemplate(a) {
         <p class="text-[11px] text-ink-700/70 truncate"><i class="fa-solid fa-location-dot mr-1"></i>${a.city}, ${a.province}</p>
       </div>
     </div>
+    <div class="flex flex-wrap gap-1.5 mb-3">${specialtyLabels(a.specializesIn)}</div>
     <div class="flex items-center gap-1.5 text-sm mb-3">
       ${starIcons(a.rating)}
       <span class="font-semibold font-data ml-1">${a.rating.toFixed(1)}</span>
       <span class="text-ink-700 text-xs">(${a.reviews})</span>
     </div>
-    <div class="grid grid-cols-2 gap-2 text-xs text-ink-700 mb-4">
+    <div class="grid grid-cols-2 gap-2 text-xs text-ink-700 mb-3">
       <div><i class="fa-solid fa-house mr-1 text-ink-300"></i>${a.sales} vendidas</div>
       <div><i class="fa-solid fa-clock mr-1 text-ink-300"></i>${a.responseTime}</div>
     </div>
+    ${a.certifications && a.certifications.length ? `
+    <div class="flex items-center gap-1.5 text-xs text-ink-800 bg-paper rounded-full px-3 py-1.5 mb-4 w-fit">
+      <i class="fa-solid fa-shield-halved text-brand-600"></i>
+      <span class="font-semibold">${a.certifications.length}</span> capacitaciones
+      ${a.certifications.some(c => certStatus(c) === 'vencida') ? '<i class="fa-solid fa-circle-exclamation text-red-500 ml-1" title="Tiene capacitaciones para renovar"></i>' : ''}
+    </div>` : '<div class="mb-4"></div>'}
     <button class="btn w-full bg-ink-900 hover:bg-ink-800 text-white rounded-full text-sm font-semibold transition-colors">Ver perfil</button>
   </div>`;
 }
 
-function renderAgentCards(list) {
-  agentsGrid.innerHTML = list.length
+function renderCardsInto(gridEl, countEl, list, emptyMsg) {
+  gridEl.innerHTML = list.length
     ? list.map(agentCardTemplate).join('')
     : `<div class="col-span-full text-center py-12 text-ink-700">
          <i class="fa-solid fa-user-tie text-3xl mb-3 text-ink-300"></i>
-         <p class="font-medium">No hay agentes en esa ubicación todavía.</p>
+         <p class="font-medium">${emptyMsg}</p>
        </div>`;
-  document.getElementById('agentLocationCount').textContent = list.length + (list.length === 1 ? ' agente encontrado' : ' agentes encontrados');
+  if (countEl) countEl.textContent = list.length + (list.length === 1 ? ' agente encontrado' : ' agentes encontrados');
+}
+function renderAgentCards(list) {
+  renderCardsInto(agentsGrid, document.getElementById('agentLocationCount'), list, 'No hay agentes en esa ubicación todavía.');
 }
 renderAgentCards(agents);
 
-/* ---------------- Filtro país / provincia / ciudad (personal shoppers) ---------------- */
-const paisSel = document.getElementById('agentPaisFilter');
-const provinciaSel = document.getElementById('agentProvinciaFilter');
-const ciudadSel = document.getElementById('agentCiudadFilter');
-const agentLocationClear = document.getElementById('agentLocationClear');
-
+/* ---------------- Filtro país / provincia / ciudad, reutilizable para el resumen del home y el directorio completo ---------------- */
 function fillSelect(select, values, placeholder) {
   select.innerHTML = `<option value="">${placeholder}</option>` + values.map(v => `<option value="${v}">${v}</option>`).join('');
 }
 
-function refreshLocationSelects() {
-  const pais = paisSel.value;
-  const provincia = provinciaSel.value;
+function makeAgentLocationFilter({ paisEl, provinciaEl, ciudadEl, clearEl, specialtyGetter, onApply }) {
+  function pool() {
+    const t = specialtyGetter ? specialtyGetter() : '';
+    return t ? agents.filter(a => (a.specializesIn || []).includes(t)) : agents;
+  }
+  function refresh() {
+    const pais = paisEl.value, provincia = provinciaEl.value;
+    const base = pool();
 
-  const paises = [...new Set(agents.map(a => a.country))].sort();
-  fillSelect(paisSel, paises, 'País');
-  paisSel.value = pais;
+    fillSelect(paisEl, [...new Set(base.map(a => a.country))].sort(), 'País');
+    paisEl.value = pais;
 
-  const provinciasDisponibles = [...new Set(agents.filter(a => !pais || a.country === pais).map(a => a.province))].sort();
-  fillSelect(provinciaSel, provinciasDisponibles, 'Provincia');
-  provinciaSel.value = provinciasDisponibles.includes(provincia) ? provincia : '';
+    const provinciasDisponibles = [...new Set(base.filter(a => !pais || a.country === pais).map(a => a.province))].sort();
+    fillSelect(provinciaEl, provinciasDisponibles, 'Provincia');
+    provinciaEl.value = provinciasDisponibles.includes(provincia) ? provincia : '';
 
-  const ciudadesDisponibles = [...new Set(agents
-    .filter(a => (!pais || a.country === pais) && (!provinciaSel.value || a.province === provinciaSel.value))
-    .map(a => a.city))].sort();
-  fillSelect(ciudadSel, ciudadesDisponibles, 'Ciudad');
+    const ciudadesDisponibles = [...new Set(base
+      .filter(a => (!pais || a.country === pais) && (!provinciaEl.value || a.province === provinciaEl.value))
+      .map(a => a.city))].sort();
+    fillSelect(ciudadEl, ciudadesDisponibles, 'Ciudad');
+  }
+  function apply() {
+    const pais = paisEl.value, provincia = provinciaEl.value, ciudad = ciudadEl.value;
+    const filtered = pool().filter(a =>
+      (!pais || a.country === pais) &&
+      (!provincia || a.province === provincia) &&
+      (!ciudad || a.city === ciudad)
+    );
+    if (clearEl) clearEl.classList.toggle('hidden', !(pais || provincia || ciudad));
+    onApply(filtered);
+  }
+  return { refresh, apply };
 }
 
-function applyAgentLocationFilter() {
-  const pais = paisSel.value, provincia = provinciaSel.value, ciudad = ciudadSel.value;
-  const filtered = agents.filter(a =>
-    (!pais || a.country === pais) &&
-    (!provincia || a.province === provincia) &&
-    (!ciudad || a.city === ciudad)
-  );
-  renderAgentCards(filtered);
-  agentLocationClear.classList.toggle('hidden', !(pais || provincia || ciudad));
+const homeLocationFilter = makeAgentLocationFilter({
+  paisEl: document.getElementById('agentPaisFilter'),
+  provinciaEl: document.getElementById('agentProvinciaFilter'),
+  ciudadEl: document.getElementById('agentCiudadFilter'),
+  clearEl: document.getElementById('agentLocationClear'),
+  onApply: renderAgentCards,
+});
+homeLocationFilter.refresh();
+homeLocationFilter.apply();
+document.getElementById('agentPaisFilter').addEventListener('change', () => { document.getElementById('agentProvinciaFilter').value = ''; document.getElementById('agentCiudadFilter').value = ''; homeLocationFilter.refresh(); homeLocationFilter.apply(); });
+document.getElementById('agentProvinciaFilter').addEventListener('change', () => { document.getElementById('agentCiudadFilter').value = ''; homeLocationFilter.refresh(); homeLocationFilter.apply(); });
+document.getElementById('agentCiudadFilter').addEventListener('change', () => homeLocationFilter.apply());
+document.getElementById('agentLocationClear').addEventListener('click', () => {
+  document.getElementById('agentPaisFilter').value = ''; document.getElementById('agentProvinciaFilter').value = ''; document.getElementById('agentCiudadFilter').value = '';
+  homeLocationFilter.refresh(); homeLocationFilter.apply();
+});
+
+/* ---------------- Directorio completo (#/agentes): mismo filtro de ubicación + filtro por tipo de propiedad ---------------- */
+let dirSpecialty = '';
+function renderDirectoryCards(list) {
+  renderCardsInto(document.getElementById('agentsDirectoryGrid'), document.getElementById('dirResultCount'), list, 'No hay agentes que coincidan con la búsqueda.');
 }
-
-refreshLocationSelects();
-applyAgentLocationFilter();
-
-paisSel.addEventListener('change', () => { provinciaSel.value = ''; ciudadSel.value = ''; refreshLocationSelects(); applyAgentLocationFilter(); });
-provinciaSel.addEventListener('change', () => { ciudadSel.value = ''; refreshLocationSelects(); applyAgentLocationFilter(); });
-ciudadSel.addEventListener('change', applyAgentLocationFilter);
-agentLocationClear.addEventListener('click', () => {
-  paisSel.value = ''; provinciaSel.value = ''; ciudadSel.value = '';
-  refreshLocationSelects();
-  applyAgentLocationFilter();
+const directoryLocationFilter = makeAgentLocationFilter({
+  paisEl: document.getElementById('dirPaisFilter'),
+  provinciaEl: document.getElementById('dirProvinciaFilter'),
+  ciudadEl: document.getElementById('dirCiudadFilter'),
+  clearEl: document.getElementById('dirLocationClear'),
+  specialtyGetter: () => dirSpecialty,
+  onApply: renderDirectoryCards,
+});
+document.getElementById('dirPaisFilter').addEventListener('change', () => { document.getElementById('dirProvinciaFilter').value = ''; document.getElementById('dirCiudadFilter').value = ''; directoryLocationFilter.refresh(); directoryLocationFilter.apply(); });
+document.getElementById('dirProvinciaFilter').addEventListener('change', () => { document.getElementById('dirCiudadFilter').value = ''; directoryLocationFilter.refresh(); directoryLocationFilter.apply(); });
+document.getElementById('dirCiudadFilter').addEventListener('change', () => directoryLocationFilter.apply());
+document.getElementById('dirLocationClear').addEventListener('click', () => {
+  document.getElementById('dirPaisFilter').value = ''; document.getElementById('dirProvinciaFilter').value = ''; document.getElementById('dirCiudadFilter').value = '';
+  directoryLocationFilter.refresh(); directoryLocationFilter.apply();
+});
+document.getElementById('dirSpecialtyFilter').addEventListener('click', (e) => {
+  const btn = e.target.closest('.dir-specialty-btn');
+  if (!btn) return;
+  document.querySelectorAll('.dir-specialty-btn').forEach(b => b.classList.remove('is-active'));
+  btn.classList.add('is-active');
+  dirSpecialty = btn.dataset.type;
+  directoryLocationFilter.refresh();
+  directoryLocationFilter.apply();
 });
 
 function ratingBarPct(list, filterFn) {
@@ -805,6 +1000,23 @@ function buildAgentProfileHTML(a) {
       <p class="text-sm text-ink-700 leading-relaxed">${a.bio}</p>
     </div>
 
+    ${a.certifications && a.certifications.length ? `
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-1">
+        <h2 class="font-display font-medium text-lg">Capacitación Público-Privado</h2>
+        <span class="text-xs text-ink-700 font-data">${a.certifications.length} completadas</span>
+      </div>
+      <p class="text-xs text-ink-700 mb-4">Programas cursados con instituciones públicas y privadas. Los escudos opacos indican capacitaciones a renovar.</p>
+      <div class="flex flex-wrap gap-4">
+        ${a.certifications.map(certBadgeHTML).join('')}
+      </div>
+      <div class="flex items-center gap-4 mt-4 text-[11px] text-ink-700">
+        <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-brand-600 mr-1"></span>Vigente</span>
+        <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-[#D9A441] mr-1"></span>Por vencer (90 días)</span>
+        <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-red-600 mr-1"></span>A renovar</span>
+      </div>
+    </div>` : ''}
+
     ${a.photos && a.photos.length ? `
     <div class="mb-8">
       <h2 class="font-display font-medium text-lg mb-3">Fotos de propiedades mostradas</h2>
@@ -839,6 +1051,9 @@ function buildAgentProfileHTML(a) {
 }
 
 const agentProfilePage = document.getElementById('agentProfilePage');
+const agentsDirectoryPage = document.getElementById('agentsDirectoryPage');
+let agentReturnHash = '';
+
 function showAgentProfile(id) {
   const a = agents.find(ag => ag.id === id);
   if (!a) return;
@@ -850,23 +1065,47 @@ function showAgentProfile(id) {
 }
 function hideAgentProfile() {
   agentProfilePage.classList.add('hidden');
-  document.body.style.overflow = '';
+}
+function showAgentsDirectory() {
+  agentsDirectoryPage.classList.remove('hidden');
+  agentsDirectoryPage.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  directoryLocationFilter.refresh();
+  directoryLocationFilter.apply();
+}
+function hideAgentsDirectory() {
+  agentsDirectoryPage.classList.add('hidden');
 }
 function syncAgentRoute() {
-  const m = location.hash.match(/^#\/agente\/(\d+)$/);
-  if (m) showAgentProfile(Number(m[1]));
-  else hideAgentProfile();
+  const mProfile = location.hash.match(/^#\/agente\/(\d+)$/);
+  if (mProfile) {
+    hideAgentsDirectory();
+    showAgentProfile(Number(mProfile[1]));
+  } else if (location.hash === '#/agentes') {
+    hideAgentProfile();
+    showAgentsDirectory();
+  } else {
+    hideAgentProfile();
+    hideAgentsDirectory();
+    document.body.style.overflow = '';
+  }
 }
-function openAgent(id) {
+function openAgent(id, returnTo) {
+  agentReturnHash = returnTo || '';
   location.hash = '#/agente/' + id; // dispara hashchange -> showAgentProfile (funciona como subpágina real, con back del navegador)
 }
 window.addEventListener('hashchange', syncAgentRoute);
-document.getElementById('agentProfileBack').addEventListener('click', () => { location.hash = ''; });
-syncAgentRoute(); // soporta deep-link directo a #/agente/ID al cargar la página
+document.getElementById('agentProfileBack').addEventListener('click', () => { location.hash = agentReturnHash; });
+document.getElementById('agentsDirectoryBack').addEventListener('click', () => { location.hash = ''; });
+syncAgentRoute(); // soporta deep-link directo a #/agente/ID o #/agentes al cargar la página
 
 agentsGrid.addEventListener('click', (e) => {
   const card = e.target.closest('.agent-card');
-  if (card) openAgent(Number(card.dataset.agentId));
+  if (card) openAgent(Number(card.dataset.agentId), '');
+});
+document.getElementById('agentsDirectoryGrid').addEventListener('click', (e) => {
+  const card = e.target.closest('.agent-card');
+  if (card) openAgent(Number(card.dataset.agentId), '#/agentes');
 });
 
 /* ---------------- Panel de favoritos ---------------- */
@@ -1146,7 +1385,7 @@ function closeDetail() {
 }
 document.getElementById('closeDetail').addEventListener('click', closeDetail);
 document.getElementById('detailBackdrop').addEventListener('click', closeDetail);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); if (location.hash.startsWith('#/agente/')) location.hash = ''; closeFavoritesPanel(); } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); if (location.hash.startsWith('#/agente') ) location.hash = ''; closeFavoritesPanel(); } });
 
 document.getElementById('mediaTabs').addEventListener('click', (e) => {
   const tab = e.target.closest('.media-tab');
