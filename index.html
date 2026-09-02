@@ -102,7 +102,7 @@
 
   /* ---- Modal de detalle ---- */
   #detailModal, #compareModal { transition: opacity .2s ease, visibility .2s ease; }
-  #detailModal.hidden-modal, #compareModal.hidden-modal, #agentModal.hidden-modal, #favoritesModal.hidden-modal { opacity: 0; visibility: hidden; pointer-events: none; }
+  #detailModal.hidden-modal, #compareModal.hidden-modal, #favoritesModal.hidden-modal { opacity: 0; visibility: hidden; pointer-events: none; }
   .media-tab.is-active { background: #111111; color: #fff; }
   .media-pane { display: none; }
   .media-pane.is-active { display: block; }
@@ -363,8 +363,8 @@
   <div class="max-w-7xl mx-auto">
     <div class="flex items-end justify-between mb-6 flex-wrap gap-2">
       <div>
-        <h2 class="font-display font-medium text-2xl sm:text-3xl">Agentes mejor rankeados</h2>
-        <p class="text-ink-700 text-sm mt-1">Personal shoppers inmobiliarios verificados, ordenados por calificación</p>
+        <h2 class="font-display font-medium text-2xl sm:text-3xl">Agentes y Personal Shoppers Inmobiliarios</h2>
+        <p class="text-ink-700 text-sm mt-1">Perfiles verificados, ordenados por calificación — tocá "Ver perfil" para el perfil completo</p>
       </div>
       <span class="text-xs text-ink-700 font-data hidden sm:inline"><i class="fa-solid fa-star text-[#D9A441] mr-1"></i>Ordenado por mejor calificación</span>
     </div>
@@ -380,15 +380,15 @@
   </div>
 </section>
 
-<!-- MODAL DE PERFIL DE AGENTE -->
-<div id="agentModal" class="hidden-modal fixed inset-0 z-[85]">
-  <div class="absolute inset-0 bg-ink-900/70"></div>
-  <div class="absolute inset-0 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2.5xl w-full max-w-md max-h-[90vh] overflow-y-auto relative shadow-2xl p-6">
-      <button id="closeAgent" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-paper flex items-center justify-center text-ink-900 hover:bg-black/5"><i class="fa-solid fa-xmark"></i></button>
-      <div id="agentModalBody"></div>
-    </div>
+<!-- SUBPÁGINA: PERFIL COMPLETO DE AGENTE (estilo LinkedIn) -->
+<div id="agentProfilePage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
+  <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
+    <button id="agentProfileBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+    <span class="text-sm text-ink-700 font-data">Agentes / <span id="agentProfileBreadcrumb" class="text-ink-900 font-semibold"></span></span>
   </div>
+  <div id="agentProfileBody" class="max-w-4xl mx-auto px-4 sm:px-6 pb-24"></div>
 </div>
 
 <!-- MODAL DE FAVORITOS -->
@@ -486,46 +486,59 @@ const FLOORPLANS = {
 
 /* ---------------- Agentes / Personal shoppers mejor rankeados ---------------- */
 const agents = [
-  { id:1, name:'Valentina Ríos', initials:'VR', color:'#16A34A', rating:4.9, reviews:128, specialty:'Bardas Soleadas y Terrazas del Neuquén', sales:62, responseTime:'~10 min', verified:true,
+  { id:1, name:'Valentina Ríos', initials:'VR', color:'#16A34A', rating:4.9, reviews:128, specialty:'Bardas Soleadas y Terrazas del Neuquén', sales:62, responseTime:'~10 min', verified:true, yearsExp:12,
     country:'Argentina', province:'Neuquén', city:'Neuquén Capital',
+    social:{ instagram:'#', linkedin:'#', facebook:'#' },
+    photos:['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=500&q=80'],
     bio:'12 años como agente en Neuquén Capital. Se especializa en casas familiares en las zonas norte de la ciudad, con foco en negociación de financiación directa con el propietario.',
     reviewsList:[
-      {name:'Marcos T.', text:'Encontró exactamente lo que buscábamos en dos semanas. Muy clara con los tiempos.'},
-      {name:'Julieta P.', text:'Nos ayudó a negociar el precio final. Recomendable.'},
+      {name:'Marcos T.', rating:5, sentiment:'positive', text:'Encontró exactamente lo que buscábamos en dos semanas. Muy clara con los tiempos.'},
+      {name:'Julieta P.', rating:5, sentiment:'positive', text:'Nos ayudó a negociar el precio final. Recomendable.'},
+      {name:'Nahuel S.', rating:4, sentiment:'positive', text:'Buena comunicación, aunque alguna vez tardó en confirmar horarios.'},
     ]},
-  { id:2, name:'Martín Aguirre', initials:'MA', color:'#111111', rating:4.8, reviews:94, specialty:'Confluencia y alrededores', sales:47, responseTime:'~25 min', verified:true,
+  { id:2, name:'Martín Aguirre', initials:'MA', color:'#111111', rating:4.8, reviews:94, specialty:'Confluencia y alrededores', sales:47, responseTime:'~25 min', verified:true, yearsExp:8,
     country:'Argentina', province:'Neuquén', city:'Neuquén Capital',
+    social:{ instagram:'#', linkedin:'#', facebook:'#' },
+    photos:['https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=500&q=80'],
     bio:'Corredor matriculado, trabaja principalmente la zona de Confluencia Urbana y Rural. Fuerte en operaciones de terrenos y proyectos aprobados.',
     reviewsList:[
-      {name:'Denise A.', text:'Conoce muy bien la zona rural, nos evitó varios problemas de escritura.'},
-      {name:'Ramiro G.', text:'Buena predisposición, algo lento para responder los fines de semana.'},
+      {name:'Denise A.', rating:5, sentiment:'positive', text:'Conoce muy bien la zona rural, nos evitó varios problemas de escritura.'},
+      {name:'Ramiro G.', rating:3, sentiment:'negative', text:'Buena predisposición, pero muy lento para responder los fines de semana.'},
     ]},
-  { id:3, name:'Sol Bertone', initials:'SB', color:'#16A34A', rating:5.0, reviews:61, specialty:'Departamentos a estrenar, Centro', sales:38, responseTime:'~15 min', verified:true,
+  { id:3, name:'Sol Bertone', initials:'SB', color:'#16A34A', rating:5.0, reviews:61, specialty:'Departamentos a estrenar, Centro', sales:38, responseTime:'~15 min', verified:true, yearsExp:5,
     country:'Argentina', province:'Neuquén', city:'Neuquén Capital',
+    social:{ instagram:'#', linkedin:'#' },
+    photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=500&q=80'],
     bio:'Especialista en pozo y unidades a estrenar en el área Centro. Trabaja con varios desarrollos y conoce los planes de financiación de cada uno.',
     reviewsList:[
-      {name:'Ivo N.', text:'Perfecta atención, nos mostró 4 opciones a estrenar en un día.'},
-      {name:'Carla M.', text:'Excelente, todo por WhatsApp, muy cómodo.'},
+      {name:'Ivo N.', rating:5, sentiment:'positive', text:'Perfecta atención, nos mostró 4 opciones a estrenar en un día.'},
+      {name:'Carla M.', rating:5, sentiment:'positive', text:'Excelente, todo por WhatsApp, muy cómodo.'},
     ]},
-  { id:4, name:'Ezequiel Paz', initials:'EP', color:'#111111', rating:4.7, reviews:52, specialty:'Terrenos y quintas, zona rural', sales:29, responseTime:'~40 min', verified:false,
+  { id:4, name:'Ezequiel Paz', initials:'EP', color:'#111111', rating:4.7, reviews:52, specialty:'Terrenos y quintas, zona rural', sales:29, responseTime:'~40 min', verified:false, yearsExp:6,
     country:'Argentina', province:'Neuquén', city:'Neuquén Capital',
+    social:{ facebook:'#' },
+    photos:['https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=500&q=80'],
     bio:'Enfocado en quintas y terrenos grandes en las zonas rurales de Neuquén. Ideal para quienes buscan más superficie y tranquilidad.',
     reviewsList:[
-      {name:'Fernanda L.', text:'Buen conocimiento de las quintas de la zona sur.'},
-      {name:'Hugo D.', text:'Tardó en confirmar la visita pero cumplió.'},
+      {name:'Fernanda L.', rating:5, sentiment:'positive', text:'Buen conocimiento de las quintas de la zona sur.'},
+      {name:'Hugo D.', rating:2, sentiment:'negative', text:'Tardó demasiado en confirmar la visita, casi perdemos el lote.'},
     ]},
-  { id:5, name:'Camila Suárez', initials:'CS', color:'#16A34A', rating:4.9, reviews:73, specialty:'Casas y duplex en Cipolletti', sales:41, responseTime:'~20 min', verified:true,
+  { id:5, name:'Camila Suárez', initials:'CS', color:'#16A34A', rating:4.9, reviews:73, specialty:'Casas y duplex en Cipolletti', sales:41, responseTime:'~20 min', verified:true, yearsExp:7,
     country:'Argentina', province:'Río Negro', city:'Cipolletti',
+    social:{ instagram:'#', linkedin:'#', facebook:'#' },
+    photos:['https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80'],
     bio:'Trabaja del otro lado del río, en Cipolletti. Conoce bien la demanda de quienes buscan alternativas más económicas cerca de Neuquén Capital.',
     reviewsList:[
-      {name:'Nicolás B.', text:'Nos mostró opciones que no encontrábamos solos. Muy atenta.'},
-      {name:'Ayelén R.', text:'Rápida para responder y coordinar visitas.'},
+      {name:'Nicolás B.', rating:5, sentiment:'positive', text:'Nos mostró opciones que no encontrábamos solos. Muy atenta.'},
+      {name:'Ayelén R.', rating:5, sentiment:'positive', text:'Rápida para responder y coordinar visitas.'},
     ]},
-  { id:6, name:'Federico Lanús', initials:'FL', color:'#111111', rating:4.6, reviews:35, specialty:'Departamentos en CABA', sales:22, responseTime:'~30 min', verified:false,
+  { id:6, name:'Federico Lanús', initials:'FL', color:'#111111', rating:4.6, reviews:35, specialty:'Departamentos en CABA', sales:22, responseTime:'~30 min', verified:false, yearsExp:4,
     country:'Argentina', province:'Ciudad Autónoma de Buenos Aires', city:'Buenos Aires',
+    social:{ instagram:'#' },
+    photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=500&q=80'],
     bio:'Agente porteño, especializado en departamentos usados en Buenos Aires. Ideal para inversores que buscan renta en la capital.',
     reviewsList:[
-      {name:'Lucía M.', text:'Buen conocimiento del mercado porteño, aunque tardó en cerrar la operación.'},
+      {name:'Lucía M.', rating:3, sentiment:'negative', text:'Buen conocimiento del mercado porteño, aunque tardó en cerrar la operación.'},
     ]},
 ];
 
@@ -750,42 +763,107 @@ agentLocationClear.addEventListener('click', () => {
   applyAgentLocationFilter();
 });
 
-const agentModal = document.getElementById('agentModal');
-function openAgent(id) {
-  const a = agents.find(ag => ag.id === id);
-  if (!a) return;
-  document.getElementById('agentModalBody').innerHTML = `
-    <div class="flex items-center gap-4 mb-4">
-      <div class="w-20 h-20 rounded-full flex items-center justify-center text-white font-display font-semibold text-2xl shrink-0" style="background:${a.color}">${a.initials}</div>
-      <div>
-        <div class="flex items-center gap-1.5">
-          <h3 class="font-display font-medium text-xl">${a.name}</h3>
-          ${a.verified ? '<i class="fa-solid fa-circle-check text-brand-600" title="Verificado"></i>' : ''}
+function ratingBarPct(list, filterFn) {
+  if (!list.length) return 0;
+  return Math.round(100 * list.filter(filterFn).length / list.length);
+}
+
+function socialIcons(social) {
+  const map = { instagram:'fa-instagram', linkedin:'fa-linkedin', facebook:'fa-facebook' };
+  return Object.entries(social || {}).map(([k, url]) => `<a href="${url}" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-800 transition-colors" aria-label="${k}"><i class="fa-brands ${map[k] || 'fa-link'}"></i></a>`).join('');
+}
+
+function buildAgentProfileHTML(a) {
+  const positivePct = ratingBarPct(a.reviewsList, r => r.sentiment === 'positive');
+  return `
+    <div class="h-36 sm:h-48 -mx-4 sm:-mx-6 rounded-b-3xl" style="background:linear-gradient(135deg, ${a.color}, #111111)"></div>
+    <div class="relative -mt-14 sm:-mt-16 px-1 flex items-end gap-4 mb-5">
+      <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white flex items-center justify-center text-white font-display font-semibold text-4xl shrink-0 shadow-lg" style="background:${a.color}">${a.initials}</div>
+      <div class="pb-2">
+        <div class="flex items-center gap-2">
+          <h1 class="font-display font-medium text-2xl">${a.name}</h1>
+          ${a.verified ? '<i class="fa-solid fa-circle-check text-brand-600 text-xl" title="Verificado"></i>' : ''}
         </div>
-        <p class="text-sm text-ink-700">${a.specialty}</p>
-        <div class="flex items-center gap-1.5 text-sm mt-1">${starIcons(a.rating)}<span class="font-semibold font-data ml-1">${a.rating.toFixed(1)}</span><span class="text-ink-700 text-xs">(${a.reviews} reseñas)</span></div>
+        <p class="text-sm text-ink-700">Personal Shopper Inmobiliario · ${a.specialty}</p>
       </div>
     </div>
-    <p class="text-sm text-ink-700 leading-relaxed mb-4">${a.bio}</p>
-    <div class="grid grid-cols-2 gap-3 text-sm mb-5">
-      <div class="bg-paper rounded-xl p-3 text-center"><div class="font-display font-semibold text-lg">${a.sales}</div><div class="text-xs text-ink-700">Propiedades vendidas</div></div>
-      <div class="bg-paper rounded-xl p-3 text-center"><div class="font-display font-semibold text-lg">${a.responseTime}</div><div class="text-xs text-ink-700">Tiempo de respuesta</div></div>
+
+    <div class="flex flex-wrap items-center gap-4 mb-6">
+      <div class="flex items-center gap-1.5">${starIcons(a.rating)}<span class="font-semibold font-data ml-1">${a.rating.toFixed(1)}</span><span class="text-ink-700 text-sm">(${a.reviews} reseñas)</span></div>
+      <span class="text-ink-700 text-sm"><i class="fa-solid fa-location-dot mr-1"></i>${a.city}, ${a.province}</span>
+      <div class="flex items-center gap-2 sm:ml-auto">${socialIcons(a.social)}</div>
     </div>
-    <div class="space-y-3 mb-5">
-      ${a.reviewsList.map(r => `<div class="border-l-2 border-brand-600 pl-3"><p class="text-sm text-ink-800 italic">"${r.text}"</p><p class="text-xs text-ink-700 mt-1">— ${r.name}</p></div>`).join('')}
+
+    <div class="grid grid-cols-3 gap-3 mb-8">
+      <div class="bg-paper rounded-xl p-4 text-center"><div class="font-display font-semibold text-xl">${a.sales}</div><div class="text-xs text-ink-700 mt-0.5">Propiedades vendidas</div></div>
+      <div class="bg-paper rounded-xl p-4 text-center"><div class="font-display font-semibold text-xl">${a.responseTime}</div><div class="text-xs text-ink-700 mt-0.5">Tiempo de respuesta</div></div>
+      <div class="bg-paper rounded-xl p-4 text-center"><div class="font-display font-semibold text-xl">${a.yearsExp}</div><div class="text-xs text-ink-700 mt-0.5">Años de experiencia</div></div>
     </div>
-    <button onclick="abrirModalIA('el agente ${a.name.replace(/'/g, "\\'")}')" class="btn w-full bg-brand-600 hover:bg-brand-700 text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2">
+
+    <div class="mb-8">
+      <h2 class="font-display font-medium text-lg mb-2">Acerca de</h2>
+      <p class="text-sm text-ink-700 leading-relaxed">${a.bio}</p>
+    </div>
+
+    ${a.photos && a.photos.length ? `
+    <div class="mb-8">
+      <h2 class="font-display font-medium text-lg mb-3">Fotos de propiedades mostradas</h2>
+      <div class="grid grid-cols-3 gap-2">
+        ${a.photos.map(p => `<img src="${p}" alt="" class="w-full h-28 sm:h-36 object-cover rounded-xl">`).join('')}
+      </div>
+    </div>` : ''}
+
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-display font-medium text-lg">Reseñas (${a.reviewsList.length})</h2>
+        <span class="text-xs text-ink-700 font-data">${positivePct}% positivas</span>
+      </div>
+      <div class="space-y-3">
+        ${a.reviewsList.map(r => `
+          <div class="border border-black/[0.08] rounded-xl p-4">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="font-semibold text-sm">${r.name}</span>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${r.sentiment === 'positive' ? 'bg-brand-100 text-brand-700' : 'bg-red-50 text-red-600'}">${r.sentiment === 'positive' ? 'Positiva' : 'A mejorar'}</span>
+            </div>
+            <div class="mb-1.5">${starIcons(r.rating)}</div>
+            <p class="text-sm text-ink-700 leading-relaxed">"${r.text}"</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <button onclick="abrirModalIA('el agente ${a.name.replace(/'/g, "\\'")}')" class="btn w-full bg-brand-600 hover:bg-brand-700 text-white rounded-full text-base font-semibold flex items-center justify-center gap-2 sticky bottom-4 shadow-lg">
       <i class="fa-brands fa-whatsapp"></i> Contactar a ${a.name.split(' ')[0]}
     </button>
   `;
-  agentModal.classList.remove('hidden-modal');
+}
+
+const agentProfilePage = document.getElementById('agentProfilePage');
+function showAgentProfile(id) {
+  const a = agents.find(ag => ag.id === id);
+  if (!a) return;
+  document.getElementById('agentProfileBody').innerHTML = buildAgentProfileHTML(a);
+  document.getElementById('agentProfileBreadcrumb').textContent = a.name;
+  agentProfilePage.classList.remove('hidden');
+  agentProfilePage.scrollTop = 0;
   document.body.style.overflow = 'hidden';
 }
-function closeAgent() {
-  agentModal.classList.add('hidden-modal');
+function hideAgentProfile() {
+  agentProfilePage.classList.add('hidden');
   document.body.style.overflow = '';
 }
-document.getElementById('closeAgent').addEventListener('click', closeAgent);
+function syncAgentRoute() {
+  const m = location.hash.match(/^#\/agente\/(\d+)$/);
+  if (m) showAgentProfile(Number(m[1]));
+  else hideAgentProfile();
+}
+function openAgent(id) {
+  location.hash = '#/agente/' + id; // dispara hashchange -> showAgentProfile (funciona como subpágina real, con back del navegador)
+}
+window.addEventListener('hashchange', syncAgentRoute);
+document.getElementById('agentProfileBack').addEventListener('click', () => { location.hash = ''; });
+syncAgentRoute(); // soporta deep-link directo a #/agente/ID al cargar la página
+
 agentsGrid.addEventListener('click', (e) => {
   const card = e.target.closest('.agent-card');
   if (card) openAgent(Number(card.dataset.agentId));
@@ -1068,7 +1146,7 @@ function closeDetail() {
 }
 document.getElementById('closeDetail').addEventListener('click', closeDetail);
 document.getElementById('detailBackdrop').addEventListener('click', closeDetail);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); closeAgent(); closeFavoritesPanel(); } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); if (location.hash.startsWith('#/agente/')) location.hash = ''; closeFavoritesPanel(); } });
 
 document.getElementById('mediaTabs').addEventListener('click', (e) => {
   const tab = e.target.closest('.media-tab');
