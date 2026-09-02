@@ -98,6 +98,23 @@
   .app-tab:active { background: rgba(17,17,17,.05); }
   .app-tab.is-active { color: #16A34A; }
   .dir-specialty-btn.is-active { background: #111111 !important; color: #fff !important; border-color: transparent !important; }
+  .course-cat-btn.is-active { background: #111111 !important; color: #fff !important; border-color: transparent !important; }
+
+  /* ---- Botón flotante iEduca (destaca del resto de la UI) ---- */
+  .ieduca-fab {
+    background: linear-gradient(135deg, #9333EA, #6D28D9);
+    animation: ieduca-bob 2.6s ease-in-out infinite;
+  }
+  .ieduca-fab-ping {
+    position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; border-radius: 999px;
+    background: #F59E0B; box-shadow: 0 0 0 2px #fff;
+    animation: ieduca-ping 1.8s cubic-bezier(0,0,.2,1) infinite;
+  }
+  @keyframes ieduca-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  @keyframes ieduca-ping { 0% { box-shadow: 0 0 0 2px #fff, 0 0 0 0 rgba(245,158,11,.6); } 100% { box-shadow: 0 0 0 2px #fff, 0 0 0 9px rgba(245,158,11,0); } }
+  @media (prefers-reduced-motion: reduce) {
+    .ieduca-fab, .ieduca-fab-ping { animation: none; }
+  }
 
   /* ---- Escudos de capacitación (Capacitación Público-Privado) ---- */
   .cert-shield {
@@ -124,7 +141,7 @@
 
   /* ---- Modal de detalle ---- */
   #detailModal, #compareModal { transition: opacity .2s ease, visibility .2s ease; }
-  #detailModal.hidden-modal, #compareModal.hidden-modal, #favoritesModal.hidden-modal { opacity: 0; visibility: hidden; pointer-events: none; }
+  #detailModal.hidden-modal, #compareModal.hidden-modal, #favoritesModal.hidden-modal, #loginModal.hidden-modal { opacity: 0; visibility: hidden; pointer-events: none; }
   .media-tab.is-active { background: #111111; color: #fff; }
   .media-pane { display: none; }
   .media-pane.is-active { display: block; }
@@ -178,19 +195,20 @@
       <span class="font-display font-semibold text-xl tracking-tight"><span class="italic text-brand-600">i</span>Portal</span>
     </div>
 
-    <div class="hidden md:flex items-center gap-7 text-base font-medium text-ink-800">
+    <div class="hidden md:flex items-center gap-6 text-base font-medium text-ink-800">
       <a href="#" class="hover:text-brand-600 transition-colors">Comprar</a>
       <a href="#" class="hover:text-brand-600 transition-colors">Alquilar</a>
       <a href="#" class="hover:text-brand-600 transition-colors">Desarrollos</a>
-      <a href="#agentsSection" class="hover:text-brand-600 transition-colors">Agentes</a>
+      <a href="#/agentes" class="hover:text-brand-600 transition-colors">Agentes y Personal Shoppers Inmobiliarios</a>
       <a href="#" class="hover:text-brand-600 transition-colors">Tasar con IA</a>
+      <a href="#/ieduca" class="flex items-center gap-1.5 text-[#7C3AED] font-semibold hover:text-[#6D28D9] transition-colors"><i class="fa-solid fa-graduation-cap"></i> iEduca</a>
     </div>
 
     <div class="flex items-center gap-2">
       <button id="favoritesNavBtn" class="btn hidden sm:flex w-11 px-0 rounded-full border border-black/[0.1] hover:border-black/20 items-center justify-center text-ink-800 hover:text-red-500 transition-colors" aria-label="Ver favoritos">
         <i class="fa-regular fa-heart"></i>
       </button>
-      <button class="btn hidden sm:flex bg-ink-900 hover:bg-ink-800 text-white px-5 rounded-full text-base font-semibold transition-colors items-center gap-2">
+      <button id="panelAgenteBtn" class="btn hidden sm:flex bg-ink-900 hover:bg-ink-800 text-white px-5 rounded-full text-base font-semibold transition-colors items-center gap-2">
         <i class="fa-solid fa-user text-sm"></i> Panel Agente
       </button>
       <button id="menuBtn" aria-label="Abrir menú" aria-expanded="false" class="md:hidden w-11 h-11 flex items-center justify-center rounded-full bg-paper hover:bg-black/5 transition-colors">
@@ -203,7 +221,9 @@
       <a href="#" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Comprar</a>
       <a href="#" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Alquilar</a>
       <a href="#" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Desarrollos</a>
+      <a href="#/agentes" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Agentes y Personal Shoppers Inmobiliarios</a>
       <a href="#" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Tasar con IA</a>
+      <a href="#/ieduca" class="py-3 px-2 rounded-lg hover:bg-paper flex items-center gap-2 text-[#7C3AED] font-semibold"><i class="fa-solid fa-graduation-cap"></i> iEduca</a>
     </div>
   </div>
 </nav>
@@ -244,6 +264,9 @@
     <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Ambientes <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
     <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Tipo de propiedad <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
     <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors"><i class="fa-solid fa-sliders text-xs"></i> Más filtros</button>
+    <select id="agentPropertyFilter" class="btn shrink-0 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors px-4 bg-white text-ink-800">
+      <option value="">Agente / Personal Shopper</option>
+    </select>
     <span class="flex-1"></span>
     <span class="hidden sm:inline text-sm text-ink-700 font-data shrink-0">126 propiedades</span>
     <button class="btn shrink-0 hidden sm:flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Relevancia <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
@@ -328,6 +351,13 @@
             <i class="fa-solid fa-code-compare mr-1.5"></i>Comparar
           </button>
         </div>
+      </div>
+
+      <!-- Botón flotante de WhatsApp: queda pegado abajo a la derecha mientras se scrollea el popup -->
+      <div class="sticky bottom-0 z-20 flex justify-end px-4 sm:px-6 pb-4 pointer-events-none">
+        <button id="detailWhatsappFloat" class="pointer-events-auto w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#1EBE57] text-white shadow-xl flex items-center justify-center text-2xl transition-transform hover:scale-105" aria-label="Contactar por WhatsApp" title="Contactar por WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -454,6 +484,135 @@
   <div id="agentProfileBody" class="max-w-4xl mx-auto px-4 sm:px-6 pb-24"></div>
 </div>
 
+<!-- BOTÓN FLOTANTE iEduca (mobile/tablet) — destaca aparte del resto para llamar la atención -->
+<a href="#/ieduca" class="ieduca-fab lg:hidden fixed bottom-[92px] left-4 z-[70] flex items-center gap-2 pl-3 pr-4 py-3 rounded-full text-white text-sm font-semibold shadow-xl">
+  <i class="fa-solid fa-graduation-cap text-base"></i> iEduca
+  <span class="ieduca-fab-ping"></span>
+</a>
+
+<!-- SUBPÁGINA: iEduca — catálogo de cursos -->
+<div id="ieducaPage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
+  <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
+    <button id="ieducaBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
+    <span class="text-sm text-ink-700 font-data">iEduca</span>
+    <span id="loginStatusPill" class="ml-auto hidden items-center gap-1.5 text-xs font-semibold text-brand-700 bg-brand-100 rounded-full px-3 py-1.5"><i class="fa-solid fa-circle-check"></i> Sesión iniciada</span>
+  </div>
+
+  <div class="bg-ink-900 text-white px-4 sm:px-6 py-10 sm:py-14">
+    <div class="max-w-7xl mx-auto">
+      <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#7C3AED] rounded-full px-3 py-1.5 mb-4"><i class="fa-solid fa-graduation-cap"></i> Capacitación Público-Privado</span>
+      <h1 class="font-display font-medium text-3xl sm:text-4xl mb-3">iEduca</h1>
+      <p class="text-ink-300 max-w-xl">Los mismos programas que suman escudos en el perfil de agentes y personal shoppers, ahora abiertos a todo el público. Terminá un curso y tu escudo aparece automáticamente en tu perfil.</p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24">
+    <div class="flex flex-wrap items-center gap-2.5 mb-6" id="courseCategoryFilter">
+      <button class="course-cat-btn is-active btn bg-ink-900 text-white rounded-full px-4 text-sm font-medium" data-cat="">Todos los cursos</button>
+    </div>
+    <div id="coursesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </div>
+</div>
+
+<!-- SUBPÁGINA: detalle de un curso de iEduca -->
+<div id="coursePage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
+  <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
+    <button id="courseBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
+    <span class="text-sm text-ink-700 font-data">iEduca / <span id="courseBreadcrumb" class="text-ink-900 font-semibold"></span></span>
+  </div>
+  <div id="courseBody" class="max-w-4xl mx-auto px-4 sm:px-6 pb-24"></div>
+</div>
+
+<!-- MODAL DE LOGIN (necesario para comprar un curso) -->
+<div id="loginModal" class="hidden-modal fixed inset-0 z-[95]">
+  <div class="absolute inset-0 bg-ink-900/70"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2.5xl w-full max-w-sm relative shadow-2xl p-6">
+      <button id="closeLoginModal" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-paper flex items-center justify-center text-ink-900 hover:bg-black/5"><i class="fa-solid fa-xmark"></i></button>
+      <div class="w-12 h-12 rounded-full bg-[#7C3AED] text-white flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-graduation-cap"></i></div>
+      <h3 id="loginModalTitle" class="font-display font-medium text-xl mb-1">Iniciá sesión para comprar</h3>
+      <p id="loginModalSubtitle" class="text-sm text-ink-700 mb-5">Necesitás una cuenta de iPortal para acceder a los cursos de iEduca y que queden guardados en tu perfil.</p>
+      <form id="loginForm" class="space-y-3">
+        <input id="loginName" type="text" required placeholder="Nombre y apellido" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-600">
+        <input id="loginEmail" type="email" required placeholder="Email" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-600">
+        <input id="loginPassword" type="password" required placeholder="Contraseña" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-600">
+        <button type="submit" class="btn w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-full text-sm font-semibold">Ingresar y continuar</button>
+      </form>
+      <p class="text-[11px] text-ink-700 mt-4 text-center">Prototipo de demostración — no se procesa ningún dato real.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SUBPÁGINA: Panel de Agente — Estadísticas y auditoría (lógica tipo ZonaProp) -->
+<div id="statsPage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
+  <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
+    <button id="statsBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
+    <span class="text-sm text-ink-700 font-data">Panel Agente / Estadísticas</span>
+    <button id="statsLogout" class="ml-auto text-xs text-ink-700 hover:text-red-600 font-semibold"><i class="fa-solid fa-right-from-bracket mr-1"></i>Cerrar sesión</button>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-8">
+      <div>
+        <h1 class="font-display font-medium text-2xl sm:text-3xl mb-1">Hola, <span id="statsUserName">—</span> 👋</h1>
+        <p class="text-ink-700 text-sm">Estadísticas de tus publicaciones — vistas, contactos por WhatsApp y auditoría completa</p>
+      </div>
+      <button id="downloadAuditBtn" class="btn bg-ink-900 hover:bg-ink-800 text-white px-5 rounded-full text-sm font-semibold flex items-center gap-2">
+        <i class="fa-solid fa-file-arrow-down"></i> Descargar informe de auditoría (CSV)
+      </button>
+    </div>
+
+    <!-- Resumen -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-paper rounded-2xl p-5">
+        <div class="text-2xl font-display font-semibold" id="statTotalViews">0</div>
+        <div class="text-xs text-ink-700 mt-1"><i class="fa-solid fa-eye mr-1"></i>Vistas totales</div>
+      </div>
+      <div class="bg-paper rounded-2xl p-5">
+        <div class="text-2xl font-display font-semibold text-brand-600" id="statTotalWa">0</div>
+        <div class="text-xs text-ink-700 mt-1"><i class="fa-brands fa-whatsapp mr-1"></i>Contactos por WhatsApp</div>
+      </div>
+      <div class="bg-paper rounded-2xl p-5">
+        <div class="text-2xl font-display font-semibold" id="statConvRate">0%</div>
+        <div class="text-xs text-ink-700 mt-1"><i class="fa-solid fa-arrow-trend-up mr-1"></i>Tasa de contacto</div>
+      </div>
+      <div class="bg-paper rounded-2xl p-5">
+        <div class="text-2xl font-display font-semibold" id="statUniqueUsers">0</div>
+        <div class="text-xs text-ink-700 mt-1"><i class="fa-solid fa-users mr-1"></i>Usuarios identificados</div>
+      </div>
+    </div>
+
+    <!-- Desempeño por propiedad -->
+    <div class="mb-10">
+      <h2 class="font-display font-medium text-lg mb-4">Desempeño por propiedad</h2>
+      <div id="statsByProperty" class="space-y-3"></div>
+    </div>
+
+    <!-- Auditoría -->
+    <div>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display font-medium text-lg">Registro de auditoría</h2>
+        <span id="auditRowsNote" class="text-xs text-ink-700 font-data"></span>
+      </div>
+      <div class="border border-black/[0.08] rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-paper text-ink-700 text-xs">
+              <tr>
+                <th class="text-left font-semibold px-4 py-3">Fecha y hora</th>
+                <th class="text-left font-semibold px-4 py-3">Evento</th>
+                <th class="text-left font-semibold px-4 py-3">Propiedad</th>
+                <th class="text-left font-semibold px-4 py-3">Usuario</th>
+              </tr>
+            </thead>
+            <tbody id="auditTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL DE FAVORITOS -->
 <div id="favoritesModal" class="hidden-modal fixed inset-0 z-[85]">
   <div class="absolute inset-0 bg-ink-900/70"></div>
@@ -562,6 +721,55 @@ const CERT_CATEGORIES = {
   'Internacional':            { color:'#4338CA', icon:'fa-globe' },
   'Seguridad y Compliance':   { color:'#DC2626', icon:'fa-shield-halved' },
 };
+
+/* ---------------- iEduca — catálogo de cursos (mismo catálogo que respalda los escudos de agentes) ---------------- */
+const courses = [
+  { id:1, title:'Normativas Inmobiliarias 2026', category:'Normativa y Legal', price:'AR$ 45.000', duration:'6 horas', modality:'Online, a demanda', instructor:'Dra. Marina Costa', rating:4.8, reviewsCount:212,
+    shortDesc:'Todo lo que cambió en la normativa inmobiliaria argentina para 2026, explicado para corredores en actividad.',
+    longDesc:'Un repaso completo y actualizado de las normativas que rigen la actividad inmobiliaria en Argentina durante 2026: cambios en el régimen de alquileres, actualizaciones al Código Civil y Comercial aplicadas a inmuebles, y los criterios que están aplicando hoy los colegios profesionales. Pensado para agentes en actividad que necesitan estar al día sin perder horas de trabajo.',
+    perfilEgresado:'Al terminar el curso vas a poder identificar los cambios normativos que afectan una operación antes de que se conviertan en un problema, asesorar a tus clientes con criterios actualizados y evitar los errores más comunes en la redacción de boletos y contratos.',
+    temario:['Marco legal vigente 2026 y principales cambios','Régimen de alquileres actualizado','Boleto de compraventa: cláusulas críticas','Casos prácticos de corretaje','Preguntas frecuentes de colegas matriculados'] },
+  { id:2, title:'Marketing Inmobiliario Digital', category:'Marketing Inmobiliario', price:'AR$ 38.000', duration:'10 horas', modality:'Online, a demanda', instructor:'Lic. Pablo Ferreyra', rating:4.9, reviewsCount:340,
+    shortDesc:'Armá una estrategia digital propia: redes, portales y publicidad paga aplicados a inmuebles reales.',
+    longDesc:'Curso práctico para agentes y personal shoppers que quieren dejar de depender solo del boca en boca. Vas a armar, paso a paso, tu propia estrategia de marketing digital: qué publicar, cómo fotografiar una propiedad con lo que tenés a mano, y cómo invertir de forma inteligente en publicidad paga.',
+    perfilEgresado:'Vas a poder planificar un mes completo de contenido para tus redes, armar un aviso que se destaque en los portales y correr tu primera campaña de anuncios pagos con un presupuesto acotado.',
+    temario:['Diagnóstico de tu marca personal actual','Fotografía de propiedades con el celular','Redes sociales para agentes inmobiliarios','Publicidad en Meta Ads paso a paso','Copywriting para avisos que generan consultas'] },
+  { id:3, title:'Personal Shopper Inmobiliario', category:'Personal Shopper', price:'AR$ 52.000', duration:'16 horas', modality:'Online + práctica guiada', instructor:'Sofía Larrañaga', rating:5.0, reviewsCount:128,
+    shortDesc:'La formación completa para asesorar a un comprador de punta a punta, no solo mostrarle propiedades.',
+    longDesc:'El personal shopper inmobiliario no vende una propiedad puntual: acompaña a un comprador en todo el proceso de búsqueda, negociación y cierre, representando sus intereses. Este curso cubre el rol completo, desde el primer brief con el cliente hasta la firma.',
+    perfilEgresado:'Vas a poder relevar las necesidades reales de un comprador, armar una preselección de propiedades con criterio, acompañar visitas con una mirada técnica y negociar en representación del cliente.',
+    temario:['El rol del personal shopper vs. el agente tradicional','Entrevista y relevamiento de necesidades','Preselección y armado de un shortlist','Acompañamiento en visitas','Negociación en representación del comprador','Cierre y seguimiento posventa'] },
+  { id:4, title:'Tasación Inmobiliaria', category:'Tasación y Valuación', price:'AR$ 41.000', duration:'12 horas', modality:'Online, a demanda', instructor:'Ing. Rodrigo Peralta', rating:4.7, reviewsCount:95,
+    shortDesc:'Métodos de tasación aplicados a casas, departamentos y terrenos, con planillas de trabajo incluidas.',
+    longDesc:'Aprendé a armar una tasación defendible: qué variables pesan realmente en el valor de una propiedad, cómo construir un análisis comparativo de mercado (CMA) prolijo, y cómo comunicarle el resultado a un propietario que espera un número más alto.',
+    perfilEgresado:'Vas a poder armar un informe de tasación completo con comparables reales, justificar tu número frente al propietario y adaptarlo según el tipo de propiedad (casa, departamento o terreno).',
+    temario:['Variables que determinan el valor de una propiedad','Análisis comparativo de mercado (CMA)','Tasación de terrenos y loteos','Cómo comunicar una tasación a la baja','Planilla de trabajo y checklist final'] },
+  { id:5, title:'Tours Virtuales 360°', category:'Tecnología y PropTech', price:'AR$ 29.000', duration:'5 horas', modality:'Online, a demanda', instructor:'Julián Ibáñez', rating:4.6, reviewsCount:77,
+    shortDesc:'Grabá y publicá recorridos virtuales 360° de tus propiedades sin equipo profesional.',
+    longDesc:'Los tours virtuales ya dejaron de ser un lujo: hoy son lo primero que un comprador a distancia busca antes de pedir una visita. En este curso vas a aprender a producir un tour 360° de calidad con equipo accesible y a publicarlo en los principales portales.',
+    perfilEgresado:'Vas a poder planificar, grabar y publicar un tour virtual 360° de una propiedad completa, y sumarlo como diferencial en tus avisos.',
+    temario:['Equipo necesario y presupuesto','Planificación del recorrido por ambiente','Grabación y buenas prácticas de iluminación','Edición y publicación en portales','Cómo venderle este servicio al propietario'] },
+  { id:6, title:'Créditos Hipotecarios', category:'Finanzas e Inversión', price:'AR$ 35.000', duration:'8 horas', modality:'Online, a demanda', instructor:'Lic. Ana Belén Rojas', rating:4.8, reviewsCount:156,
+    shortDesc:'Entendé las líneas de crédito hipotecario vigentes para poder asesorar a compradores con financiación.',
+    longDesc:'Buena parte de las operaciones se caen por desconocimiento del proceso de crédito. Este curso te da el panorama completo de las líneas hipotecarias disponibles, los requisitos típicos de cada banco y cómo acompañar a un comprador que necesita financiación.',
+    perfilEgresado:'Vas a poder explicarle a un comprador qué línea de crédito le conviene evaluar, qué documentación necesita preparar y en qué etapa del proceso podés ayudarlo vos como agente.',
+    temario:['Panorama de líneas de crédito hipotecario','Requisitos habituales por entidad','El rol del agente durante el proceso crediticio','Errores comunes que demoran una aprobación','Casos prácticos con distintos perfiles de comprador'] },
+  { id:7, title:'Prevención de Lavado de Activos (UIF)', category:'Seguridad y Compliance', price:'AR$ 30.000', duration:'4 horas', modality:'Online, obligatorio anual', instructor:'Dr. Esteban Quiroga', rating:4.5, reviewsCount:410,
+    shortDesc:'La capacitación anual que exige la UIF para corredores inmobiliarios, con certificado de finalización.',
+    longDesc:'Curso corto y directo al punto para cumplir con la exigencia anual de capacitación en prevención de lavado de activos para sujetos obligados del rubro inmobiliario. Incluye los criterios de reporte de operaciones sospechosas actualizados.',
+    perfilEgresado:'Vas a poder identificar señales de alerta en una operación, saber cuándo y cómo reportar, y mantener tu matrícula al día con esta exigencia.',
+    temario:['Marco normativo de la UIF para el sector inmobiliario','Sujetos obligados y responsabilidades','Señales de alerta en una operación','Procedimiento de reporte de operaciones sospechosas','Autoevaluación final'] },
+  { id:8, title:'Home Staging', category:'Marketing Inmobiliario', price:'AR$ 33.000', duration:'8 horas', modality:'Online, a demanda', instructor:'Carolina Méndez', rating:4.9, reviewsCount:203,
+    shortDesc:'Técnicas de puesta en valor de una propiedad para vender o alquilar más rápido y a mejor precio.',
+    longDesc:'El home staging no es decoración: es preparar una propiedad para que el comprador se imagine viviendo ahí. Vas a aprender técnicas de bajo costo para poner en valor cualquier propiedad antes de las fotos y las visitas.',
+    perfilEgresado:'Vas a poder armar un plan de puesta en valor con presupuesto acotado, priorizar qué ambientes intervenir primero y justificarle al propietario por qué vale la pena invertir antes de publicar.',
+    temario:['Principios del home staging','Diagnóstico de una propiedad antes de publicar','Intervenciones de bajo costo con alto impacto','Preparar la propiedad para la sesión de fotos','Casos de antes y después'] },
+  { id:9, title:'Inglés para Real Estate', category:'Internacional', price:'AR$ 48.000', duration:'20 horas', modality:'Online, a demanda', instructor:'Prof. Laura Whitman', rating:4.7, reviewsCount:88,
+    shortDesc:'Vocabulario y frases clave para atender consultas de compradores extranjeros con confianza.',
+    longDesc:'Pensado específicamente para el rubro inmobiliario: nada de inglés general. Vas a practicar el vocabulario técnico y las frases que realmente vas a necesitar para mostrar una propiedad, negociar y cerrar una operación con un cliente que no habla español.',
+    perfilEgresado:'Vas a poder atender una consulta por WhatsApp o email en inglés, guiar una visita completa y manejar los términos básicos de una negociación sin depender de un traductor.',
+    temario:['Vocabulario técnico inmobiliario en inglés','Frases para atender la primera consulta','Guiando una visita en inglés','Negociación básica en inglés','Simulacros de conversación real'] },
+];
 
 const MES_CORTO = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 function fmtFecha(iso) {
@@ -695,39 +903,39 @@ const PET_IMG = {
 
 /* ---------------- Datos de propiedades ---------------- */
 const properties = [
-  { id:1, title:'Casa moderna con piscina', price:'USD 185.000', priceShort:'USD 185K', loc:'Bardas Soleadas, Neuquén', badge:'ACM Calificado', badgeColor:'ink', type:'house', specs:[['fa-bed','3 dorms'],['fa-bath','2 baños'],['fa-ruler-combined','210 m²']],
+  { id:1, title:'Casa moderna con piscina', price:'USD 185.000', priceShort:'USD 185K', loc:'Bardas Soleadas, Neuquén', badge:'ACM Calificado', badgeColor:'ink', type:'house', agentId:1, specs:[['fa-bed','3 dorms'],['fa-bath','2 baños'],['fa-ruler-combined','210 m²']],
     photos:['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9298, lng:-68.0745,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/NjV1w?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'Casa de dos plantas con piscina y parquización completa, en una de las zonas más buscadas de la ciudad. Living-comedor integrado, cocina con isla y dormitorio en suite.' },
-  { id:2, title:'Departamento 2 ambientes centro', price:'USD 75.000', priceShort:'USD 75K', loc:'Área Centro, Neuquén Capital', badge:'Oportunidad', badgeColor:'brand', type:'apt', specs:[['fa-bed','1 dorm'],['fa-bath','1 baño'],['fa-ruler-combined','52 m²']],
+  { id:2, title:'Departamento 2 ambientes centro', price:'USD 75.000', priceShort:'USD 75K', loc:'Área Centro, Neuquén Capital', badge:'Oportunidad', badgeColor:'brand', type:'apt', agentId:3, specs:[['fa-bed','1 dorm'],['fa-bath','1 baño'],['fa-ruler-combined','52 m²']],
     photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9522, lng:-68.0591,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/5GssB?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'A metros de la peatonal, ideal para renta o primera vivienda. Balcón, cocina separada y excelente iluminación natural todo el día.',
     pets:['dog','cat'] },
-  { id:3, title:'Casa con vista al río', price:'USD 210.000', priceShort:'USD 210K', loc:'Terrazas del Neuquén', badge:'Vista premium', badgeColor:'ink', type:'house', specs:[['fa-bed','4 dorms'],['fa-bath','3 baños'],['fa-ruler-combined','320 m²']],
+  { id:3, title:'Casa con vista al río', price:'USD 210.000', priceShort:'USD 210K', loc:'Terrazas del Neuquén', badge:'Vista premium', badgeColor:'ink', type:'house', agentId:1, specs:[['fa-bed','4 dorms'],['fa-bath','3 baños'],['fa-ruler-combined','320 m²']],
     photos:['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9245, lng:-68.0958,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/h5Hpv?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'En la meseta alta, con vista abierta al Río Neuquén. Living con ventanales de piso a techo, quincho cubierto y cochera para 2 autos.' },
-  { id:4, title:'Departamento a estrenar frente a la plaza', price:'USD 98.000', priceShort:'USD 98K', loc:'Confluencia Urbana, Neuquén', badge:'A estrenar', badgeColor:'brand', type:'apt', specs:[['fa-bed','2 dorms'],['fa-bath','1 baño'],['fa-ruler-combined','64 m²']],
+  { id:4, title:'Departamento a estrenar frente a la plaza', price:'USD 98.000', priceShort:'USD 98K', loc:'Confluencia Urbana, Neuquén', badge:'A estrenar', badgeColor:'brand', type:'apt', agentId:2, specs:[['fa-bed','2 dorms'],['fa-bath','1 baño'],['fa-ruler-combined','64 m²']],
     photos:['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9581, lng:-68.0552,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/5GssB?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'Estrenar sin sorpresas: terminaciones a nuevo, amenities de edificio y frente a plaza arbolada. Apto crédito hipotecario.',
     pets:['dog'] },
-  { id:5, title:'Terreno con proyecto aprobado', price:'USD 42.000', priceShort:'USD 42K', loc:'Confluencia Rural, Neuquén', badge:'Apto crédito', badgeColor:'ink', type:'land', specs:[['fa-draw-polygon','Lote 600 m²'],['fa-file-signature','Escritura lista'],['fa-road','Sobre ruta']],
+  { id:5, title:'Terreno con proyecto aprobado', price:'USD 42.000', priceShort:'USD 42K', loc:'Confluencia Rural, Neuquén', badge:'Apto crédito', badgeColor:'ink', type:'land', agentId:4, specs:[['fa-draw-polygon','Lote 600 m²'],['fa-file-signature','Escritura lista'],['fa-road','Sobre ruta']],
     photos:['https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9812, lng:-68.0198,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:null,
     desc:'Lote plano, esquina, con todos los servicios en la vereda y proyecto de vivienda ya aprobado por catastro municipal.' },
-  { id:6, title:'Casa quinta con parque', price:'USD 265.000', priceShort:'USD 265K', loc:'Valentina Sur Rural, Neuquén', badge:'Exclusiva', badgeColor:'ink', type:'house', specs:[['fa-bed','5 dorms'],['fa-bath','4 baños'],['fa-ruler-combined','540 m²']],
+  { id:6, title:'Casa quinta con parque', price:'USD 265.000', priceShort:'USD 265K', loc:'Valentina Sur Rural, Neuquén', badge:'Exclusiva', badgeColor:'ink', type:'house', agentId:4, specs:[['fa-bed','5 dorms'],['fa-bath','4 baños'],['fa-ruler-combined','540 m²']],
     photos:['https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9765, lng:-68.0865,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
@@ -1078,16 +1286,25 @@ function hideAgentsDirectory() {
 }
 function syncAgentRoute() {
   const mProfile = location.hash.match(/^#\/agente\/(\d+)$/);
+  const mCourse = location.hash.match(/^#\/curso\/(\d+)$/);
+  hideAgentProfile();
+  hideAgentsDirectory();
+  hideIeducaPage();
+  hideCoursePage();
+  hideStatsPage();
+  document.body.style.overflow = '';
+
   if (mProfile) {
-    hideAgentsDirectory();
     showAgentProfile(Number(mProfile[1]));
   } else if (location.hash === '#/agentes') {
-    hideAgentProfile();
     showAgentsDirectory();
-  } else {
-    hideAgentProfile();
-    hideAgentsDirectory();
-    document.body.style.overflow = '';
+  } else if (location.hash === '#/ieduca') {
+    showIeducaPage();
+  } else if (mCourse) {
+    showCoursePage(Number(mCourse[1]));
+  } else if (location.hash === '#/estadisticas') {
+    if (!loggedIn) { location.hash = ''; return; } // ruta protegida: sin sesión, vuelve al home
+    showStatsPage();
   }
 }
 function openAgent(id, returnTo) {
@@ -1097,7 +1314,7 @@ function openAgent(id, returnTo) {
 window.addEventListener('hashchange', syncAgentRoute);
 document.getElementById('agentProfileBack').addEventListener('click', () => { location.hash = agentReturnHash; });
 document.getElementById('agentsDirectoryBack').addEventListener('click', () => { location.hash = ''; });
-syncAgentRoute(); // soporta deep-link directo a #/agente/ID o #/agentes al cargar la página
+// (la llamada inicial a syncAgentRoute() se hace más abajo, después de declarar las páginas de iEduca)
 
 agentsGrid.addEventListener('click', (e) => {
   const card = e.target.closest('.agent-card');
@@ -1107,6 +1324,289 @@ document.getElementById('agentsDirectoryGrid').addEventListener('click', (e) => 
   const card = e.target.closest('.agent-card');
   if (card) openAgent(Number(card.dataset.agentId), '#/agentes');
 });
+
+/* ---------------- iEduca: catálogo y detalle de cursos ---------------- */
+function courseCardTemplate(c) {
+  const cat = CERT_CATEGORIES[c.category] || { color:'#111111', icon:'fa-award' };
+  return `
+  <div class="course-card bg-white border border-black/[0.08] rounded-2.5xl overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" data-course-id="${c.id}">
+    <div class="h-36 flex items-center justify-center text-white text-4xl relative" style="background:linear-gradient(135deg, ${cat.color}, #111111)">
+      <i class="fa-solid ${cat.icon}"></i>
+      <span class="absolute top-3 left-3 text-[10px] font-semibold bg-white/90 text-ink-900 rounded-full px-2.5 py-1">${c.category}</span>
+    </div>
+    <div class="p-4">
+      <h3 class="font-display font-medium text-base mb-1 leading-snug">${c.title}</h3>
+      <p class="text-xs text-ink-700 mb-3 line-clamp-2">${c.shortDesc}</p>
+      <div class="flex items-center gap-1.5 text-xs mb-2">
+        ${starIcons(c.rating)}<span class="font-semibold font-data ml-1">${c.rating.toFixed(1)}</span><span class="text-ink-700">(${c.reviewsCount})</span>
+      </div>
+      <div class="flex items-center justify-between text-xs text-ink-700 mb-3">
+        <span><i class="fa-regular fa-clock mr-1"></i>${c.duration}</span>
+        <span><i class="fa-solid fa-laptop mr-1"></i>${c.modality.split(',')[0]}</span>
+      </div>
+      <div class="flex items-center justify-between pt-3 border-t border-black/[0.06]">
+        <span class="font-display font-semibold text-lg">${c.price}</span>
+        <span class="text-xs text-brand-600 font-semibold">Ver curso →</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+const coursesGrid = document.getElementById('coursesGrid');
+function renderCourses(list) {
+  coursesGrid.innerHTML = list.length ? list.map(courseCardTemplate).join('') :
+    `<div class="col-span-full text-center py-12 text-ink-700"><i class="fa-solid fa-graduation-cap text-3xl mb-3 text-ink-300"></i><p class="font-medium">No hay cursos en esta categoría todavía.</p></div>`;
+}
+renderCourses(courses);
+
+const courseCategories = [...new Set(courses.map(c => c.category))];
+document.getElementById('courseCategoryFilter').innerHTML =
+  '<button class="course-cat-btn is-active btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-cat="">Todos los cursos</button>' +
+  courseCategories.map(cat => `<button class="course-cat-btn btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-cat="${cat}">${cat}</button>`).join('');
+document.getElementById('courseCategoryFilter').addEventListener('click', (e) => {
+  const btn = e.target.closest('.course-cat-btn');
+  if (!btn) return;
+  document.querySelectorAll('.course-cat-btn').forEach(b => b.classList.remove('is-active'));
+  btn.classList.add('is-active');
+  const cat = btn.dataset.cat;
+  renderCourses(cat ? courses.filter(c => c.category === cat) : courses);
+});
+coursesGrid.addEventListener('click', (e) => {
+  const card = e.target.closest('.course-card');
+  if (card) { location.hash = '#/curso/' + card.dataset.courseId; }
+});
+
+function buildCourseDetailHTML(c) {
+  const cat = CERT_CATEGORIES[c.category] || { color:'#111111', icon:'fa-award' };
+  return `
+    <div class="h-44 sm:h-56 -mx-4 sm:-mx-6 flex items-center justify-center text-white text-6xl rounded-b-3xl" style="background:linear-gradient(135deg, ${cat.color}, #111111)">
+      <i class="fa-solid ${cat.icon}"></i>
+    </div>
+    <div class="pt-6">
+      <span class="inline-block text-xs font-semibold bg-paper text-ink-800 rounded-full px-3 py-1 mb-3">${c.category}</span>
+      <h1 class="font-display font-medium text-2xl sm:text-3xl mb-2">${c.title}</h1>
+      <div class="flex flex-wrap items-center gap-4 mb-6 text-sm">
+        <div class="flex items-center gap-1.5">${starIcons(c.rating)}<span class="font-semibold font-data ml-1">${c.rating.toFixed(1)}</span><span class="text-ink-700">(${c.reviewsCount} reseñas)</span></div>
+        <span class="text-ink-700"><i class="fa-solid fa-user mr-1.5"></i>${c.instructor}</span>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 mb-8">
+        <div class="bg-paper rounded-xl p-4 text-center"><div class="font-display font-semibold text-lg">${c.duration}</div><div class="text-xs text-ink-700 mt-0.5">Duración</div></div>
+        <div class="bg-paper rounded-xl p-4 text-center"><div class="font-display font-semibold text-sm">${c.modality}</div><div class="text-xs text-ink-700 mt-0.5">Modalidad</div></div>
+        <div class="bg-paper rounded-xl p-4 text-center"><div class="font-display font-semibold text-lg">${c.price}</div><div class="text-xs text-ink-700 mt-0.5">Precio</div></div>
+      </div>
+
+      <button onclick="requireLogin(() => comprarCurso(${c.id}))" class="btn w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-full text-base font-semibold flex items-center justify-center gap-2 mb-8">
+        <i class="fa-solid fa-lock"></i> Comprar acceso — ${c.price}
+      </button>
+
+      <div class="mb-8">
+        <h2 class="font-display font-medium text-lg mb-2">Descripción</h2>
+        <p class="text-sm text-ink-700 leading-relaxed">${c.longDesc}</p>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="font-display font-medium text-lg mb-2">Perfil del egresado</h2>
+        <p class="text-sm text-ink-700 leading-relaxed">${c.perfilEgresado}</p>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="font-display font-medium text-lg mb-3">Temario</h2>
+        <div class="space-y-2">
+          ${c.temario.map((t, i) => `<div class="flex items-center gap-3 border border-black/[0.08] rounded-xl px-4 py-3"><span class="w-6 h-6 rounded-full bg-paper flex items-center justify-center text-xs font-semibold shrink-0">${i + 1}</span><span class="text-sm text-ink-800">${t}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+const ieducaPage = document.getElementById('ieducaPage');
+const coursePage = document.getElementById('coursePage');
+function showIeducaPage() { ieducaPage.classList.remove('hidden'); ieducaPage.scrollTop = 0; document.body.style.overflow = 'hidden'; }
+function hideIeducaPage() { ieducaPage.classList.add('hidden'); }
+function showCoursePage(id) {
+  const c = courses.find(cc => cc.id === id);
+  if (!c) return;
+  document.getElementById('courseBody').innerHTML = buildCourseDetailHTML(c);
+  document.getElementById('courseBreadcrumb').textContent = c.title;
+  coursePage.classList.remove('hidden');
+  coursePage.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+function hideCoursePage() { coursePage.classList.add('hidden'); }
+document.getElementById('ieducaBack').addEventListener('click', () => { location.hash = ''; });
+document.getElementById('courseBack').addEventListener('click', () => { location.hash = '#/ieduca'; });
+
+/* ---------------- Login / sesión (persiste en localStorage para que el panel tenga sentido entre recargas) ---------------- */
+const LS_USER_KEY = 'iportal_current_user';
+const LS_EVENTS_KEY = 'iportal_analytics_events';
+function loadCurrentUser() { try { return JSON.parse(localStorage.getItem(LS_USER_KEY)) || null; } catch (err) { return null; } }
+function saveCurrentUser(u) { try { u ? localStorage.setItem(LS_USER_KEY, JSON.stringify(u)) : localStorage.removeItem(LS_USER_KEY); } catch (err) {} }
+function loadEvents() { try { return JSON.parse(localStorage.getItem(LS_EVENTS_KEY)) || []; } catch (err) { return []; } }
+function saveEvents(list) { try { localStorage.setItem(LS_EVENTS_KEY, JSON.stringify(list)); } catch (err) {} }
+
+let currentUser = loadCurrentUser(); // { name, email } | null
+let loggedIn = !!currentUser;
+let pendingPurchase = null;
+let analyticsEvents = loadEvents();
+
+const loginModal = document.getElementById('loginModal');
+function requireLogin(action, context) {
+  if (loggedIn) { action(); return; }
+  pendingPurchase = action;
+  const title = document.getElementById('loginModalTitle');
+  const subtitle = document.getElementById('loginModalSubtitle');
+  if (context === 'panel') {
+    title.textContent = 'Iniciá sesión para ver tu panel';
+    subtitle.textContent = 'El panel de estadísticas queda asociado a tu cuenta, para poder auditar quién contactó tus propiedades.';
+  } else {
+    title.textContent = 'Iniciá sesión para comprar';
+    subtitle.textContent = 'Necesitás una cuenta de iPortal para acceder a los cursos de iEduca y que queden guardados en tu perfil.';
+  }
+  loginModal.classList.remove('hidden-modal');
+}
+function closeLoginModal() { loginModal.classList.add('hidden-modal'); }
+document.getElementById('closeLoginModal').addEventListener('click', closeLoginModal);
+function updateLoginUI() {
+  const pill = document.getElementById('loginStatusPill');
+  if (loggedIn && currentUser) {
+    pill.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${currentUser.name}`;
+    pill.classList.remove('hidden'); pill.classList.add('flex');
+  } else {
+    pill.classList.add('hidden'); pill.classList.remove('flex');
+  }
+}
+updateLoginUI();
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  currentUser = {
+    name: document.getElementById('loginName').value.trim(),
+    email: document.getElementById('loginEmail').value.trim(),
+  };
+  loggedIn = true;
+  saveCurrentUser(currentUser);
+  updateLoginUI();
+  closeLoginModal();
+  e.target.reset();
+  if (pendingPurchase) { const fn = pendingPurchase; pendingPurchase = null; fn(); }
+});
+function comprarCurso(id) {
+  const c = courses.find(cc => cc.id === id);
+  alert(`¡Listo! Compraste "${c.title}" por ${c.price}.\n\nEste es un prototipo de demostración: en la versión real acá se procesaría el pago y el curso quedaría disponible en tu perfil.`);
+}
+
+/* ---------------- Analíticas y auditoría — vistas y contactos por WhatsApp, por propiedad y por usuario ---------------- */
+function fmtFechaHora(ts) {
+  const d = new Date(ts);
+  const dia = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${dia} ${MES_CORTO[d.getMonth()]} ${d.getFullYear()}, ${hh}:${mm}`;
+}
+function seedAnalyticsIfEmpty() {
+  if (analyticsEvents.length) return;
+  const visitantesPrevios = ['Rodrigo Fernández', 'Ana Gómez', null, null, 'Lucas Medina', null, 'Camila Ortiz'];
+  const now = Date.now();
+  properties.forEach(p => {
+    const views = 6 + Math.floor(Math.random() * 12);
+    for (let i = 0; i < views; i++) {
+      const nombre = visitantesPrevios[Math.floor(Math.random() * visitantesPrevios.length)];
+      analyticsEvents.push({ type:'view', propertyId:p.id, propertyTitle:p.title, userName: nombre, userEmail: nombre ? nombre.toLowerCase().replace(' ', '.') + '@mail.com' : null, ts: now - Math.floor(Math.random() * 14 * 86400000) });
+    }
+    const contactos = Math.round(views * (0.15 + Math.random() * 0.25));
+    for (let i = 0; i < contactos; i++) {
+      const nombre = visitantesPrevios[Math.floor(Math.random() * visitantesPrevios.length)];
+      analyticsEvents.push({ type:'whatsapp_click', propertyId:p.id, propertyTitle:p.title, userName: nombre, userEmail: nombre ? nombre.toLowerCase().replace(' ', '.') + '@mail.com' : null, ts: now - Math.floor(Math.random() * 14 * 86400000) });
+    }
+  });
+  saveEvents(analyticsEvents);
+}
+seedAnalyticsIfEmpty();
+
+function trackEvent(type, property) {
+  analyticsEvents.push({
+    type, propertyId: property.id, propertyTitle: property.title,
+    userName: currentUser ? currentUser.name : null,
+    userEmail: currentUser ? currentUser.email : null,
+    ts: Date.now(),
+  });
+  saveEvents(analyticsEvents);
+  if (statsPage && !statsPage.classList.contains('hidden')) renderStatsPage();
+}
+
+function renderStatsPage() {
+  document.getElementById('statsUserName').textContent = currentUser ? currentUser.name : 'Invitado';
+
+  const views = analyticsEvents.filter(e => e.type === 'view');
+  const contacts = analyticsEvents.filter(e => e.type === 'whatsapp_click');
+  document.getElementById('statTotalViews').textContent = views.length;
+  document.getElementById('statTotalWa').textContent = contacts.length;
+  document.getElementById('statConvRate').textContent = views.length ? Math.round(contacts.length / views.length * 100) + '%' : '0%';
+  document.getElementById('statUniqueUsers').textContent = new Set(analyticsEvents.filter(e => e.userName).map(e => e.userName)).size;
+
+  const byProp = properties.map(p => ({
+    p,
+    v: views.filter(e => e.propertyId === p.id).length,
+    c: contacts.filter(e => e.propertyId === p.id).length,
+  })).sort((a, b) => b.v - a.v);
+  const maxViews = Math.max(1, ...byProp.map(x => x.v));
+  document.getElementById('statsByProperty').innerHTML = byProp.map(({ p, v, c }) => `
+    <div class="border border-black/[0.08] rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold">${p.title}</span>
+        <span class="text-xs text-ink-700 font-data">${v} vistas · ${c} WhatsApp</span>
+      </div>
+      <div class="h-2 rounded-full bg-paper overflow-hidden">
+        <div class="h-full bg-ink-900 rounded-full" style="width:${(v / maxViews * 100).toFixed(0)}%"></div>
+      </div>
+    </div>`).join('');
+
+  const sorted = [...analyticsEvents].sort((a, b) => b.ts - a.ts);
+  const shown = sorted.slice(0, 100);
+  document.getElementById('auditRowsNote').textContent = `Mostrando ${shown.length} de ${sorted.length} eventos — el CSV incluye el historial completo`;
+  document.getElementById('auditTableBody').innerHTML = shown.map(e => `
+    <tr class="border-t border-black/[0.06]">
+      <td class="px-4 py-2.5 text-xs font-data text-ink-700 whitespace-nowrap">${fmtFechaHora(e.ts)}</td>
+      <td class="px-4 py-2.5 text-xs">${e.type === 'view' ? '<span class="text-ink-800"><i class="fa-solid fa-eye mr-1.5 text-ink-300"></i>Vista de propiedad</span>' : '<span class="text-brand-700 font-medium"><i class="fa-brands fa-whatsapp mr-1.5"></i>Contacto por WhatsApp</span>'}</td>
+      <td class="px-4 py-2.5 text-xs text-ink-800">${e.propertyTitle}</td>
+      <td class="px-4 py-2.5 text-xs text-ink-800">${e.userName || 'Visitante anónimo'}</td>
+    </tr>`).join('');
+}
+
+function downloadAuditCSV() {
+  const rows = [['Fecha y hora', 'Evento', 'Propiedad', 'Usuario', 'Email']];
+  [...analyticsEvents].sort((a, b) => a.ts - b.ts).forEach(e => {
+    rows.push([
+      fmtFechaHora(e.ts),
+      e.type === 'view' ? 'Vista de propiedad' : 'Contacto por WhatsApp',
+      e.propertyTitle,
+      e.userName || 'Visitante anónimo',
+      e.userEmail || '',
+    ]);
+  });
+  const csv = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `iPortal_auditoria_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+document.getElementById('downloadAuditBtn').addEventListener('click', downloadAuditCSV);
+
+const statsPage = document.getElementById('statsPage');
+function showStatsPage() { renderStatsPage(); statsPage.classList.remove('hidden'); statsPage.scrollTop = 0; document.body.style.overflow = 'hidden'; }
+function hideStatsPage() { statsPage.classList.add('hidden'); }
+document.getElementById('statsBack').addEventListener('click', () => { location.hash = ''; });
+document.getElementById('statsLogout').addEventListener('click', () => {
+  loggedIn = false; currentUser = null; saveCurrentUser(null); updateLoginUI(); location.hash = '';
+});
+document.getElementById('panelAgenteBtn').addEventListener('click', () => requireLogin(() => { location.hash = '#/estadisticas'; }, 'panel'));
+
+syncAgentRoute(); // soporta deep-link directo a #/agente/ID, #/agentes, #/ieduca, #/curso/ID o #/estadisticas al cargar la página
 
 /* ---------------- Panel de favoritos ---------------- */
 const favoritesModal = document.getElementById('favoritesModal');
@@ -1247,6 +1747,8 @@ function applyZoneFilter(layer) {
   const ring = layer.getLatLngs()[0]; // polígono y rectángulo comparten esta forma en Leaflet
   const matches = properties.filter(p => pointInPolygon(p.lat, p.lng, ring));
   renderCards(matches);
+  const agentSel = document.getElementById('agentPropertyFilter');
+  if (agentSel) agentSel.value = '';
   Object.entries(leafletMaps).forEach(([, m]) => {
     Object.entries(m.markersById || {}).forEach(([id, marker]) => {
       const inZone = matches.some(p => p.id === Number(id));
@@ -1259,11 +1761,35 @@ function applyZoneFilter(layer) {
 
 function clearZoneFilter() {
   renderCards(properties);
+  const agentSel = document.getElementById('agentPropertyFilter');
+  if (agentSel) agentSel.value = '';
   Object.values(leafletMaps).forEach(m => Object.values(m.markersById || {}).forEach(marker => marker.setOpacity(1)));
   Object.values(leafletMaps).forEach(m => m.map && m.map.zoneControls && m.map.zoneControls.drawnItems.clearLayers());
   zoneBanner.classList.add('hidden');
 }
 zoneBanner.querySelector('button').addEventListener('click', clearZoneFilter);
+
+/* ---------------- Filtro por Agente / Personal Shopper en la barra de filtros de propiedades ---------------- */
+const agentPropertyFilterSel = document.getElementById('agentPropertyFilter');
+const agentesConPropiedades = agents.filter(a => properties.some(p => p.agentId === a.id));
+agentPropertyFilterSel.innerHTML = '<option value="">Agente / Personal Shopper</option>' +
+  agentesConPropiedades.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+
+function applyAgentPropertyFilter(agentId) {
+  if (!agentId) { clearZoneFilter(); return; }
+  const ag = agents.find(a => a.id === Number(agentId));
+  const matches = properties.filter(p => p.agentId === Number(agentId));
+  renderCards(matches);
+  Object.values(leafletMaps).forEach(m => m.map && m.map.zoneControls && m.map.zoneControls.drawnItems.clearLayers());
+  Object.entries(leafletMaps).forEach(([, m]) => {
+    Object.entries(m.markersById || {}).forEach(([id, marker]) => {
+      marker.setOpacity(matches.some(p => p.id === Number(id)) ? 1 : 0.28);
+    });
+  });
+  zoneBanner.classList.remove('hidden');
+  zoneBanner.querySelector('span').textContent = `${matches.length} propiedad${matches.length === 1 ? '' : 'es'} de ${ag ? ag.name : 'este agente'}`;
+}
+agentPropertyFilterSel.addEventListener('change', (e) => applyAgentPropertyFilter(e.target.value));
 
 /* ---------------- Sincronía tarjeta ↔ pin ---------------- */
 function setActive(id) {
@@ -1351,6 +1877,7 @@ function openDetail(id) {
   if (!p) return;
   currentDetailId = id;
   currentPhotoIdx = 0;
+  trackEvent('view', p);
 
   document.getElementById('detailTitle').textContent = p.title;
   const badgeEl = document.getElementById('detailBadge');
@@ -1360,7 +1887,9 @@ function openDetail(id) {
   document.getElementById('detailLoc').querySelector('span').textContent = p.loc;
   document.getElementById('detailDesc').textContent = p.desc || '';
   document.getElementById('detailSpecs').innerHTML = p.specs.map(s => `<span><i class="fa-solid ${s[0]} mr-1.5 text-ink-700/60"></i>${s[1]}</span>`).join('');
-  document.getElementById('detailWhatsapp').onclick = () => abrirModalIA(p.title);
+  const waUrl = waLinkProperty(p);
+  document.getElementById('detailWhatsapp').onclick = () => { trackEvent('whatsapp_click', p); window.open(waUrl, '_blank'); };
+  document.getElementById('detailWhatsappFloat').onclick = () => { trackEvent('whatsapp_click', p); window.open(waUrl, '_blank'); };
 
   document.getElementById('mediaFotoImg').src = p.photos[0];
   document.getElementById('mediaVideoFrame').src = '';
@@ -1385,7 +1914,7 @@ function closeDetail() {
 }
 document.getElementById('closeDetail').addEventListener('click', closeDetail);
 document.getElementById('detailBackdrop').addEventListener('click', closeDetail);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); if (location.hash.startsWith('#/agente') ) location.hash = ''; closeFavoritesPanel(); } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); closeLoginModal(); if (/^#\/(agente|agentes|ieduca|curso)/.test(location.hash)) location.hash = ''; closeFavoritesPanel(); } });
 
 document.getElementById('mediaTabs').addEventListener('click', (e) => {
   const tab = e.target.closest('.media-tab');
@@ -1516,6 +2045,13 @@ function buscarConIA() {
   if (query.trim() === '') { alert('Ingresá una descripción de lo que querés buscar.'); return; }
   alert('Procesando consulta con lenguaje natural: "' + query + '"\n\nFiltrando propiedades según intención y presupuesto...');
 }
+/* ---------------- Mensaje de WhatsApp armado según la propiedad ---------------- */
+const WHATSAPP_NUMBER = '5492994001234'; // TODO: reemplazar por el número real de la inmobiliaria
+function waLinkProperty(p) {
+  const msg = `Hola! 👋 Vi esta propiedad en iPortal y me interesa:\n\n*${p.title}*\n${p.price} · ${p.loc}\n\n¿Podemos coordinar una visita?`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
 function abrirModalIA(propiedad) {
   alert('Iniciando atención automatizada vía WhatsApp para:\n"' + propiedad + '"\n\nEl bot precalifica al cliente antes de derivarlo al vendedor.');
 }
