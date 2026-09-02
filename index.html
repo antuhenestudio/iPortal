@@ -13,6 +13,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
 
 <script>
   tailwind.config = {
@@ -118,6 +120,11 @@
   }
   .map-pin.is-active::after, .map-pin:hover::after { border-top-color:#16A34A; }
 
+  /* ---- Popup del mapa (imagen + info sobre el mismo pin) ---- */
+  .leaflet-popup-content-wrapper { border-radius: 14px; box-shadow: 0 12px 30px -8px rgba(17,17,17,.35); padding: 4px; }
+  .leaflet-popup-content { margin: 10px; font-family: 'Space Grotesk', sans-serif; }
+  .leaflet-popup-tip { box-shadow: 0 4px 10px rgba(17,17,17,.15); }
+
   #mapOverlay { transition: opacity .25s ease, visibility .25s ease; }
   #mapOverlay.hidden-map { opacity: 0; visibility: hidden; pointer-events: none; }
 
@@ -212,6 +219,10 @@
 
   <!-- LISTA -->
   <section id="listPanel" class="space-y-4">
+    <div id="zoneBanner" class="hidden bg-brand-100 border border-brand-600/30 text-ink-900 rounded-2xl px-4 py-3 flex items-center justify-between gap-3 text-sm">
+      <span class="font-medium"></span>
+      <button class="btn shrink-0 bg-white hover:bg-paper text-ink-900 px-4 rounded-full text-xs font-semibold border border-black/[0.1]"><i class="fa-solid fa-xmark mr-1.5"></i>Quitar filtro</button>
+    </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="cardsGrid"></div>
   </section>
 
@@ -464,9 +475,12 @@ function badgeClasses(color) {
   return color === 'brand' ? 'bg-brand-600' : 'bg-ink-900';
 }
 
-/* ---------------- Render tarjetas ---------------- */
+/* ---------------- Render tarjetas (reutilizable para poder filtrar por zona) ---------------- */
 const grid = document.getElementById('cardsGrid');
-grid.innerHTML = properties.map(p => `
+const compareSet = new Set(); // declarado acá arriba porque renderCards lo usa desde el primer render
+
+function cardTemplate(p) {
+  return `
   <article class="property-card relative bg-white rounded-2.5xl border border-black/[0.08] overflow-hidden flex flex-col" data-id="${p.id}" tabindex="0">
     <div class="property-photo open-detail relative h-52 bg-ink-700 overflow-hidden cursor-pointer" data-id="${p.id}">
       <img src="${p.photos[0]}" data-idx="0" alt="${p.title}" loading="lazy" class="w-full h-full object-cover">
@@ -509,8 +523,20 @@ grid.innerHTML = properties.map(p => `
         </button>
       </div>
     </div>
-  </article>
-`).join('');
+  </article>`;
+}
+
+function renderCards(list) {
+  grid.innerHTML = list.length
+    ? list.map(cardTemplate).join('')
+    : `<div class="col-span-full text-center py-16 text-ink-700">
+         <i class="fa-solid fa-map-location-dot text-3xl mb-3 text-ink-300"></i>
+         <p class="font-medium">No hay propiedades dentro de la zona dibujada.</p>
+       </div>`;
+  // reaplicar estado de comparación (el Set persiste aunque se re-dibujen las tarjetas)
+  document.querySelectorAll('.compare-btn').forEach(b => b.classList.toggle('is-comparing', compareSet.has(Number(b.dataset.id))));
+}
+renderCards(properties);
 
 /* ---------------- Mapa real (Leaflet + OpenStreetMap) ---------------- */
 function pinIcon(p) {
@@ -521,11 +547,33 @@ function pinIcon(p) {
   });
 }
 
+function popupContent(p) {
+  return `<div class="w-56">
+    <img src="${p.photos[0]}" alt="${p.title}" class="w-full h-32 object-cover rounded-lg mb-2">
+    <div class="font-display font-medium text-sm text-ink-900 leading-snug">${p.title}</div>
+    <div class="text-brand-600 font-semibold font-data text-sm mt-0.5">${p.price}</div>
+    <div class="text-ink-700 text-xs mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i>${p.loc}</div>
+    <button onclick="openDetail(${p.id})" class="mt-2 w-full bg-brand-600 hover:bg-brand-700 text-white rounded-full py-2 text-xs font-semibold transition-colors">Ver más en grande</button>
+  </div>`;
+}
+
+// point-in-polygon (ray casting) — usado para el filtro por zona dibujada
+function pointInPolygon(lat, lng, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const yi = ring[i].lat, xi = ring[i].lng;
+    const yj = ring[j].lat, xj = ring[j].lng;
+    const intersect = ((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
 function buildMap(containerId) {
   if (typeof L === 'undefined') {
     const el = document.getElementById(containerId);
     if (el) el.innerHTML = '<div class="w-full h-full flex items-center justify-center text-sm text-ink-700 bg-paper p-6 text-center">No se pudo cargar el mapa (sin conexión a OpenStreetMap).</div>';
-    return null;
+    return { map: null, markersById: {} };
   }
   const map = L.map(containerId, { zoomControl: true, scrollWheelZoom: true })
     .setView([-38.9516, -68.0591], 12); // Neuquén Capital — el centro se recalcula según las propiedades cargadas
@@ -533,14 +581,91 @@ function buildMap(containerId) {
     maxZoom: 19,
     attribution: '&copy; OpenStreetMap contributors',
   }).addTo(map);
-  properties.forEach(p => L.marker([p.lat, p.lng], { icon: pinIcon(p) }).addTo(map));
+
+  const markersById = {};
+  properties.forEach(p => {
+    const marker = L.marker([p.lat, p.lng], { icon: pinIcon(p) }).addTo(map);
+    marker.bindPopup(popupContent(p), { maxWidth: 240, className: 'brand-popup' });
+    markersById[p.id] = marker;
+  });
   const bounds = L.latLngBounds(properties.map(p => [p.lat, p.lng]));
   map.fitBounds(bounds, { padding: [50, 50] });
-  return map;
+
+  // ---- Dibujar zona de búsqueda ----
+  if (typeof L.Control.Draw !== 'undefined') {
+    L.drawLocal.draw.toolbar.buttons.polygon = 'Dibujar zona de búsqueda (polígono)';
+    L.drawLocal.draw.toolbar.buttons.rectangle = 'Dibujar zona de búsqueda (rectángulo)';
+    L.drawLocal.draw.toolbar.actions.title = 'Cancelar dibujo';
+    L.drawLocal.draw.toolbar.actions.text = 'Cancelar';
+    L.drawLocal.draw.toolbar.finish.title = 'Terminar zona';
+    L.drawLocal.draw.toolbar.finish.text = 'Terminar';
+    L.drawLocal.draw.toolbar.undo.title = 'Borrar último punto';
+    L.drawLocal.draw.toolbar.undo.text = 'Borrar último punto';
+    L.drawLocal.draw.handlers.polygon.tooltip.start = 'Hacé clic para empezar a dibujar la zona';
+    L.drawLocal.draw.handlers.polygon.tooltip.cont = 'Hacé clic para seguir dibujando';
+    L.drawLocal.draw.handlers.polygon.tooltip.end = 'Hacé clic en el primer punto para cerrar la zona';
+    L.drawLocal.draw.handlers.rectangle.tooltip.start = 'Arrastrá para dibujar la zona';
+    L.drawLocal.edit.toolbar.buttons.edit = 'Editar zona';
+    L.drawLocal.edit.toolbar.buttons.remove = 'Quitar zona';
+    L.drawLocal.edit.toolbar.actions.save.title = 'Guardar cambios';
+    L.drawLocal.edit.toolbar.actions.save.text = 'Guardar';
+    L.drawLocal.edit.toolbar.actions.cancel.title = 'Cancelar edición';
+    L.drawLocal.edit.toolbar.actions.cancel.text = 'Cancelar';
+
+    const drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+    const drawControl = new L.Control.Draw({
+      position: 'topright',
+      draw: { polygon: { allowIntersection: false, showArea: true, shapeOptions: { color: '#16A34A', weight: 3 } },
+              rectangle: { shapeOptions: { color: '#16A34A', weight: 3 } },
+              circle: false, circlemarker: false, marker: false, polyline: false },
+      edit: { featureGroup: drawnItems, remove: true },
+    });
+    map.addControl(drawControl);
+
+    map.on(L.Draw.Event.CREATED, (e) => {
+      drawnItems.clearLayers();
+      drawnItems.addLayer(e.layer);
+      applyZoneFilter(e.layer);
+    });
+    map.on(L.Draw.Event.EDITED, (e) => {
+      e.layers.eachLayer(layer => applyZoneFilter(layer));
+    });
+    map.on(L.Draw.Event.DELETED, () => clearZoneFilter());
+
+    map.zoneControls = { drawnItems };
+  }
+
+  return { map, markersById };
 }
 
 const leafletMaps = { desktop: buildMap('leafletMapDesktop'), mobile: buildMap('leafletMapMobile') };
-window.addEventListener('resize', () => { leafletMaps.desktop && leafletMaps.desktop.invalidateSize(); leafletMaps.mobile && leafletMaps.mobile.invalidateSize(); });
+window.addEventListener('resize', () => { leafletMaps.desktop.map && leafletMaps.desktop.map.invalidateSize(); leafletMaps.mobile.map && leafletMaps.mobile.map.invalidateSize(); });
+
+/* ---------------- Filtro por zona dibujada ---------------- */
+const zoneBanner = document.getElementById('zoneBanner');
+
+function applyZoneFilter(layer) {
+  const ring = layer.getLatLngs()[0]; // polígono y rectángulo comparten esta forma en Leaflet
+  const matches = properties.filter(p => pointInPolygon(p.lat, p.lng, ring));
+  renderCards(matches);
+  Object.entries(leafletMaps).forEach(([, m]) => {
+    Object.entries(m.markersById || {}).forEach(([id, marker]) => {
+      const inZone = matches.some(p => p.id === Number(id));
+      marker.setOpacity(inZone ? 1 : 0.28);
+    });
+  });
+  zoneBanner.classList.remove('hidden');
+  zoneBanner.querySelector('span').textContent = `${matches.length} propiedad${matches.length === 1 ? '' : 'es'} dentro de la zona dibujada`;
+}
+
+function clearZoneFilter() {
+  renderCards(properties);
+  Object.values(leafletMaps).forEach(m => Object.values(m.markersById || {}).forEach(marker => marker.setOpacity(1)));
+  Object.values(leafletMaps).forEach(m => m.map && m.map.zoneControls && m.map.zoneControls.drawnItems.clearLayers());
+  zoneBanner.classList.add('hidden');
+}
+zoneBanner.querySelector('button').addEventListener('click', clearZoneFilter);
 
 /* ---------------- Sincronía tarjeta ↔ pin ---------------- */
 function setActive(id) {
@@ -684,7 +809,6 @@ document.getElementById('mediaNext').addEventListener('click', () => {
 });
 
 /* ---------------- Comparador de propiedades (hasta 3) ---------------- */
-const compareSet = new Set();
 const compareBar = document.getElementById('compareBar');
 
 function toggleCompare(id) {
