@@ -264,9 +264,6 @@
     <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Ambientes <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
     <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Tipo de propiedad <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
     <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors"><i class="fa-solid fa-sliders text-xs"></i> Más filtros</button>
-    <select id="agentPropertyFilter" class="btn shrink-0 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors px-4 bg-white text-ink-800">
-      <option value="">Agente / Personal Shopper</option>
-    </select>
     <span class="flex-1"></span>
     <span class="hidden sm:inline text-sm text-ink-700 font-data shrink-0">126 propiedades</span>
     <button class="btn shrink-0 hidden sm:flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Relevancia <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
@@ -295,9 +292,11 @@
 
 <!-- Overlay de mapa para mobile (patrón Zillow: alternar lista/mapa) -->
 <div id="mapOverlay" class="hidden-map fixed inset-0 z-[60] bg-white lg:hidden">
-  <div class="absolute top-4 inset-x-4 z-10 flex items-center gap-2">
-    <button id="closeMap" class="btn w-12 px-0 rounded-full bg-white shadow-lg border border-black/[0.08] flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
-    <div class="flex-1 bg-white rounded-full shadow-lg border border-black/[0.08] px-4 py-3 text-sm text-ink-700 font-data">126 propiedades en el mapa</div>
+  <div class="absolute top-4 inset-x-4 z-[2000] flex items-center gap-2">
+    <button id="closeMap" class="btn h-12 px-4 rounded-full bg-ink-900 text-white shadow-lg flex items-center justify-center gap-2 font-semibold text-sm shrink-0">
+      <i class="fa-solid fa-xmark text-base"></i> Cerrar mapa
+    </button>
+    <div class="flex-1 min-w-0 bg-white rounded-full shadow-lg border border-black/[0.08] px-4 py-3 text-sm text-ink-700 font-data truncate">126 propiedades en el mapa</div>
   </div>
   <div id="leafletMapMobile" class="w-full h-full"></div>
 </div>
@@ -447,7 +446,7 @@
   </div>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-24">
     <h1 class="font-display font-medium text-2xl sm:text-3xl mb-1">Agentes y Personal Shoppers Inmobiliarios</h1>
-    <p class="text-ink-700 text-sm mb-6">Buscá por ubicación y por en qué tipo de propiedad se especializan</p>
+    <p class="text-ink-700 text-sm mb-6">Buscá por ubicación y elegí entre agentes inmobiliarios o personal shoppers inmobiliarios</p>
 
     <div class="flex flex-wrap items-center gap-2.5 mb-4">
       <i class="fa-solid fa-location-dot text-ink-700 text-sm mr-0.5"></i>
@@ -458,13 +457,12 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-2.5 mb-6">
-      <i class="fa-solid fa-house-chimney text-ink-700 text-sm mr-0.5"></i>
-      <span class="text-xs text-ink-700 mr-1">Se especializa en:</span>
+      <i class="fa-solid fa-id-badge text-ink-700 text-sm mr-0.5"></i>
+      <span class="text-xs text-ink-700 mr-1">Tipo de profesional:</span>
       <div id="dirSpecialtyFilter" class="flex flex-wrap gap-2">
         <button class="dir-specialty-btn is-active btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-type="">Todos</button>
-        <button class="dir-specialty-btn btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-type="house">Casas</button>
-        <button class="dir-specialty-btn btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-type="apt">Departamentos</button>
-        <button class="dir-specialty-btn btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-type="land">Terrenos y quintas</button>
+        <button class="dir-specialty-btn btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-type="agente">Agentes Inmobiliarios</button>
+        <button class="dir-specialty-btn btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-medium text-ink-800" data-type="personal_shopper">Personal Shoppers Inmobiliarios</button>
       </div>
       <span id="dirResultCount" class="text-xs text-ink-700 font-data ml-auto"></span>
     </div>
@@ -802,7 +800,7 @@ function certBadgeHTML(cert) {
 
 const agents = [
   { id:1, name:'Valentina Ríos', initials:'VR', color:'#16A34A', rating:4.9, reviews:128, specialty:'Bardas Soleadas y Terrazas del Neuquén', sales:62, responseTime:'~10 min', verified:true, yearsExp:12,
-    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['house'],
+    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['house'], role:'agente',
     social:{ instagram:'#', linkedin:'#', facebook:'#' },
     photos:['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=500&q=80'],
     bio:'12 años como agente en Neuquén Capital. Se especializa en casas familiares en las zonas norte de la ciudad, con foco en negociación de financiación directa con el propietario.',
@@ -822,7 +820,7 @@ const agents = [
       {name:'Nahuel S.', rating:4, sentiment:'positive', text:'Buena comunicación, aunque alguna vez tardó en confirmar horarios.'},
     ]},
   { id:2, name:'Martín Aguirre', initials:'MA', color:'#111111', rating:4.8, reviews:94, specialty:'Confluencia y alrededores', sales:47, responseTime:'~25 min', verified:true, yearsExp:8,
-    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['land','house'],
+    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['land','house'], role:'agente',
     social:{ instagram:'#', linkedin:'#', facebook:'#' },
     photos:['https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=500&q=80'],
     bio:'Corredor matriculado, trabaja principalmente la zona de Confluencia Urbana y Rural. Fuerte en operaciones de terrenos y proyectos aprobados.',
@@ -839,7 +837,7 @@ const agents = [
       {name:'Ramiro G.', rating:3, sentiment:'negative', text:'Buena predisposición, pero muy lento para responder los fines de semana.'},
     ]},
   { id:3, name:'Sol Bertone', initials:'SB', color:'#16A34A', rating:5.0, reviews:61, specialty:'Departamentos a estrenar, Centro', sales:38, responseTime:'~15 min', verified:true, yearsExp:5,
-    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['apt'],
+    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['apt'], role:'agente',
     social:{ instagram:'#', linkedin:'#' },
     photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=500&q=80'],
     bio:'Especialista en pozo y unidades a estrenar en el área Centro. Trabaja con varios desarrollos y conoce los planes de financiación de cada uno.',
@@ -855,7 +853,7 @@ const agents = [
       {name:'Carla M.', rating:5, sentiment:'positive', text:'Excelente, todo por WhatsApp, muy cómodo.'},
     ]},
   { id:4, name:'Ezequiel Paz', initials:'EP', color:'#111111', rating:4.7, reviews:52, specialty:'Terrenos y quintas, zona rural', sales:29, responseTime:'~40 min', verified:false, yearsExp:6,
-    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['land','house'],
+    country:'Argentina', province:'Neuquén', city:'Neuquén Capital', specializesIn:['land','house'], role:'agente',
     social:{ facebook:'#' },
     photos:['https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=500&q=80'],
     bio:'Enfocado en quintas y terrenos grandes en las zonas rurales de Neuquén. Ideal para quienes buscan más superficie y tranquilidad.',
@@ -868,7 +866,7 @@ const agents = [
       {name:'Hugo D.', rating:2, sentiment:'negative', text:'Tardó demasiado en confirmar la visita, casi perdemos el lote.'},
     ]},
   { id:5, name:'Camila Suárez', initials:'CS', color:'#16A34A', rating:4.9, reviews:73, specialty:'Casas y duplex en Cipolletti', sales:41, responseTime:'~20 min', verified:true, yearsExp:7,
-    country:'Argentina', province:'Río Negro', city:'Cipolletti', specializesIn:['house'],
+    country:'Argentina', province:'Río Negro', city:'Cipolletti', specializesIn:['house'], role:'personal_shopper',
     social:{ instagram:'#', linkedin:'#', facebook:'#' },
     photos:['https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80'],
     bio:'Trabaja del otro lado del río, en Cipolletti. Conoce bien la demanda de quienes buscan alternativas más económicas cerca de Neuquén Capital.',
@@ -882,7 +880,7 @@ const agents = [
       {name:'Ayelén R.', rating:5, sentiment:'positive', text:'Rápida para responder y coordinar visitas.'},
     ]},
   { id:6, name:'Federico Lanús', initials:'FL', color:'#111111', rating:4.6, reviews:35, specialty:'Departamentos en CABA', sales:22, responseTime:'~30 min', verified:false, yearsExp:4,
-    country:'Argentina', province:'Ciudad Autónoma de Buenos Aires', city:'Buenos Aires', specializesIn:['apt'],
+    country:'Argentina', province:'Ciudad Autónoma de Buenos Aires', city:'Buenos Aires', specializesIn:['apt'], role:'personal_shopper',
     social:{ instagram:'#' },
     photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=500&q=80'],
     bio:'Agente porteño, especializado en departamentos usados en Buenos Aires. Ideal para inversores que buscan renta en la capital.',
@@ -1031,6 +1029,11 @@ function specialtyLabels(list) {
   const map = { house:['fa-house','Casas'], apt:['fa-building','Deptos'], land:['fa-tree','Terrenos'] };
   return (list || []).map(t => map[t] ? `<span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-paper text-ink-800 rounded-full px-2 py-0.5"><i class="fa-solid ${map[t][0]}"></i>${map[t][1]}</span>` : '').join('');
 }
+function roleLabel(role) {
+  return role === 'personal_shopper'
+    ? '<span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-[#7C3AED]/10 text-[#7C3AED] rounded-full px-2 py-0.5"><i class="fa-solid fa-user-tie"></i>Personal Shopper</span>'
+    : '<span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-ink-900/5 text-ink-800 rounded-full px-2 py-0.5"><i class="fa-solid fa-id-badge"></i>Agente Inmobiliario</span>';
+}
 
 function agentCardTemplate(a) {
   return `
@@ -1046,7 +1049,7 @@ function agentCardTemplate(a) {
         <p class="text-[11px] text-ink-700/70 truncate"><i class="fa-solid fa-location-dot mr-1"></i>${a.city}, ${a.province}</p>
       </div>
     </div>
-    <div class="flex flex-wrap gap-1.5 mb-3">${specialtyLabels(a.specializesIn)}</div>
+    <div class="flex flex-wrap gap-1.5 mb-3">${roleLabel(a.role)}${specialtyLabels(a.specializesIn)}</div>
     <div class="flex items-center gap-1.5 text-sm mb-3">
       ${starIcons(a.rating)}
       <span class="font-semibold font-data ml-1">${a.rating.toFixed(1)}</span>
@@ -1088,7 +1091,7 @@ function fillSelect(select, values, placeholder) {
 function makeAgentLocationFilter({ paisEl, provinciaEl, ciudadEl, clearEl, specialtyGetter, onApply }) {
   function pool() {
     const t = specialtyGetter ? specialtyGetter() : '';
-    return t ? agents.filter(a => (a.specializesIn || []).includes(t)) : agents;
+    return t ? agents.filter(a => a.role === t) : agents;
   }
   function refresh() {
     const pais = paisEl.value, provincia = provinciaEl.value;
@@ -1187,7 +1190,7 @@ function buildAgentProfileHTML(a) {
           <h1 class="font-display font-medium text-2xl">${a.name}</h1>
           ${a.verified ? '<i class="fa-solid fa-circle-check text-brand-600 text-xl" title="Verificado"></i>' : ''}
         </div>
-        <p class="text-sm text-ink-700">Personal Shopper Inmobiliario · ${a.specialty}</p>
+        <p class="text-sm text-ink-700">${a.role === 'personal_shopper' ? 'Personal Shopper Inmobiliario' : 'Agente Inmobiliario'} · ${a.specialty}</p>
       </div>
     </div>
 
@@ -1675,6 +1678,7 @@ function buildMap(containerId) {
   }
   const map = L.map(containerId, { zoomControl: true, scrollWheelZoom: true })
     .setView([-38.9516, -68.0591], 12); // Neuquén Capital — el centro se recalcula según las propiedades cargadas
+  map.zoomControl.setPosition('bottomleft'); // evita chocar con la barra de "Cerrar mapa" en mobile
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; OpenStreetMap contributors',
@@ -1747,8 +1751,6 @@ function applyZoneFilter(layer) {
   const ring = layer.getLatLngs()[0]; // polígono y rectángulo comparten esta forma en Leaflet
   const matches = properties.filter(p => pointInPolygon(p.lat, p.lng, ring));
   renderCards(matches);
-  const agentSel = document.getElementById('agentPropertyFilter');
-  if (agentSel) agentSel.value = '';
   Object.entries(leafletMaps).forEach(([, m]) => {
     Object.entries(m.markersById || {}).forEach(([id, marker]) => {
       const inZone = matches.some(p => p.id === Number(id));
@@ -1761,35 +1763,11 @@ function applyZoneFilter(layer) {
 
 function clearZoneFilter() {
   renderCards(properties);
-  const agentSel = document.getElementById('agentPropertyFilter');
-  if (agentSel) agentSel.value = '';
   Object.values(leafletMaps).forEach(m => Object.values(m.markersById || {}).forEach(marker => marker.setOpacity(1)));
   Object.values(leafletMaps).forEach(m => m.map && m.map.zoneControls && m.map.zoneControls.drawnItems.clearLayers());
   zoneBanner.classList.add('hidden');
 }
 zoneBanner.querySelector('button').addEventListener('click', clearZoneFilter);
-
-/* ---------------- Filtro por Agente / Personal Shopper en la barra de filtros de propiedades ---------------- */
-const agentPropertyFilterSel = document.getElementById('agentPropertyFilter');
-const agentesConPropiedades = agents.filter(a => properties.some(p => p.agentId === a.id));
-agentPropertyFilterSel.innerHTML = '<option value="">Agente / Personal Shopper</option>' +
-  agentesConPropiedades.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-
-function applyAgentPropertyFilter(agentId) {
-  if (!agentId) { clearZoneFilter(); return; }
-  const ag = agents.find(a => a.id === Number(agentId));
-  const matches = properties.filter(p => p.agentId === Number(agentId));
-  renderCards(matches);
-  Object.values(leafletMaps).forEach(m => m.map && m.map.zoneControls && m.map.zoneControls.drawnItems.clearLayers());
-  Object.entries(leafletMaps).forEach(([, m]) => {
-    Object.entries(m.markersById || {}).forEach(([id, marker]) => {
-      marker.setOpacity(matches.some(p => p.id === Number(id)) ? 1 : 0.28);
-    });
-  });
-  zoneBanner.classList.remove('hidden');
-  zoneBanner.querySelector('span').textContent = `${matches.length} propiedad${matches.length === 1 ? '' : 'es'} de ${ag ? ag.name : 'este agente'}`;
-}
-agentPropertyFilterSel.addEventListener('change', (e) => applyAgentPropertyFilter(e.target.value));
 
 /* ---------------- Sincronía tarjeta ↔ pin ---------------- */
 function setActive(id) {
@@ -1859,8 +1837,16 @@ document.addEventListener('click', (e) => {
 
 /* ---------------- Mapa mobile overlay ---------------- */
 const mapOverlay = document.getElementById('mapOverlay');
-function openMobileMap() { mapOverlay.classList.remove('hidden-map'); setTimeout(() => leafletMaps.mobile && leafletMaps.mobile.invalidateSize(), 50); }
-document.getElementById('closeMap').addEventListener('click', () => mapOverlay.classList.add('hidden-map'));
+function openMobileMap() {
+  mapOverlay.classList.remove('hidden-map');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => leafletMaps.mobile && leafletMaps.mobile.map && leafletMaps.mobile.map.invalidateSize(), 50);
+}
+function closeMobileMap() {
+  mapOverlay.classList.add('hidden-map');
+  document.body.style.overflow = '';
+}
+document.getElementById('closeMap').addEventListener('click', closeMobileMap);
 
 /* ---------------- Modal de detalle (fotos, video, tour 360°, plano) ---------------- */
 const detailModal = document.getElementById('detailModal');
@@ -1914,7 +1900,7 @@ function closeDetail() {
 }
 document.getElementById('closeDetail').addEventListener('click', closeDetail);
 document.getElementById('detailBackdrop').addEventListener('click', closeDetail);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); closeLoginModal(); if (/^#\/(agente|agentes|ieduca|curso)/.test(location.hash)) location.hash = ''; closeFavoritesPanel(); } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); closeLoginModal(); closeMobileMap(); if (/^#\/(agente|agentes|ieduca|curso)/.test(location.hash)) location.hash = ''; closeFavoritesPanel(); } });
 
 document.getElementById('mediaTabs').addEventListener('click', (e) => {
   const tab = e.target.closest('.media-tab');
