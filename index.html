@@ -99,9 +99,13 @@
   .app-tab.is-active { color: #16A34A; }
 
   /* ---- Etiquetas de posicionamiento de publicaciones ---- */
-  .positioning-tag { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; padding:4px 10px; border-radius:999px; letter-spacing:.01em; }
-  .positioning-premium { background:#D9A441; color:#111111; box-shadow:0 2px 6px rgba(217,164,65,.5); }
-  .positioning-medio { background:#111111; color:#fff; }
+  .positioning-tag { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800; padding:5px 11px; border-radius:999px; letter-spacing:.02em; text-transform:uppercase; }
+  .positioning-premium { background:#D9A441; color:#111111; box-shadow:0 3px 10px rgba(217,164,65,.65); }
+  .positioning-medio { background:#111111; color:#fff; box-shadow:0 3px 10px rgba(0,0,0,.35); }
+
+  /* ---- Bloqueo de contenido premium (Inversiones) ---- */
+  .invest-locked { filter: blur(5px); user-select: none; pointer-events: none; }
+  .invest-lock-overlay { position:absolute; inset:0; background:linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.97) 65%); display:flex; align-items:flex-end; justify-content:center; padding-bottom:16px; }
   .dir-specialty-btn.is-active { background: #111111 !important; color: #fff !important; border-color: transparent !important; }
   .course-cat-btn.is-active { background: #111111 !important; color: #fff !important; border-color: transparent !important; }
 
@@ -146,7 +150,7 @@
 
   /* ---- Modal de detalle ---- */
   #detailModal, #compareModal { transition: opacity .2s ease, visibility .2s ease; }
-  #detailModal.hidden-modal, #compareModal.hidden-modal, #favoritesModal.hidden-modal, #loginModal.hidden-modal { opacity: 0; visibility: hidden; pointer-events: none; }
+  #detailModal.hidden-modal, #compareModal.hidden-modal, #favoritesModal.hidden-modal, #loginModal.hidden-modal, #leadModal.hidden-modal { opacity: 0; visibility: hidden; pointer-events: none; }
   .media-tab.is-active { background: #111111; color: #fff; }
   .media-pane { display: none; }
   .media-pane.is-active { display: block; }
@@ -205,6 +209,7 @@
       <a href="#" class="hover:text-brand-600 transition-colors">Alquilar</a>
       <a href="#" class="hover:text-brand-600 transition-colors">Desarrollos</a>
       <a href="#/agentes" class="hover:text-brand-600 transition-colors">Agentes y Personal Shoppers Inmobiliarios</a>
+      <a href="#/inversiones" class="hover:text-brand-600 transition-colors">Inversiones</a>
       <a href="#" class="hover:text-brand-600 transition-colors">Tasar con IA</a>
       <a href="#/ieduca" class="flex items-center gap-1.5 text-[#7C3AED] font-semibold hover:text-[#6D28D9] transition-colors"><i class="fa-solid fa-graduation-cap"></i> iEduca</a>
     </div>
@@ -227,6 +232,7 @@
       <a href="#" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Alquilar</a>
       <a href="#" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Desarrollos</a>
       <a href="#/agentes" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Agentes y Personal Shoppers Inmobiliarios</a>
+      <a href="#/inversiones" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Inversiones</a>
       <a href="#" class="py-3 px-2 rounded-lg hover:bg-paper hover:text-brand-600 transition-colors">Tasar con IA</a>
       <a href="#/ieduca" class="py-3 px-2 rounded-lg hover:bg-paper flex items-center gap-2 text-[#7C3AED] font-semibold"><i class="fa-solid fa-graduation-cap"></i> iEduca</a>
     </div>
@@ -269,6 +275,13 @@
     <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Ambientes <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
     <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Tipo de propiedad <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
     <button class="btn shrink-0 flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors"><i class="fa-solid fa-sliders text-xs"></i> Más filtros</button>
+    <select class="currency-selector btn shrink-0 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors px-4 bg-white text-ink-800" title="Moneda de visualización">
+      <option value="USD">Ver en USD</option>
+      <option value="ARS">Ver en AR$ (Argentina)</option>
+      <option value="CLP">Ver en CLP$ (Chile)</option>
+      <option value="UYU">Ver en $U (Uruguay)</option>
+      <option value="MXN">Ver en MX$ (México)</option>
+    </select>
     <span class="flex-1"></span>
     <span class="hidden sm:inline text-sm text-ink-700 font-data shrink-0">126 propiedades</span>
     <button class="btn shrink-0 hidden sm:flex items-center gap-1.5 px-4 rounded-full text-sm font-semibold border border-black/[0.12] hover:border-ink-900 transition-colors">Relevancia <i class="fa-solid fa-chevron-down text-[10px] text-ink-700"></i></button>
@@ -421,6 +434,43 @@
   </div>
 </section>
 
+<!-- SUSCRIPCIÓN A NOVEDADES (para usuarios comunes, no agentes) -->
+<section class="bg-white py-12 sm:py-14 px-4 sm:px-6 border-t border-black/[0.06]">
+  <div class="max-w-3xl mx-auto text-center">
+    <h2 class="font-display font-medium text-2xl sm:text-3xl mb-2">Recibí novedades a tu medida</h2>
+    <p class="text-ink-700 text-sm mb-8">Contanos qué te interesa y te avisamos por mail cuando aparezca algo que coincida — nada de spam genérico.</p>
+    <form id="newsletterForm" class="bg-paper rounded-2.5xl p-6 sm:p-8 text-left">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+        <input id="newsletterName" type="text" required placeholder="Nombre y apellido" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:border-brand-600">
+        <input id="newsletterEmail" type="email" required placeholder="Email" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:border-brand-600">
+      </div>
+      <p class="text-xs font-semibold text-ink-800 mb-3">¿Qué te gustaría recibir?</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-6">
+        <label class="flex items-center gap-2 text-sm bg-white border border-black/[0.1] rounded-xl px-3 py-2.5 cursor-pointer hover:border-brand-600 transition-colors">
+          <input type="checkbox" name="interest" value="Loteos en cuotas" class="accent-brand-600"> Loteos en cuotas
+        </label>
+        <label class="flex items-center gap-2 text-sm bg-white border border-black/[0.1] rounded-xl px-3 py-2.5 cursor-pointer hover:border-brand-600 transition-colors">
+          <input type="checkbox" name="interest" value="Departamentos" class="accent-brand-600"> Departamentos
+        </label>
+        <label class="flex items-center gap-2 text-sm bg-white border border-black/[0.1] rounded-xl px-3 py-2.5 cursor-pointer hover:border-brand-600 transition-colors">
+          <input type="checkbox" name="interest" value="Casas" class="accent-brand-600"> Casas
+        </label>
+        <label class="flex items-center gap-2 text-sm bg-white border border-black/[0.1] rounded-xl px-3 py-2.5 cursor-pointer hover:border-brand-600 transition-colors">
+          <input type="checkbox" name="interest" value="Terrenos y quintas" class="accent-brand-600"> Terrenos y quintas
+        </label>
+        <label class="flex items-center gap-2 text-sm bg-white border border-black/[0.1] rounded-xl px-3 py-2.5 cursor-pointer hover:border-brand-600 transition-colors">
+          <input type="checkbox" name="interest" value="Alquileres" class="accent-brand-600"> Alquileres
+        </label>
+        <label class="flex items-center gap-2 text-sm bg-white border border-black/[0.1] rounded-xl px-3 py-2.5 cursor-pointer hover:border-brand-600 transition-colors">
+          <input type="checkbox" name="interest" value="Inversiones" class="accent-brand-600"> Inversiones
+        </label>
+      </div>
+      <button type="submit" class="btn w-full sm:w-auto bg-ink-900 hover:bg-ink-800 text-white px-8 rounded-full text-sm font-semibold">Quiero recibir novedades</button>
+      <p id="newsletterConfirm" class="hidden text-sm text-brand-700 font-medium mt-3"><i class="fa-solid fa-circle-check mr-1.5"></i>¡Listo! Te vamos a avisar cuando aparezca algo para vos.</p>
+    </form>
+  </div>
+</section>
+
 <!-- AGENTES / PERSONAL SHOPPERS MEJOR RANKEADOS -->
 <section id="agentsSection" class="bg-white py-12 sm:py-14 px-4 sm:px-6 border-t border-black/[0.06]">
   <div class="max-w-7xl mx-auto">
@@ -545,6 +595,36 @@
   <div id="courseBody" class="max-w-4xl mx-auto px-4 sm:px-6 pb-24"></div>
 </div>
 
+<!-- SUBPÁGINA: Inversiones (contenido libre + Inversiones Premium bajo suscripción) -->
+<div id="investPage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
+  <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
+    <button id="investBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
+    <span class="text-sm text-ink-700 font-data">Inversiones</span>
+    <span id="investStatusPill" class="ml-auto hidden items-center gap-1.5 text-xs font-semibold text-[#B45309] bg-[#FEF3C7] rounded-full px-3 py-1.5"><i class="fa-solid fa-crown"></i> Inversiones Premium activo</span>
+  </div>
+
+  <div class="bg-ink-900 text-white px-4 sm:px-6 py-10 sm:py-14">
+    <div class="max-w-7xl mx-auto">
+      <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#D9A441] text-ink-900 rounded-full px-3 py-1.5 mb-4"><i class="fa-solid fa-chart-line"></i> Oportunidades de inversión</span>
+      <h1 class="font-display font-medium text-3xl sm:text-4xl mb-3">Inversiones inmobiliarias</h1>
+      <p class="text-ink-300 max-w-xl">Fideicomisos, loteos y rentas con datos reales de rentabilidad. Las oportunidades básicas son de acceso libre — las marcadas <span class="text-[#D9A441] font-semibold">Premium</span> requieren una cuenta con suscripción activa.</p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24">
+    <div id="investmentsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </div>
+</div>
+
+<!-- SUBPÁGINA: detalle de una inversión -->
+<div id="investDetailPage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
+  <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
+    <button id="investDetailBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
+    <span class="text-sm text-ink-700 font-data">Inversiones / <span id="investDetailBreadcrumb" class="text-ink-900 font-semibold"></span></span>
+  </div>
+  <div id="investDetailBody" class="max-w-3xl mx-auto px-4 sm:px-6 pb-24"></div>
+</div>
+
 <!-- MODAL DE LOGIN (necesario para comprar un curso) -->
 <div id="loginModal" class="hidden-modal fixed inset-0 z-[95]">
   <div class="absolute inset-0 bg-ink-900/70"></div>
@@ -580,9 +660,14 @@
         <h1 class="font-display font-medium text-2xl sm:text-3xl mb-1">Hola, <span id="statsUserName">—</span> 👋</h1>
         <p class="text-ink-700 text-sm">Estadísticas de tus publicaciones — vistas, contactos por WhatsApp y auditoría completa</p>
       </div>
-      <button id="downloadAuditBtn" class="btn bg-ink-900 hover:bg-ink-800 text-white px-5 rounded-full text-sm font-semibold flex items-center gap-2">
-        <i class="fa-solid fa-file-arrow-down"></i> Descargar informe de auditoría (CSV)
-      </button>
+      <div class="flex flex-wrap gap-2">
+        <button id="downloadAuditBtn" class="btn bg-ink-900 hover:bg-ink-800 text-white px-5 rounded-full text-sm font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-file-arrow-down"></i> Informe de auditoría (CSV)
+        </button>
+        <button id="downloadNewsletterBtn" class="btn bg-white border border-black/[0.12] hover:border-ink-900 text-ink-900 px-5 rounded-full text-sm font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-envelope-open-text"></i> Suscriptores (CSV)
+        </button>
+      </div>
     </div>
 
     <!-- Resumen -->
@@ -611,6 +696,15 @@
       <div id="statsByProperty" class="space-y-3"></div>
     </div>
 
+    <!-- Leads: personas identificadas y qué tan interesadas están -->
+    <div class="mb-10">
+      <div class="flex items-center justify-between mb-1">
+        <h2 class="font-display font-medium text-lg">Leads — personas interesadas</h2>
+      </div>
+      <p class="text-xs text-ink-700 mb-4">Solo se identifica a quienes iniciaron sesión en algún momento durante la navegación. Tocá un lead para ver el detalle y contactarlo.</p>
+      <div id="leadsList" class="space-y-2"></div>
+    </div>
+
     <!-- Auditoría -->
     <div>
       <div class="flex items-center justify-between mb-4">
@@ -632,6 +726,17 @@
           </table>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE DETALLE DE LEAD -->
+<div id="leadModal" class="hidden-modal fixed inset-0 z-[95]">
+  <div class="absolute inset-0 bg-ink-900/70"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2.5xl w-full max-w-md max-h-[88vh] overflow-y-auto relative shadow-2xl p-6">
+      <button id="closeLeadModal" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-paper flex items-center justify-center text-ink-900 hover:bg-black/5"><i class="fa-solid fa-xmark"></i></button>
+      <div id="leadModalBody"></div>
     </div>
   </div>
 </div>
@@ -794,6 +899,40 @@ const courses = [
     temario:['Vocabulario técnico inmobiliario en inglés','Frases para atender la primera consulta','Guiando una visita en inglés','Negociación básica en inglés','Simulacros de conversación real'] },
 ];
 
+/* ---------------- Inversiones inmobiliarias — libres y Premium (bajo suscripción) ---------------- */
+const investments = [
+  { id:1, title:'Fideicomiso Confluencia Norte', category:'Residencial', premium:false, minInvestment:'USD 5.000', yieldRange:'12% – 15% anual', term:'24 meses', risk:'Medio',
+    icon:'fa-building', color:'#16A34A',
+    shortDesc:'Fideicomiso al costo para la construcción de un edificio de 24 unidades en Bardas Soleadas.',
+    longDesc:'Fideicomiso al costo para la construcción de un edificio de departamentos de 24 unidades en Bardas Soleadas, Neuquén. El desarrollador ya tiene el terreno escriturado y los planos aprobados por catastro municipal. Los aportantes reciben unidades a precio de pozo o la devolución en efectivo con la rentabilidad pactada al finalizar la obra.',
+    breakdown:'62% del aporte se destina a materiales y mano de obra, 18% a honorarios profesionales y dirección de obra, 12% a gastos administrativos e impuestos, 8% a la comisión de estructuración del fideicomiso.' },
+  { id:2, title:'Loteo Ruta 7 — Etapa 2', category:'Terrenos', premium:false, minInvestment:'USD 3.000', yieldRange:'18% – 22% anual', term:'18 meses', risk:'Medio-alto',
+    icon:'fa-draw-polygon', color:'#0D9488',
+    shortDesc:'Compra y subdivisión de un campo sobre Ruta 7 para lotear en 40 parcelas con servicios.',
+    longDesc:'El desarrollo consiste en la compra de un campo lindante a la Ruta 7, su subdivisión en 40 parcelas de entre 400 y 600 m², y la instalación de servicios básicos (luz, agua, gas). La etapa 1 ya vendió el 70% de sus lotes; esta segunda etapa repite el modelo sobre el sector lindante.',
+    breakdown:'55% del aporte a la compra del campo, 30% a mensura, subdivisión e instalación de servicios, 15% a comisión de venta de los lotes ya terminados.' },
+  { id:3, title:'Renta de cocheras — Edificio Centro', category:'Comercial', premium:false, minInvestment:'USD 8.000', yieldRange:'8% – 10% anual', term:'Renta continua', risk:'Bajo',
+    icon:'fa-square-parking', color:'#4B5563',
+    shortDesc:'Pool de cocheras en un edificio del Área Centro, alquiladas mes a mes a inquilinos fijos.',
+    longDesc:'Compra de un lote de 6 cocheras cubiertas en un edificio del Área Centro de Neuquén Capital, con administración incluida. Las cocheras ya están alquiladas a inquilinos estables desde hace más de 2 años, lo que reduce el riesgo de vacancia frente a otras inversiones inmobiliarias.',
+    breakdown:'Renta neta mensual repartida proporcionalmente entre los aportantes, descontando el 8% de administración del edificio y el fondo de reserva para mantenimiento.' },
+  { id:4, title:'Desarrollo Boutique Terrazas del Neuquén', category:'Residencial premium', premium:true, minInvestment:'USD 15.000', yieldRange:'20% – 26% anual', term:'20 meses', risk:'Medio',
+    icon:'fa-gem', color:'#D9A441',
+    shortDesc:'Edificio boutique de 8 unidades con vista al Río Neuquén, financiado exclusivamente por un grupo cerrado de inversores.',
+    longDesc:'Desarrollo boutique de 8 unidades de alta gama en Terrazas del Neuquén, con vista directa al Río Neuquén. Es una oportunidad off-market: no se publicita al público general y el cupo de inversores está limitado para mantener la rentabilidad por aportante.',
+    breakdown:'Detalle financiero completo, cronograma de obra mes a mes y track record del desarrollador disponibles solo para inversores Premium.' },
+  { id:5, title:'Renta comercial Paseo Confluencia', category:'Comercial', premium:true, minInvestment:'USD 25.000', yieldRange:'14% – 17% anual', term:'Renta continua', risk:'Bajo-medio',
+    icon:'fa-store', color:'#D9A441',
+    shortDesc:'Local a estrenar en un paseo comercial con contrato de alquiler ya firmado antes de la entrega.',
+    longDesc:'Local comercial a estrenar de 85 m² en un paseo comercial de Confluencia Urbana, con contrato de alquiler a 5 años ya firmado con una cadena nacional antes siquiera de la entrega de llaves — lo que elimina el riesgo de vacancia inicial.',
+    breakdown:'Condiciones exactas del contrato de alquiler, cláusulas de ajuste y datos del inquilino disponibles solo para inversores Premium.' },
+  { id:6, title:'Pool de renta corta gestionada', category:'Renta corta', premium:true, minInvestment:'USD 10.000', yieldRange:'16% – 24% anual', term:'Renta continua', risk:'Medio-alto',
+    icon:'fa-key', color:'#D9A441',
+    shortDesc:'Grupo de 5 departamentos gestionados para alquiler temporario (Airbnb) por un operador profesional.',
+    longDesc:'Pool de 5 departamentos en Neuquén Capital, comprados y gestionados en conjunto para alquiler temporario. Un operador profesional se encarga de la limpieza, check-in/check-out y atención a huéspedes; los aportantes reciben la renta neta mensual proporcional.',
+    breakdown:'Ocupación histórica mes a mes, tarifa promedio por noche y estructura de comisión del operador disponibles solo para inversores Premium.' },
+];
+
 const MES_CORTO = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 function fmtFecha(iso) {
   const [y, m] = iso.split('-');
@@ -931,40 +1070,74 @@ const PET_IMG = {
 };
 
 /* ---------------- Datos de propiedades ---------------- */
+/* ---------------- Monedas por país (el portal está pensado para operar en más de un país) ---------------- */
+// Tasas ilustrativas / referenciales — en producción esto vendría de una API de cotización actualizada, no hardcodeado.
+const CURRENCY_CONFIG = {
+  ARS: { label: 'Pesos argentinos', symbol: 'AR$', rate: 1000, country: 'Argentina' },
+  CLP: { label: 'Pesos chilenos', symbol: 'CLP$', rate: 950, country: 'Chile' },
+  UYU: { label: 'Pesos uruguayos', symbol: '$U', rate: 41, country: 'Uruguay' },
+  MXN: { label: 'Pesos mexicanos', symbol: 'MX$', rate: 18, country: 'México' },
+};
+const LS_CURRENCY_KEY = 'iportal_display_currency';
+let displayCurrency = localStorage.getItem(LS_CURRENCY_KEY) || 'USD'; // 'USD' o una clave de CURRENCY_CONFIG
+
+function formatPrice(usdAmount, short) {
+  if (displayCurrency === 'USD' || !CURRENCY_CONFIG[displayCurrency]) {
+    return short ? `USD ${Math.round(usdAmount / 1000)}K` : `USD ${usdAmount.toLocaleString('es-AR')}`;
+  }
+  const cfg = CURRENCY_CONFIG[displayCurrency];
+  const converted = Math.round(usdAmount * cfg.rate);
+  if (short) {
+    return converted >= 1000000 ? `${cfg.symbol} ${(converted / 1000000).toFixed(1)}M` : `${cfg.symbol} ${Math.round(converted / 1000)}K`;
+  }
+  return `${cfg.symbol} ${converted.toLocaleString('es-AR')} (≈USD ${usdAmount.toLocaleString('es-AR')})`;
+}
+function setDisplayCurrency(code) {
+  displayCurrency = code;
+  try { localStorage.setItem(LS_CURRENCY_KEY, code); } catch (err) {}
+  renderCards(lastRenderedProperties);
+  refreshMapPinLabels();
+  document.querySelectorAll('.currency-selector').forEach(sel => { sel.value = code; });
+}
+document.querySelectorAll('.currency-selector').forEach(sel => {
+  sel.value = displayCurrency;
+  sel.addEventListener('change', (e) => setDisplayCurrency(e.target.value));
+});
+
 const properties = [
-  { id:1, title:'Casa moderna con piscina', price:'USD 185.000', priceShort:'USD 185K', loc:'Bardas Soleadas, Neuquén', badge:'ACM Calificado', badgeColor:'ink', type:'house', agentId:1, positioning:'premium', specs:[['fa-bed','3 dorms'],['fa-bath','2 baños'],['fa-ruler-combined','210 m²']],
+  { id:1, title:'Casa moderna con piscina', priceUSD:185000, price:'USD 185.000', priceShort:'USD 185K', loc:'Bardas Soleadas, Neuquén', badge:'ACM Calificado', badgeColor:'ink', type:'house', agentId:1, positioning:'premium', specs:[['fa-bed','3 dorms'],['fa-bath','2 baños'],['fa-ruler-combined','210 m²']],
     photos:['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9298, lng:-68.0745,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/NjV1w?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'Casa de dos plantas con piscina y parquización completa, en una de las zonas más buscadas de la ciudad. Living-comedor integrado, cocina con isla y dormitorio en suite.' },
-  { id:2, title:'Departamento 2 ambientes centro', price:'USD 75.000', priceShort:'USD 75K', loc:'Área Centro, Neuquén Capital', badge:'Oportunidad', badgeColor:'brand', type:'apt', agentId:3, positioning:'medio', specs:[['fa-bed','1 dorm'],['fa-bath','1 baño'],['fa-ruler-combined','52 m²']],
+  { id:2, title:'Departamento 2 ambientes centro', priceUSD:75000, price:'USD 75.000', priceShort:'USD 75K', loc:'Área Centro, Neuquén Capital', badge:'Oportunidad', badgeColor:'brand', type:'apt', agentId:3, positioning:'medio', specs:[['fa-bed','1 dorm'],['fa-bath','1 baño'],['fa-ruler-combined','52 m²']],
     photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9522, lng:-68.0591,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/5GssB?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'A metros de la peatonal, ideal para renta o primera vivienda. Balcón, cocina separada y excelente iluminación natural todo el día.',
     pets:['dog','cat'] },
-  { id:3, title:'Casa con vista al río', price:'USD 210.000', priceShort:'USD 210K', loc:'Terrazas del Neuquén', badge:'Vista premium', badgeColor:'ink', type:'house', agentId:1, positioning:'premium', specs:[['fa-bed','4 dorms'],['fa-bath','3 baños'],['fa-ruler-combined','320 m²']],
+  { id:3, title:'Casa con vista al río', priceUSD:210000, price:'USD 210.000', priceShort:'USD 210K', loc:'Terrazas del Neuquén', badge:'Vista premium', badgeColor:'ink', type:'house', agentId:1, positioning:'premium', specs:[['fa-bed','4 dorms'],['fa-bath','3 baños'],['fa-ruler-combined','320 m²']],
     photos:['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9245, lng:-68.0958,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/h5Hpv?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'En la meseta alta, con vista abierta al Río Neuquén. Living con ventanales de piso a techo, quincho cubierto y cochera para 2 autos.' },
-  { id:4, title:'Departamento a estrenar frente a la plaza', price:'USD 98.000', priceShort:'USD 98K', loc:'Confluencia Urbana, Neuquén', badge:'A estrenar', badgeColor:'brand', type:'apt', agentId:2, positioning:'medio', specs:[['fa-bed','2 dorms'],['fa-bath','1 baño'],['fa-ruler-combined','64 m²']],
+  { id:4, title:'Departamento a estrenar frente a la plaza', priceUSD:98000, price:'USD 98.000', priceShort:'USD 98K', loc:'Confluencia Urbana, Neuquén', badge:'A estrenar', badgeColor:'brand', type:'apt', agentId:2, positioning:'medio', specs:[['fa-bed','2 dorms'],['fa-bath','1 baño'],['fa-ruler-combined','64 m²']],
     photos:['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9581, lng:-68.0552,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/5GssB?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'Estrenar sin sorpresas: terminaciones a nuevo, amenities de edificio y frente a plaza arbolada. Apto crédito hipotecario.',
     pets:['dog'] },
-  { id:5, title:'Terreno con proyecto aprobado', price:'USD 42.000', priceShort:'USD 42K', loc:'Confluencia Rural, Neuquén', badge:'Apto crédito', badgeColor:'ink', type:'land', agentId:4, positioning:'basico', specs:[['fa-draw-polygon','Lote 600 m²'],['fa-file-signature','Escritura lista'],['fa-road','Sobre ruta']],
+  { id:5, title:'Terreno con proyecto aprobado', priceUSD:42000, price:'USD 42.000', priceShort:'USD 42K', loc:'Confluencia Rural, Neuquén', badge:'Apto crédito', badgeColor:'ink', type:'land', agentId:4, positioning:'basico', specs:[['fa-draw-polygon','Lote 600 m²'],['fa-file-signature','Escritura lista'],['fa-road','Sobre ruta']],
     photos:['https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9812, lng:-68.0198,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:null,
     desc:'Lote plano, esquina, con todos los servicios en la vereda y proyecto de vivienda ya aprobado por catastro municipal.' },
-  { id:6, title:'Casa quinta con parque', price:'USD 265.000', priceShort:'USD 265K', loc:'Valentina Sur Rural, Neuquén', badge:'Exclusiva', badgeColor:'ink', type:'house', agentId:4, positioning:'basico', specs:[['fa-bed','5 dorms'],['fa-bath','4 baños'],['fa-ruler-combined','540 m²']],
+  { id:6, title:'Casa quinta con parque', priceUSD:265000, price:'USD 265.000', priceShort:'USD 265K', loc:'Valentina Sur Rural, Neuquén', badge:'Exclusiva', badgeColor:'ink', type:'house', agentId:4, positioning:'basico', specs:[['fa-bed','5 dorms'],['fa-bath','4 baños'],['fa-ruler-combined','540 m²']],
     photos:['https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9765, lng:-68.0865,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
@@ -1010,15 +1183,16 @@ function positioningTag(p) {
 }
 
 function cardTemplate(p) {
-  const posClass = p.positioning === 'premium' ? 'ring-2 ring-[#D9A441] border-transparent'
-    : p.positioning === 'medio' ? 'ring-1 ring-ink-900/30 border-transparent'
+  const posClass = p.positioning === 'premium' ? 'ring-2 ring-[#D9A441] border-transparent shadow-[0_14px_36px_-10px_rgba(217,164,65,0.65)] hover:shadow-[0_18px_42px_-8px_rgba(217,164,65,0.75)]'
+    : p.positioning === 'medio' ? 'ring-1 ring-ink-900/30 border-transparent shadow-sm'
     : 'border border-black/[0.08]';
   return `
-  <article class="property-card relative bg-white rounded-2.5xl overflow-hidden flex flex-col ${posClass}" data-id="${p.id}" tabindex="0">
+  <article class="property-card relative bg-white rounded-2.5xl overflow-hidden flex flex-col transition-shadow duration-300 ${posClass}" data-id="${p.id}" tabindex="0">
     <div class="property-photo open-detail relative h-52 bg-ink-700 overflow-hidden cursor-pointer" data-id="${p.id}">
       <img src="${p.photos[0]}" data-idx="0" alt="${p.title}" loading="lazy" class="w-full h-full object-cover">
+      <div class="absolute top-0 inset-x-0 h-20 bg-gradient-to-b from-black/55 to-transparent pointer-events-none"></div>
       <div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
-        <span class="${badgeClasses(p.badgeColor)} text-white text-xs font-semibold px-3 py-1.5 rounded-full">${p.badge}</span>
+        <span class="${badgeClasses(p.badgeColor)} text-white text-xs font-bold tracking-wide px-3 py-1.5 rounded-full shadow-md">${p.badge}</span>
         ${positioningTag(p)}
       </div>
       <div class="absolute top-3 right-3 flex gap-2">
@@ -1044,7 +1218,7 @@ function cardTemplate(p) {
         <div class="flex items-start justify-between gap-2">
           <h3 class="open-detail cursor-pointer font-display font-medium text-lg text-ink-900 leading-snug hover:text-brand-600 transition-colors" data-id="${p.id}">${p.title}</h3>
         </div>
-        <p class="text-brand-600 font-semibold text-lg font-data mt-1">${p.price}</p>
+        <p class="text-brand-600 font-semibold text-lg font-data mt-1">${formatPrice(p.priceUSD)}</p>
         <p class="text-ink-700 text-sm mt-1"><i class="fa-solid fa-location-dot mr-1.5 text-xs"></i>${p.loc}</p>
         <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-ink-800 mt-3">
           ${p.specs.map(s=>`<span><i class="fa-solid ${s[0]} mr-1.5 text-ink-700/60"></i>${s[1]}</span>`).join('')}
@@ -1063,7 +1237,9 @@ function cardTemplate(p) {
   </article>`;
 }
 
+let lastRenderedProperties = properties;
 function renderCards(list) {
+  lastRenderedProperties = list;
   const sorted = sortByPositioning(list);
   grid.innerHTML = sorted.length
     ? sorted.map(cardTemplate).join('')
@@ -1394,11 +1570,14 @@ function hideAgentsDirectory() {
 function syncAgentRoute() {
   const mProfile = location.hash.match(/^#\/agente\/(\d+)$/);
   const mCourse = location.hash.match(/^#\/curso\/(\d+)$/);
+  const mInvest = location.hash.match(/^#\/inversion\/(\d+)$/);
   hideAgentProfile();
   hideAgentsDirectory();
   hideIeducaPage();
   hideCoursePage();
   hideStatsPage();
+  hideInvestPage();
+  hideInvestDetail();
   document.body.style.overflow = '';
 
   if (mProfile) {
@@ -1412,6 +1591,10 @@ function syncAgentRoute() {
   } else if (location.hash === '#/estadisticas') {
     if (!loggedIn) { location.hash = ''; return; } // ruta protegida: sin sesión, vuelve al home
     showStatsPage();
+  } else if (location.hash === '#/inversiones') {
+    showInvestPage();
+  } else if (mInvest) {
+    showInvestDetail(Number(mInvest[1]));
   }
 }
 function openAgent(id, returnTo) {
@@ -1544,6 +1727,123 @@ function hideCoursePage() { coursePage.classList.add('hidden'); }
 document.getElementById('ieducaBack').addEventListener('click', () => { location.hash = ''; });
 document.getElementById('courseBack').addEventListener('click', () => { location.hash = '#/ieduca'; });
 
+/* ---------------- Inversiones: catálogo libre + Premium bajo suscripción ---------------- */
+function investCardTemplate(inv) {
+  const locked = inv.premium && !(currentUser && currentUser.premiumInvestor);
+  return `
+  <div class="investment-card relative bg-white border ${inv.premium ? 'border-[#D9A441]' : 'border-black/[0.08]'} rounded-2.5xl overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" data-invest-id="${inv.id}">
+    <div class="h-32 flex items-center justify-center text-white text-3xl relative" style="background:linear-gradient(135deg, ${inv.color}, #111111)">
+      <i class="fa-solid ${inv.icon}"></i>
+      <span class="absolute top-3 left-3 text-[10px] font-semibold bg-white/90 text-ink-900 rounded-full px-2.5 py-1">${inv.category}</span>
+      ${inv.premium ? '<span class="absolute top-3 right-3 text-[10px] font-bold bg-[#D9A441] text-ink-900 rounded-full px-2.5 py-1 flex items-center gap-1"><i class="fa-solid fa-crown"></i>Premium</span>' : ''}
+    </div>
+    <div class="p-4">
+      <h3 class="font-display font-medium text-base mb-1 leading-snug">${inv.title}</h3>
+      <p class="text-xs text-ink-700 mb-3 line-clamp-2">${inv.shortDesc}</p>
+      <div class="grid grid-cols-2 gap-2 text-xs text-ink-700 mb-3">
+        <div><i class="fa-solid fa-sack-dollar mr-1 text-ink-300"></i>Desde ${inv.minInvestment}</div>
+        <div><i class="fa-solid fa-clock mr-1 text-ink-300"></i>${inv.term}</div>
+      </div>
+      <div class="flex items-center justify-between pt-3 border-t border-black/[0.06]">
+        <span class="font-display font-semibold ${locked ? 'blur-sm select-none' : 'text-brand-600'}">${inv.yieldRange}</span>
+        <span class="text-xs ${inv.premium ? 'text-[#B45309]' : 'text-brand-600'} font-semibold">${locked ? '<i class=\"fa-solid fa-lock mr-1\"></i>Desbloquear' : 'Ver detalle →'}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+const investmentsGrid = document.getElementById('investmentsGrid');
+function renderInvestments() {
+  investmentsGrid.innerHTML = investments.map(investCardTemplate).join('');
+}
+investmentsGrid.addEventListener('click', (e) => {
+  const card = e.target.closest('.investment-card');
+  if (card) location.hash = '#/inversion/' + card.dataset.investId;
+});
+
+function unlockPremiumInvestments() {
+  currentUser.premiumInvestor = true;
+  saveCurrentUser(currentUser);
+  document.getElementById('investStatusPill').classList.remove('hidden');
+  document.getElementById('investStatusPill').classList.add('flex');
+  renderInvestments();
+  if (currentInvestDetailId) showInvestDetail(currentInvestDetailId);
+  alert('¡Listo! Activaste Inversiones Premium.\n\nEste es un prototipo: en la versión real acá se procesaría un pago (único o suscripción) antes de desbloquear el contenido.');
+}
+
+let currentInvestDetailId = null;
+function buildInvestDetailHTML(inv) {
+  const locked = inv.premium && !(currentUser && currentUser.premiumInvestor);
+  return `
+    <div class="h-40 sm:h-52 -mx-4 sm:-mx-6 flex items-center justify-center text-white text-5xl rounded-b-3xl relative" style="background:linear-gradient(135deg, ${inv.color}, #111111)">
+      <i class="fa-solid ${inv.icon}"></i>
+      ${inv.premium ? '<span class="absolute top-4 right-4 text-xs font-bold bg-[#D9A441] text-ink-900 rounded-full px-3 py-1.5 flex items-center gap-1.5"><i class="fa-solid fa-crown"></i>Inversión Premium</span>' : ''}
+    </div>
+    <div class="pt-6">
+      <span class="inline-block text-xs font-semibold bg-paper text-ink-800 rounded-full px-3 py-1 mb-3">${inv.category}</span>
+      <h1 class="font-display font-medium text-2xl sm:text-3xl mb-4">${inv.title}</h1>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div class="bg-paper rounded-xl p-4 text-center"><div class="font-display font-semibold text-base">${inv.minInvestment}</div><div class="text-[11px] text-ink-700 mt-0.5">Aporte mínimo</div></div>
+        <div class="bg-paper rounded-xl p-4 text-center relative ${locked ? 'overflow-hidden' : ''}">
+          <div class="${locked ? 'invest-locked' : ''} font-display font-semibold text-base">${inv.yieldRange}</div>
+          <div class="text-[11px] text-ink-700 mt-0.5">Rentabilidad estimada</div>
+        </div>
+        <div class="bg-paper rounded-xl p-4 text-center"><div class="font-display font-semibold text-base">${inv.term}</div><div class="text-[11px] text-ink-700 mt-0.5">Plazo</div></div>
+        <div class="bg-paper rounded-xl p-4 text-center"><div class="font-display font-semibold text-base">${inv.risk}</div><div class="text-[11px] text-ink-700 mt-0.5">Riesgo</div></div>
+      </div>
+
+      <div class="mb-6">
+        <h2 class="font-display font-medium text-lg mb-2">Descripción</h2>
+        <p class="text-sm text-ink-700 leading-relaxed">${inv.longDesc}</p>
+      </div>
+
+      <div class="mb-6 relative">
+        <h2 class="font-display font-medium text-lg mb-2">Detalle financiero</h2>
+        ${locked ? `
+        <div class="relative rounded-xl overflow-hidden border border-black/[0.08]">
+          <p class="invest-locked text-sm text-ink-700 leading-relaxed p-4">${inv.breakdown}</p>
+          <div class="invest-lock-overlay">
+            <div class="text-center px-4">
+              <i class="fa-solid fa-lock text-2xl text-[#D9A441] mb-2"></i>
+              <p class="text-sm font-semibold text-ink-900 mb-1">Contenido de Inversiones Premium</p>
+              <p class="text-xs text-ink-700 mb-3">Desbloqueá el detalle financiero completo, cronograma y datos del desarrollador.</p>
+              <button onclick="requireLogin(() => unlockPremiumInvestments(), 'invest')" class="btn bg-[#D9A441] hover:bg-[#c8973a] text-ink-900 rounded-full px-5 text-sm font-bold">
+                <i class="fa-solid fa-crown mr-1.5"></i>Desbloquear Inversiones Premium
+              </button>
+            </div>
+          </div>
+        </div>` : `<p class="text-sm text-ink-700 leading-relaxed">${inv.breakdown}</p>`}
+      </div>
+
+      <button onclick="abrirModalIA('la inversión ${inv.title.replace(/'/g, "\\'")}')" class="btn w-full bg-brand-600 hover:bg-brand-700 text-white rounded-full text-base font-semibold flex items-center justify-center gap-2">
+        <i class="fa-brands fa-whatsapp"></i> Consultar por esta inversión
+      </button>
+    </div>
+  `;
+}
+
+const investPage = document.getElementById('investPage');
+const investDetailPage = document.getElementById('investDetailPage');
+function showInvestPage() {
+  renderInvestments();
+  const pill = document.getElementById('investStatusPill');
+  if (currentUser && currentUser.premiumInvestor) { pill.classList.remove('hidden'); pill.classList.add('flex'); }
+  investPage.classList.remove('hidden'); investPage.scrollTop = 0; document.body.style.overflow = 'hidden';
+}
+function hideInvestPage() { investPage.classList.add('hidden'); }
+function showInvestDetail(id) {
+  const inv = investments.find(i => i.id === id);
+  if (!inv) return;
+  currentInvestDetailId = id;
+  document.getElementById('investDetailBody').innerHTML = buildInvestDetailHTML(inv);
+  document.getElementById('investDetailBreadcrumb').textContent = inv.title;
+  investDetailPage.classList.remove('hidden'); investDetailPage.scrollTop = 0; document.body.style.overflow = 'hidden';
+}
+function hideInvestDetail() { investDetailPage.classList.add('hidden'); currentInvestDetailId = null; }
+document.getElementById('investBack').addEventListener('click', () => { location.hash = ''; });
+document.getElementById('investDetailBack').addEventListener('click', () => { location.hash = '#/inversiones'; });
+
 /* ---------------- Login / sesión (persiste en localStorage para que el panel tenga sentido entre recargas) ---------------- */
 const LS_USER_KEY = 'iportal_current_user';
 const LS_EVENTS_KEY = 'iportal_analytics_events';
@@ -1566,6 +1866,9 @@ function requireLogin(action, context) {
   if (context === 'panel') {
     title.textContent = 'Iniciá sesión para ver tu panel';
     subtitle.textContent = 'El panel de estadísticas queda asociado a tu cuenta, para poder auditar quién contactó tus propiedades.';
+  } else if (context === 'invest') {
+    title.textContent = 'Iniciá sesión para desbloquear';
+    subtitle.textContent = 'Necesitás una cuenta de iPortal para activar Inversiones Premium y ver el detalle financiero completo.';
   } else {
     title.textContent = 'Iniciá sesión para comprar';
     subtitle.textContent = 'Necesitás una cuenta de iPortal para acceder a los cursos de iEduca y que queden guardados en tu perfil.';
@@ -1689,7 +1992,108 @@ function renderStatsPage() {
       <td class="px-4 py-2.5 text-xs text-ink-800">${e.propertyTitle}</td>
       <td class="px-4 py-2.5 text-xs text-ink-800">${e.userName || 'Visitante anónimo'}</td>
     </tr>`).join('');
+
+  renderLeadsList();
 }
+
+/* ---------------- Leads: agrupar actividad por usuario logueado y estimar interés ---------------- */
+function getLeads() {
+  const byUser = {};
+  analyticsEvents.forEach(e => {
+    if (!e.userName) return; // solo identificamos a quienes iniciaron sesión
+    const key = e.userEmail || e.userName;
+    if (!byUser[key]) byUser[key] = { key, name: e.userName, email: e.userEmail, events: [] };
+    byUser[key].events.push(e);
+  });
+  const now = Date.now();
+  const DOS_DIAS = 2 * 86400000;
+  return Object.values(byUser).map(u => {
+    const views = u.events.filter(e => e.type === 'view');
+    const contacts = u.events.filter(e => e.type === 'whatsapp_click');
+    const recentViews = views.filter(e => now - e.ts <= DOS_DIAS);
+    const properties24 = [...new Set(recentViews.map(e => e.propertyTitle))];
+    return {
+      ...u,
+      viewsTotal: views.length,
+      contactsTotal: contacts.length,
+      recentViewsCount: recentViews.length,
+      recentProperties: properties24,
+      lastTs: Math.max(...u.events.map(e => e.ts)),
+    };
+  }).sort((a, b) => b.lastTs - a.lastTs);
+}
+
+function leadInsight(lead) {
+  // Heurística simple sobre actividad reciente — no es un modelo predictivo real, es una guía de priorización.
+  if (lead.contactsTotal > 0 && lead.recentViewsCount >= 2) {
+    return { level: 'alta', label: 'Interés alto', text: `Ya contactó por WhatsApp y además siguió mirando propiedades (${lead.recentViewsCount} en los últimos 2 días). Es probable que esté por tomar una decisión — conviene contactarlo hoy.` };
+  }
+  if (lead.recentViewsCount >= 3) {
+    return { level: 'alta', label: 'Interés alto', text: `Buscó ${lead.recentViewsCount} propiedades distintas en los últimos 2 días. Es probable que esté evaluando activamente su compra — buen momento para escribirle.` };
+  }
+  if (lead.recentViewsCount >= 1 || lead.contactsTotal > 0) {
+    return { level: 'media', label: 'Interés medio', text: 'Mostró actividad reciente, pero todavía parece estar explorando opciones. Vale la pena hacerle seguimiento en los próximos días.' };
+  }
+  return { level: 'baja', label: 'Sin actividad reciente', text: 'No tiene vistas ni contactos en los últimos 2 días. Puede ser una consulta vieja ya resuelta.' };
+}
+
+function renderLeadsList() {
+  const leads = getLeads();
+  const list = document.getElementById('leadsList');
+  if (!leads.length) {
+    list.innerHTML = `<div class="text-center py-8 text-ink-700 text-sm border border-black/[0.08] rounded-xl">Todavía no hay usuarios identificados con actividad.</div>`;
+    return;
+  }
+  list.innerHTML = leads.map(l => {
+    const insight = leadInsight(l);
+    const dot = { alta: 'bg-brand-600', media: 'bg-[#D9A441]', baja: 'bg-ink-300' }[insight.level];
+    return `
+    <button class="lead-row w-full text-left border border-black/[0.08] rounded-xl px-4 py-3 flex items-center gap-3 hover:border-ink-900/30 transition-colors" data-key="${encodeURIComponent(l.key)}">
+      <span class="w-2.5 h-2.5 rounded-full shrink-0 ${dot}"></span>
+      <div class="min-w-0 flex-1">
+        <div class="text-sm font-semibold text-ink-900 truncate">${l.name}</div>
+        <div class="text-xs text-ink-700 truncate">${insight.label} · ${l.recentViewsCount} propiedad${l.recentViewsCount === 1 ? '' : 'es'} vista${l.recentViewsCount === 1 ? '' : 's'} en 2 días</div>
+      </div>
+      <i class="fa-solid fa-chevron-right text-ink-300 text-xs shrink-0"></i>
+    </button>`;
+  }).join('');
+}
+
+const leadModal = document.getElementById('leadModal');
+function openLeadModal(key) {
+  const lead = getLeads().find(l => l.key === key);
+  if (!lead) return;
+  const insight = leadInsight(lead);
+  const badgeClass = { alta: 'bg-brand-100 text-brand-700', media: 'bg-[#FEF3C7] text-[#B45309]', baja: 'bg-paper text-ink-700' }[insight.level];
+  const historial = [...lead.events].sort((a, b) => b.ts - a.ts).slice(0, 15);
+  document.getElementById('leadModalBody').innerHTML = `
+    <div class="w-14 h-14 rounded-full bg-ink-900 text-white flex items-center justify-center font-display font-semibold text-xl mb-4">${lead.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}</div>
+    <h3 class="font-display font-medium text-xl mb-0.5">${lead.name}</h3>
+    <p class="text-sm text-ink-700 mb-4">${lead.email || 'Sin email registrado'}</p>
+    <span class="inline-flex items-center gap-1.5 text-xs font-semibold ${badgeClass} rounded-full px-3 py-1.5 mb-4"><i class="fa-solid fa-sparkles"></i> IA: ${insight.label}</span>
+    <p class="text-sm text-ink-700 leading-relaxed mb-5">${insight.text}</p>
+    <div class="grid grid-cols-3 gap-2 mb-5">
+      <div class="bg-paper rounded-xl p-3 text-center"><div class="font-display font-semibold text-lg">${lead.viewsTotal}</div><div class="text-[11px] text-ink-700">Vistas totales</div></div>
+      <div class="bg-paper rounded-xl p-3 text-center"><div class="font-display font-semibold text-lg">${lead.contactsTotal}</div><div class="text-[11px] text-ink-700">Contactos</div></div>
+      <div class="bg-paper rounded-xl p-3 text-center"><div class="font-display font-semibold text-lg">${lead.recentViewsCount}</div><div class="text-[11px] text-ink-700">Últimos 2 días</div></div>
+    </div>
+    <h4 class="text-sm font-semibold text-ink-900 mb-2">Actividad reciente</h4>
+    <div class="space-y-1.5 mb-5 max-h-40 overflow-y-auto">
+      ${historial.map(e => `<div class="text-xs text-ink-700 flex items-center justify-between border-b border-black/[0.05] pb-1.5">
+        <span>${e.type === 'view' ? '<i class="fa-solid fa-eye mr-1.5 text-ink-300"></i>' : '<i class="fa-brands fa-whatsapp mr-1.5 text-brand-600"></i>'}${e.propertyTitle}</span>
+        <span class="font-data shrink-0 ml-2">${fmtFechaHora(e.ts)}</span>
+      </div>`).join('')}
+    </div>
+    ${lead.email ? `<a href="mailto:${lead.email}?subject=${encodeURIComponent('Sobre tu búsqueda en iPortal')}" class="btn w-full bg-brand-600 hover:bg-brand-700 text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2"><i class="fa-solid fa-envelope"></i> Contactar por email</a>` : '<p class="text-xs text-ink-700 text-center">No hay email para contactar a este usuario.</p>'}
+  `;
+  leadModal.classList.remove('hidden-modal');
+}
+function closeLeadModal() { leadModal.classList.add('hidden-modal'); }
+document.getElementById('closeLeadModal').addEventListener('click', closeLeadModal);
+document.getElementById('leadsList').addEventListener('click', (e) => {
+  const row = e.target.closest('.lead-row');
+  if (row) openLeadModal(decodeURIComponent(row.dataset.key));
+});
 
 function downloadAuditCSV() {
   const rows = [['Fecha y hora', 'Evento', 'Propiedad', 'Usuario', 'Email']];
@@ -1714,6 +2118,42 @@ function downloadAuditCSV() {
   URL.revokeObjectURL(url);
 }
 document.getElementById('downloadAuditBtn').addEventListener('click', downloadAuditCSV);
+
+/* ---------------- Suscripción a novedades (usuarios comunes) — para difusiones masivas futuras ---------------- */
+const LS_NEWSLETTER_KEY = 'iportal_newsletter_signups';
+function loadNewsletterSignups() { try { return JSON.parse(localStorage.getItem(LS_NEWSLETTER_KEY)) || []; } catch (err) { return []; } }
+function saveNewsletterSignups(list) { try { localStorage.setItem(LS_NEWSLETTER_KEY, JSON.stringify(list)); } catch (err) {} }
+let newsletterSignups = loadNewsletterSignups();
+
+document.getElementById('newsletterForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const interests = [...document.querySelectorAll('#newsletterForm input[name="interest"]:checked')].map(i => i.value);
+  newsletterSignups.push({
+    name: document.getElementById('newsletterName').value.trim(),
+    email: document.getElementById('newsletterEmail').value.trim(),
+    interests,
+    ts: Date.now(),
+  });
+  saveNewsletterSignups(newsletterSignups);
+  document.getElementById('newsletterConfirm').classList.remove('hidden');
+  e.target.reset();
+});
+
+function downloadNewsletterCSV() {
+  const rows = [['Fecha de alta', 'Nombre', 'Email', 'Intereses']];
+  newsletterSignups.forEach(s => rows.push([fmtFechaHora(s.ts), s.name, s.email, s.interests.join(' | ')]));
+  const csv = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `iPortal_suscriptores_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+document.getElementById('downloadNewsletterBtn').addEventListener('click', downloadNewsletterCSV);
 
 const statsPage = document.getElementById('statsPage');
 function showStatsPage() { renderStatsPage(); statsPage.classList.remove('hidden'); statsPage.scrollTop = 0; document.body.style.overflow = 'hidden'; }
@@ -1758,7 +2198,7 @@ document.getElementById('favoritesNavBtn')?.addEventListener('click', openFavori
 function pinIcon(p) {
   return L.divIcon({
     className: '',
-    html: `<button class="map-pin" data-id="${p.id}" aria-label="${p.title}">${p.priceShort}</button>`,
+    html: `<button class="map-pin" data-id="${p.id}" aria-label="${p.title}">${formatPrice(p.priceUSD, true)}</button>`,
     iconSize: null,
   });
 }
@@ -1767,10 +2207,19 @@ function popupContent(p) {
   return `<div class="w-56">
     <img src="${p.photos[0]}" alt="${p.title}" class="w-full h-32 object-cover rounded-lg mb-2">
     <div class="font-display font-medium text-sm text-ink-900 leading-snug">${p.title}</div>
-    <div class="text-brand-600 font-semibold font-data text-sm mt-0.5">${p.price}</div>
+    <div class="text-brand-600 font-semibold font-data text-sm mt-0.5">${formatPrice(p.priceUSD)}</div>
     <div class="text-ink-700 text-xs mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i>${p.loc}</div>
     <button onclick="openDetail(${p.id})" class="mt-2 w-full bg-brand-600 hover:bg-brand-700 text-white rounded-full py-2 text-xs font-semibold transition-colors">Ver más en grande</button>
   </div>`;
+}
+
+function refreshMapPinLabels() {
+  Object.values(leafletMaps || {}).forEach(m => {
+    Object.entries(m.markersById || {}).forEach(([id, marker]) => {
+      const p = properties.find(pr => pr.id === Number(id));
+      if (p) { marker.setIcon(pinIcon(p)); marker.setPopupContent(popupContent(p)); }
+    });
+  });
 }
 
 // point-in-polygon (ray casting) — usado para el filtro por zona dibujada
@@ -1984,7 +2433,7 @@ function openDetail(id) {
   const badgeEl = document.getElementById('detailBadge');
   badgeEl.textContent = p.badge;
   badgeEl.className = 'shrink-0 text-white text-xs font-semibold px-3 py-1.5 rounded-full ' + badgeClasses(p.badgeColor);
-  document.getElementById('detailPrice').textContent = p.price;
+  document.getElementById('detailPrice').textContent = formatPrice(p.priceUSD);
   document.getElementById('detailLoc').querySelector('span').textContent = p.loc;
   document.getElementById('detailDesc').textContent = p.desc || '';
   document.getElementById('detailSpecs').innerHTML = p.specs.map(s => `<span><i class="fa-solid ${s[0]} mr-1.5 text-ink-700/60"></i>${s[1]}</span>`).join('');
@@ -2015,7 +2464,7 @@ function closeDetail() {
 }
 document.getElementById('closeDetail').addEventListener('click', closeDetail);
 document.getElementById('detailBackdrop').addEventListener('click', closeDetail);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); closeLoginModal(); closeMobileMap(); if (/^#\/(agente|agentes|ieduca|curso)/.test(location.hash)) location.hash = ''; closeFavoritesPanel(); } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); closeLoginModal(); closeMobileMap(); closeLeadModal(); if (/^#\/(agente|agentes|ieduca|curso)/.test(location.hash)) location.hash = ''; closeFavoritesPanel(); } });
 
 document.getElementById('mediaTabs').addEventListener('click', (e) => {
   const tab = e.target.closest('.media-tab');
@@ -2079,7 +2528,7 @@ function openCompareModal() {
   const rows = [
     { label: 'Foto', render: p => `<img src="${p.photos[0]}" class="w-full h-32 object-cover rounded-xl">` },
     { label: 'Nombre', render: p => `<span class="font-display font-medium">${p.title}</span>` },
-    { label: 'Precio', render: p => `<span class="text-brand-600 font-semibold font-data">${p.price}</span>` },
+    { label: 'Precio', render: p => `<span class="text-brand-600 font-semibold font-data">${formatPrice(p.priceUSD)}</span>` },
     { label: 'Ubicación', render: p => p.loc },
     { label: 'Características', render: p => p.specs.map(s => s[1]).join(' · ') },
     { label: 'Mascotas', render: p => (p.pets && p.pets.length) ? p.pets.map(x => x === 'dog' ? 'Perro' : 'Gato').join(', ') : '—' },
@@ -2149,7 +2598,7 @@ function buscarConIA() {
 /* ---------------- Mensaje de WhatsApp armado según la propiedad ---------------- */
 const WHATSAPP_NUMBER = '5492994001234'; // TODO: reemplazar por el número real de la inmobiliaria
 function waLinkProperty(p) {
-  const msg = `Hola! 👋 Vi esta propiedad en iPortal y me interesa:\n\n*${p.title}*\n${p.price} · ${p.loc}\n\n¿Podemos coordinar una visita?`;
+  const msg = `Hola! 👋 Vi esta propiedad en iPortal y me interesa:\n\n*${p.title}*\n${formatPrice(p.priceUSD)} · ${p.loc}\n\n¿Podemos coordinar una visita?`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
 
