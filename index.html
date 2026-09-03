@@ -697,6 +697,147 @@
   </div>
 </div>
 
+<!-- SUBPÁGINA: Publicador de propiedades multi-etapa -->
+<div id="publishPage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
+  <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
+    <button id="publishBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
+    <span class="text-sm text-ink-700 font-data">Panel Agente / Publicar propiedad</span>
+  </div>
+
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 py-8 pb-24">
+    <h1 class="font-display font-medium text-2xl sm:text-3xl mb-1">Publicar propiedad</h1>
+    <p class="text-ink-700 text-sm mb-6">Publicar es gratis — después la podés destacar desde "Mis publicaciones".</p>
+
+    <!-- Indicador de etapas -->
+    <div class="flex items-center gap-2 mb-8" id="publishStepper">
+      <div class="publish-step-dot flex items-center gap-2 flex-1" data-step="1">
+        <span class="w-8 h-8 rounded-full bg-ink-900 text-white flex items-center justify-center text-xs font-bold shrink-0">1</span>
+        <span class="text-xs font-semibold text-ink-900 hidden sm:inline">Tipo y ubicación</span>
+        <span class="h-px bg-black/[0.1] flex-1"></span>
+      </div>
+      <div class="publish-step-dot flex items-center gap-2 flex-1" data-step="2">
+        <span class="w-8 h-8 rounded-full bg-paper text-ink-700 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+        <span class="text-xs font-semibold text-ink-700 hidden sm:inline">Características</span>
+        <span class="h-px bg-black/[0.1] flex-1"></span>
+      </div>
+      <div class="publish-step-dot flex items-center gap-2" data-step="3">
+        <span class="w-8 h-8 rounded-full bg-paper text-ink-700 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+        <span class="text-xs font-semibold text-ink-700 hidden sm:inline">Precio y revisión</span>
+      </div>
+    </div>
+
+    <form id="publishForm">
+      <!-- Etapa 1: Tipo y ubicación -->
+      <div class="publish-step" data-step="1">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-ink-700 mb-1.5">Tipo de operación</label>
+            <div class="flex gap-2" id="publishOperacion">
+              <button type="button" class="op-btn is-active flex-1 btn bg-ink-900 text-white rounded-full text-sm font-semibold" data-op="Venta">Venta</button>
+              <button type="button" class="op-btn flex-1 btn bg-paper border border-black/[0.1] text-ink-800 rounded-full text-sm font-semibold" data-op="Alquiler">Alquiler</button>
+              <button type="button" class="op-btn flex-1 btn bg-paper border border-black/[0.1] text-ink-800 rounded-full text-sm font-semibold" data-op="Alquiler temporal">Alquiler temporal</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-700 mb-1.5">Tipo de propiedad</label>
+            <select id="publishTipo" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white">
+              <option value="house">Casa</option>
+              <option value="apt">Departamento</option>
+              <option value="land">Terreno / Lote</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-700 mb-1.5">Título del aviso</label>
+            <input id="publishTitulo" type="text" maxlength="100" placeholder="Ej: Casa moderna con pileta en Bardas Soleadas" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-700 mb-1.5">Ubicación (barrio, ciudad)</label>
+            <input id="publishUbicacion" type="text" placeholder="Ej: Bardas Soleadas, Neuquén" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm">
+          </div>
+        </div>
+      </div>
+
+      <!-- Etapa 2: Características -->
+      <div class="publish-step hidden" data-step="2">
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-ink-700 mb-1.5">Superficie total (m²)</label>
+              <input id="publishM2" type="number" min="0" placeholder="120" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-ink-700 mb-1.5">Antigüedad</label>
+              <select id="publishAntiguedad" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white">
+                <option>A estrenar</option><option>En construcción</option><option>1 a 5 años</option><option>5 a 15 años</option><option>Más de 15 años</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-3" id="publishAmbientesRow">
+            <div>
+              <label class="block text-xs font-semibold text-ink-700 mb-1.5">Dormitorios</label>
+              <input id="publishDorms" type="number" min="0" value="2" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-ink-700 mb-1.5">Baños</label>
+              <input id="publishBanos" type="number" min="0" value="1" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-ink-700 mb-1.5">Cocheras</label>
+              <input id="publishCocheras" type="number" min="0" value="0" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-700 mb-2">Comodidades</label>
+            <div class="flex flex-wrap gap-2" id="publishAmenities">
+              ${''}
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-700 mb-1.5">Descripción</label>
+            <textarea id="publishDesc" rows="3" maxlength="10000" placeholder="Contá los ambientes, beneficios y alrededores..." class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm"></textarea>
+          </div>
+          <div class="bg-paper rounded-xl p-4 space-y-3">
+            <p class="text-xs font-semibold text-ink-700">Multimedia (opcional — el plano se genera solo)</p>
+            <input id="publishFoto1" type="text" placeholder="URL de foto 1" class="w-full border border-black/[0.12] rounded-xl px-4 py-2 text-xs bg-white">
+            <input id="publishFoto2" type="text" placeholder="URL de foto 2" class="w-full border border-black/[0.12] rounded-xl px-4 py-2 text-xs bg-white">
+            <input id="publishVideo" type="text" placeholder="URL de video de YouTube" class="w-full border border-black/[0.12] rounded-xl px-4 py-2 text-xs bg-white">
+            <input id="publishTour" type="text" placeholder="URL de recorrido 360° (Kuula)" class="w-full border border-black/[0.12] rounded-xl px-4 py-2 text-xs bg-white">
+          </div>
+        </div>
+      </div>
+
+      <!-- Etapa 3: Precio y revisión -->
+      <div class="publish-step hidden" data-step="3">
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-ink-700 mb-1.5">Precio</label>
+              <input id="publishPrecio" type="number" min="0" placeholder="150000" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-ink-700 mb-1.5">Moneda</label>
+              <select id="publishMoneda" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white">
+                <option value="USD">USD</option><option value="ARS">AR$</option><option value="CLP">CLP$</option><option value="UYU">$U</option><option value="MXN">MX$</option>
+              </select>
+            </div>
+          </div>
+          <label class="flex items-center gap-2 text-sm cursor-pointer">
+            <input type="checkbox" id="publishAptoCredito" class="accent-brand-600"> Apto crédito
+          </label>
+          <div id="publishSummary" class="bg-paper rounded-2xl p-5"></div>
+        </div>
+      </div>
+
+      <div class="flex justify-between mt-8">
+        <button type="button" id="publishPrevBtn" class="btn hidden bg-paper border border-black/[0.1] text-ink-800 px-5 rounded-full text-sm font-semibold">Atrás</button>
+        <button type="button" id="publishNextBtn" class="btn ml-auto bg-ink-900 hover:bg-ink-800 text-white px-6 rounded-full text-sm font-semibold">Siguiente</button>
+        <button type="submit" id="publishSubmitBtn" class="btn ml-auto hidden bg-brand-600 hover:bg-brand-700 text-white px-6 rounded-full text-sm font-semibold"><i class="fa-solid fa-check mr-1.5"></i>Publicar propiedad</button>
+      </div>
+    </form>
+    <p id="publishSuccessMsg" class="hidden text-sm text-brand-700 font-semibold mt-4 text-center"></p>
+  </div>
+</div>
+
 <!-- SUBPÁGINA: Comprar posicionamiento (packs de créditos) -->
 <div id="packsPage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
   <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
@@ -751,7 +892,8 @@
   <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
     <button id="statsBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
     <span class="text-sm text-ink-700 font-data">Panel Agente / Estadísticas</span>
-    <a href="#/importar" class="ml-auto text-xs text-ink-800 hover:text-brand-600 font-semibold flex items-center gap-1.5 mr-4"><i class="fa-solid fa-file-import"></i>Importar propiedades</a>
+    <a href="#/publicar" class="ml-auto text-xs text-ink-800 hover:text-brand-600 font-semibold flex items-center gap-1.5 mr-4"><i class="fa-solid fa-plus"></i>Publicar propiedad</a>
+    <a href="#/importar" class="text-xs text-ink-800 hover:text-brand-600 font-semibold flex items-center gap-1.5 mr-4"><i class="fa-solid fa-file-import"></i>Importar propiedades</a>
     <a href="#/posicionamiento" class="text-xs text-ink-800 hover:text-[#D9A441] font-semibold flex items-center gap-1.5 mr-4"><i class="fa-solid fa-star"></i>Posicionamiento</a>
     <button id="statsLogout" class="text-xs text-ink-700 hover:text-red-600 font-semibold"><i class="fa-solid fa-right-from-bracket mr-1"></i>Cerrar sesión</button>
   </div>
@@ -760,7 +902,8 @@
     <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
       <div>
         <h1 class="font-display font-medium text-2xl sm:text-3xl mb-1">Hola, <span id="statsUserName">—</span> 👋</h1>
-        <p class="text-ink-700 text-sm">Estadísticas de tus publicaciones — vistas, contactos por WhatsApp y auditoría completa</p>
+        <p class="text-ink-700 text-sm mb-2">Estadísticas de tus publicaciones — vistas, contactos por WhatsApp y auditoría completa</p>
+        <div id="reputationBadge" class="inline-flex items-center gap-2 bg-paper rounded-full px-3 py-1.5 text-xs font-semibold"></div>
       </div>
       <div class="flex flex-wrap gap-2">
         <button id="downloadAuditBtn" class="btn bg-ink-900 hover:bg-ink-800 text-white px-5 rounded-full text-sm font-semibold flex items-center gap-2">
@@ -808,6 +951,13 @@
         <div class="text-2xl font-display font-semibold" id="statUniqueUsers">0</div>
         <div class="text-xs text-ink-700 mt-1"><i class="fa-solid fa-users mr-1"></i>Usuarios identificados</div>
       </div>
+    </div>
+
+    <!-- Embudo de conversión -->
+    <div class="mb-10">
+      <h2 class="font-display font-medium text-lg mb-1">Embudo de conversión</h2>
+      <p class="text-xs text-ink-700 mb-4">Exposición = veces que tus propiedades aparecieron en un listado (acumulado histórico, no depende del rango de fechas). Visualizaciones e Interesados sí respetan el rango elegido.</p>
+      <div id="funnelChart" class="space-y-3"></div>
     </div>
 
     <!-- Mis publicaciones + KPIs (estilo panel de anunciante) -->
@@ -1365,9 +1515,19 @@ function cardTemplate(p) {
 }
 
 let lastRenderedProperties = properties;
+/* ---------------- Exposición (impresiones en grilla) — para el embudo Exposición → Visualizaciones → Interesados ---------------- */
+const LS_EXPOSURE_KEY = 'iportal_exposure_counts';
+function loadExposure() { try { return JSON.parse(localStorage.getItem(LS_EXPOSURE_KEY)) || {}; } catch (err) { return {}; } }
+let exposureCounts = loadExposure();
+function trackExposure(list) {
+  list.forEach(p => { exposureCounts[p.id] = (exposureCounts[p.id] || 0) + 1; });
+  try { localStorage.setItem(LS_EXPOSURE_KEY, JSON.stringify(exposureCounts)); } catch (err) {}
+}
+
 function renderCards(list) {
   lastRenderedProperties = list;
   const sorted = sortByPositioning(list);
+  trackExposure(sorted);
   grid.innerHTML = sorted.length
     ? sorted.map(cardTemplate).join('')
     : `<div class="col-span-full text-center py-16 text-ink-700">
@@ -1707,6 +1867,7 @@ function syncAgentRoute() {
   hideInvestDetail();
   hideImportPage();
   hidePacksPage();
+  hidePublishPage();
   document.body.style.overflow = '';
 
   if (mProfile) {
@@ -1727,6 +1888,9 @@ function syncAgentRoute() {
   } else if (location.hash === '#/importar') {
     if (!loggedIn) { location.hash = ''; return; } // ruta protegida: sin sesión, vuelve al home
     showImportPage();
+  } else if (location.hash === '#/publicar') {
+    if (!loggedIn) { location.hash = ''; return; } // ruta protegida: sin sesión, vuelve al home
+    showPublishPage();
   } else if (location.hash === '#/posicionamiento') {
     if (!loggedIn) { location.hash = ''; return; } // ruta protegida: sin sesión, vuelve al home
     showPacksPage();
@@ -2083,6 +2247,7 @@ function seedAnalyticsIfEmpty() {
   const now = Date.now();
   properties.forEach(p => {
     const views = 6 + Math.floor(Math.random() * 12);
+    exposureCounts[p.id] = views * (3 + Math.floor(Math.random() * 4)); // exposición histórica: siempre más alta que las vistas, como en un embudo real
     for (let i = 0; i < views; i++) {
       const v = visitantesPrevios[Math.floor(Math.random() * visitantesPrevios.length)];
       analyticsEvents.push({ type:'view', propertyId:p.id, propertyTitle:p.title, propertyAmount:p.priceAmount, propertyCurrency:p.currency,
@@ -2098,6 +2263,7 @@ function seedAnalyticsIfEmpty() {
     }
   });
   saveEvents(analyticsEvents);
+  try { localStorage.setItem(LS_EXPOSURE_KEY, JSON.stringify(exposureCounts)); } catch (err) {}
 }
 seedAnalyticsIfEmpty();
 
@@ -2147,6 +2313,38 @@ function renderStatsPage() {
     const c = contacts.filter(e => e.propertyId === p.id).length;
     return { p, v, c, conv: v ? Math.round(c / v * 100) : 0 };
   }).sort((a, b) => b.v - a.v);
+
+  // ---- Embudo: Exposición → Visualizaciones → Interesados ----
+  const totalExposicion = properties.reduce((sum, p) => sum + (exposureCounts[p.id] || 0), 0);
+  const funnelStages = [
+    { label: 'Exposición', desc: 'apareció en un listado', value: totalExposicion, color: '#111111' },
+    { label: 'Visualizaciones', desc: 'abrieron la ficha completa', value: views.length, color: '#16A34A' },
+    { label: 'Interesados', desc: 'contactaron por WhatsApp', value: contacts.length, color: '#D9A441' },
+  ];
+  const maxFunnel = Math.max(1, funnelStages[0].value);
+  document.getElementById('funnelChart').innerHTML = funnelStages.map((stage, i) => {
+    const pct = Math.max(4, Math.round(stage.value / maxFunnel * 100));
+    const pctOfPrevious = i > 0 && funnelStages[i - 1].value ? Math.round(stage.value / funnelStages[i - 1].value * 100) : null;
+    return `
+    <div>
+      <div class="flex items-center justify-between text-xs mb-1">
+        <span class="font-semibold text-ink-900">${stage.label} <span class="font-normal text-ink-700">— ${stage.desc}</span></span>
+        <span class="font-data font-semibold">${stage.value}${pctOfPrevious !== null ? ` <span class="text-ink-700 font-normal">(${pctOfPrevious}% del paso anterior)</span>` : ''}</span>
+      </div>
+      <div class="h-6 rounded-lg bg-paper overflow-hidden">
+        <div class="h-full rounded-lg flex items-center justify-end pr-2" style="width:${pct}%; background:${stage.color}"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ---- Reputación: heurística simple y transparente (no rastreamos mensajería real todavía) ----
+  const avgConv = byProp.length ? byProp.reduce((sum, x) => sum + x.conv, 0) / byProp.length : 0;
+  const pctComplete = properties.length ? Math.round(properties.filter(isCompleteListing).length / properties.length * 100) : 0;
+  const reputationScore = Math.round(avgConv * 0.5 + pctComplete * 0.5);
+  const repLevel = reputationScore >= 70 ? { label: 'Muy buena', cls: 'text-brand-700' } : reputationScore >= 40 ? { label: 'Buena', cls: 'text-[#B45309]' } : { label: 'A mejorar', cls: 'text-red-600' };
+  document.getElementById('reputationBadge').innerHTML = `<i class="fa-solid fa-medal ${repLevel.cls}"></i> Reputación: <span class="${repLevel.cls}">${reputationScore}/100 · ${repLevel.label}</span>`;
+  document.getElementById('reputationBadge').title = `Basada en tu tasa de contacto promedio (${Math.round(avgConv)}%) y en qué porcentaje de tus fichas están completas (${pctComplete}%). No mide tiempo de respuesta real todavía.`;
+
   document.getElementById('statsByProperty').innerHTML = byProp.map(({ p, v, c, conv }) => `
     <tr class="border-t border-black/[0.06]">
       <td class="px-4 py-3 font-semibold text-ink-900">${p.title}</td>
@@ -2601,6 +2799,127 @@ function addPropertyToMaps(p) {
 let nextImportedId = Math.max(...properties.map(p => p.id)) + 1;
 const NEUQUEN_CENTER = { lat: -38.9516, lng: -68.0591 };
 
+/* ---------------- Publicador de propiedades multi-etapa ---------------- */
+const AMENITIES_OPTIONS = [
+  { id:'pileta', label:'Pileta' }, { id:'parrilla', label:'Parrilla' }, { id:'balcon', label:'Balcón' },
+  { id:'terraza', label:'Terraza / Patio' }, { id:'seguridad', label:'Seguridad / Vigilancia' },
+  { id:'mascotas', label:'Permite mascotas' }, { id:'aire', label:'Aire acondicionado' }, { id:'calefaccion', label:'Calefacción' },
+];
+document.getElementById('publishAmenities').innerHTML = AMENITIES_OPTIONS.map(a => `
+  <button type="button" class="amenity-btn btn bg-paper border border-black/[0.1] text-ink-800 rounded-full px-3.5 text-xs font-semibold" data-amenity="${a.id}">${a.label}</button>
+`).join('');
+
+let publishStep = 1;
+let publishOperacion = 'Venta';
+let publishAmenitiesSelected = [];
+
+function goToPublishStep(n) {
+  publishStep = n;
+  document.querySelectorAll('.publish-step').forEach(s => s.classList.toggle('hidden', Number(s.dataset.step) !== n));
+  document.querySelectorAll('.publish-step-dot span:first-child').forEach(dot => {
+    const stepNum = Number(dot.closest('.publish-step-dot').dataset.step);
+    dot.classList.toggle('bg-ink-900', stepNum <= n);
+    dot.classList.toggle('text-white', stepNum <= n);
+    dot.classList.toggle('bg-paper', stepNum > n);
+    dot.classList.toggle('text-ink-700', stepNum > n);
+  });
+  document.getElementById('publishPrevBtn').classList.toggle('hidden', n === 1);
+  document.getElementById('publishNextBtn').classList.toggle('hidden', n === 3);
+  document.getElementById('publishSubmitBtn').classList.toggle('hidden', n !== 3);
+  if (n === 3) renderPublishSummary();
+}
+
+document.getElementById('publishOperacion').addEventListener('click', (e) => {
+  const btn = e.target.closest('.op-btn');
+  if (!btn) return;
+  document.querySelectorAll('.op-btn').forEach(b => { b.classList.remove('is-active', 'bg-ink-900', 'text-white'); b.classList.add('bg-paper', 'border', 'border-black/[0.1]', 'text-ink-800'); });
+  btn.classList.add('is-active', 'bg-ink-900', 'text-white'); btn.classList.remove('bg-paper', 'border', 'border-black/[0.1]', 'text-ink-800');
+  publishOperacion = btn.dataset.op;
+});
+document.getElementById('publishAmenities').addEventListener('click', (e) => {
+  const btn = e.target.closest('.amenity-btn');
+  if (!btn) return;
+  const id = btn.dataset.amenity;
+  if (publishAmenitiesSelected.includes(id)) {
+    publishAmenitiesSelected = publishAmenitiesSelected.filter(x => x !== id);
+    btn.classList.remove('bg-ink-900', 'text-white'); btn.classList.add('bg-paper', 'border', 'border-black/[0.1]', 'text-ink-800');
+  } else {
+    publishAmenitiesSelected.push(id);
+    btn.classList.add('bg-ink-900', 'text-white'); btn.classList.remove('bg-paper', 'border', 'border-black/[0.1]', 'text-ink-800');
+  }
+});
+
+document.getElementById('publishNextBtn').addEventListener('click', () => {
+  if (publishStep === 1) {
+    if (!document.getElementById('publishTitulo').value.trim() || !document.getElementById('publishUbicacion').value.trim()) {
+      alert('Completá el título y la ubicación para continuar.'); return;
+    }
+  }
+  goToPublishStep(publishStep + 1);
+});
+document.getElementById('publishPrevBtn').addEventListener('click', () => goToPublishStep(publishStep - 1));
+
+function renderPublishSummary() {
+  const tipoLabel = { house:'Casa', apt:'Departamento', land:'Terreno / Lote' }[document.getElementById('publishTipo').value];
+  const precio = Number(document.getElementById('publishPrecio').value) || 0;
+  const moneda = document.getElementById('publishMoneda').value;
+  document.getElementById('publishSummary').innerHTML = `
+    <p class="text-sm font-semibold text-ink-900 mb-2">${document.getElementById('publishTitulo').value || 'Sin título'}</p>
+    <p class="text-xs text-ink-700 mb-1">${publishOperacion} · ${tipoLabel} · ${document.getElementById('publishUbicacion').value || 'Sin ubicación'}</p>
+    <p class="text-xs text-ink-700 mb-1">${document.getElementById('publishDorms').value} dorms · ${document.getElementById('publishBanos').value} baños · ${document.getElementById('publishM2').value || '—'} m²</p>
+    <p class="font-data font-semibold text-lg mt-2">${precio ? formatMoney(precio, moneda) : 'Precio sin definir'}</p>
+  `;
+}
+
+document.getElementById('publishForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const precio = Number(document.getElementById('publishPrecio').value);
+  if (!precio || precio <= 0) { alert('Ingresá un precio válido para publicar.'); return; }
+
+  const photos = [document.getElementById('publishFoto1').value.trim(), document.getElementById('publishFoto2').value.trim()].filter(Boolean);
+  const dorms = document.getElementById('publishDorms').value;
+  const banos = document.getElementById('publishBanos').value;
+  const cocheras = document.getElementById('publishCocheras').value;
+  const m2 = document.getElementById('publishM2').value;
+  const tipo = document.getElementById('publishTipo').value;
+
+  const specs = tipo === 'land'
+    ? [['fa-draw-polygon', (m2 || '—') + ' m²']]
+    : [['fa-bed', dorms + ' dorms'], ['fa-bath', banos + ' baños'], ['fa-ruler-combined', (m2 || '—') + ' m²']];
+  if (Number(cocheras) > 0) specs.push(['fa-square-parking', cocheras + ' cochera' + (cocheras > 1 ? 's' : '')]);
+
+  const [created] = commitImportedProperties([{
+    title: document.getElementById('publishTitulo').value.trim(),
+    priceAmount: precio,
+    currency: document.getElementById('publishMoneda').value,
+    type: tipo,
+    loc: document.getElementById('publishUbicacion').value.trim(),
+    desc: document.getElementById('publishDesc').value.trim() || `${publishOperacion} · ${document.getElementById('publishAntiguedad').value}.`,
+    specs,
+    photos,
+    video: document.getElementById('publishVideo').value.trim() || null,
+    tour360: document.getElementById('publishTour').value.trim() || null,
+    amenities: publishAmenitiesSelected.slice(),
+    badge: document.getElementById('publishAptoCredito').checked ? 'Apto crédito' : 'Nueva',
+    badgeColor: 'brand',
+    source: 'publicador propio',
+  }]);
+
+  document.getElementById('publishSuccessMsg').textContent = `¡Listo! "${created.title}" ya está publicada en iPortal.`;
+  document.getElementById('publishSuccessMsg').classList.remove('hidden');
+  e.target.reset();
+  publishAmenitiesSelected = [];
+  document.querySelectorAll('.amenity-btn').forEach(b => { b.classList.remove('bg-ink-900', 'text-white'); b.classList.add('bg-paper', 'border', 'border-black/[0.1]', 'text-ink-800'); });
+  document.querySelectorAll('.op-btn').forEach((b, i) => { const active = i === 0; b.classList.toggle('bg-ink-900', active); b.classList.toggle('text-white', active); b.classList.toggle('bg-paper', !active); b.classList.toggle('border', !active); b.classList.toggle('border-black/[0.1]', !active); b.classList.toggle('text-ink-800', !active); });
+  publishOperacion = 'Venta';
+  goToPublishStep(1);
+});
+
+const publishPage = document.getElementById('publishPage');
+function showPublishPage() { publishPage.classList.remove('hidden'); publishPage.scrollTop = 0; document.body.style.overflow = 'hidden'; document.getElementById('publishSuccessMsg').classList.add('hidden'); }
+function hidePublishPage() { publishPage.classList.add('hidden'); }
+document.getElementById('publishBack').addEventListener('click', () => { location.hash = '#/estadisticas'; });
+
 function commitImportedProperties(items) {
   const created = items.map(raw => {
     const id = nextImportedId++;
@@ -2612,7 +2931,7 @@ function commitImportedProperties(items) {
       priceAmount: raw.priceAmount,
       currency: raw.currency || 'USD',
       loc: raw.loc || 'Neuquén Capital',
-      badge: 'Importada', badgeColor: 'ink',
+      badge: raw.badge || 'Importada', badgeColor: raw.badgeColor || 'ink',
       type: raw.type || 'house',
       agentId: null,
       positioning: 'basico',
@@ -2620,7 +2939,8 @@ function commitImportedProperties(items) {
       photos: raw.photos && raw.photos.length ? raw.photos : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80'],
       lat: raw.lat || (NEUQUEN_CENTER.lat + jitter()),
       lng: raw.lng || (NEUQUEN_CENTER.lng + jitter()),
-      video: null, tour360: null,
+      video: raw.video || null, tour360: raw.tour360 || null,
+      amenities: raw.amenities || [],
       desc: raw.desc || `Propiedad importada desde ${raw.source || 'sistema externo'}.`,
     };
     properties.push(p);
