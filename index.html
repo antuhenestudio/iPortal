@@ -649,6 +649,54 @@
   <div id="investDetailBody" class="max-w-3xl mx-auto px-4 sm:px-6 pb-24"></div>
 </div>
 
+<!-- SUBPÁGINA: Importar propiedades desde otro sistema -->
+<div id="importPage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
+  <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
+    <button id="importBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
+    <span class="text-sm text-ink-700 font-data">Panel Agente / Importar propiedades</span>
+  </div>
+
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24">
+    <h1 class="font-display font-medium text-2xl sm:text-3xl mb-2">Importar propiedades</h1>
+    <p class="text-ink-700 text-sm mb-6">Traé tu cartera desde el sistema que ya usás. La importación por Tokko o feed necesita tu autorización (API Key) — nunca leemos datos de otros portales sin tu permiso.</p>
+
+    <div class="flex gap-2 mb-6" id="importTabs">
+      <button class="import-tab is-active btn bg-ink-900 text-white rounded-full px-4 text-sm font-semibold" data-tab="csv"><i class="fa-solid fa-file-csv mr-1.5"></i>Archivo CSV</button>
+      <button class="import-tab btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-semibold text-ink-800" data-tab="tokko"><i class="fa-solid fa-plug mr-1.5"></i>Tokko Broker</button>
+      <button class="import-tab btn bg-paper border border-black/[0.1] rounded-full px-4 text-sm font-semibold text-ink-800" data-tab="feed"><i class="fa-solid fa-rss mr-1.5"></i>Feed propio</button>
+    </div>
+
+    <!-- CSV: 100% funcional, se procesa en el navegador -->
+    <div id="importPaneCsv" class="import-pane">
+      <div class="bg-paper rounded-2xl p-5 mb-4">
+        <p class="text-sm text-ink-800 mb-3">Subí un CSV con columnas: <code class="bg-white px-1.5 py-0.5 rounded text-xs">titulo, precio, moneda, tipo, ubicacion, dormitorios, banos, m2, descripcion</code></p>
+        <a id="downloadCsvTemplate" href="#" class="text-xs text-brand-600 hover:text-brand-700 font-semibold underline underline-offset-2 mb-4 inline-block">Descargar plantilla de ejemplo</a>
+        <input type="file" id="importCsvFile" accept=".csv" class="block w-full text-sm border border-black/[0.12] rounded-xl px-4 py-2.5 bg-white">
+      </div>
+    </div>
+
+    <!-- Tokko / Feed: flujo simulado en este prototipo (requiere backend real para producción) -->
+    <div id="importPaneTokko" class="import-pane hidden">
+      <div class="bg-paper rounded-2xl p-5 mb-4">
+        <p class="text-xs text-[#B45309] bg-[#FEF3C7] rounded-lg px-3 py-2 mb-4"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Este prototipo no tiene backend — acá simulamos la respuesta de Tokko para mostrarte el flujo. En producción esto llama a la API real con tu API Key.</p>
+        <label class="block text-xs font-semibold text-ink-700 mb-1.5">API Key de Tokko Broker</label>
+        <input type="text" id="importTokkoKey" placeholder="Ej: 5940ea45eb7cfb55228bec0b958ea9c0be151757" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white mb-3">
+        <button id="importTokkoSearch" class="btn bg-ink-900 hover:bg-ink-800 text-white px-5 rounded-full text-sm font-semibold">Buscar propiedades</button>
+      </div>
+    </div>
+    <div id="importPaneFeed" class="import-pane hidden">
+      <div class="bg-paper rounded-2xl p-5 mb-4">
+        <p class="text-xs text-[#B45309] bg-[#FEF3C7] rounded-lg px-3 py-2 mb-4"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Este prototipo no tiene backend — acá simulamos la respuesta del feed para mostrarte el flujo. En producción esto descarga y parsea tu XML/JSON real.</p>
+        <label class="block text-xs font-semibold text-ink-700 mb-1.5">URL del feed (XML o JSON)</label>
+        <input type="text" id="importFeedUrl" placeholder="https://tu-crm.com/feed/propiedades.xml" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white mb-3">
+        <button id="importFeedSearch" class="btn bg-ink-900 hover:bg-ink-800 text-white px-5 rounded-full text-sm font-semibold">Buscar propiedades</button>
+      </div>
+    </div>
+
+    <div id="importResults"></div>
+  </div>
+</div>
+
 <!-- MODAL DE LOGIN (necesario para comprar un curso) -->
 <div id="loginModal" class="hidden-modal fixed inset-0 z-[95]">
   <div class="absolute inset-0 bg-ink-900/70"></div>
@@ -676,7 +724,8 @@
   <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
     <button id="statsBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
     <span class="text-sm text-ink-700 font-data">Panel Agente / Estadísticas</span>
-    <button id="statsLogout" class="ml-auto text-xs text-ink-700 hover:text-red-600 font-semibold"><i class="fa-solid fa-right-from-bracket mr-1"></i>Cerrar sesión</button>
+    <a href="#/importar" class="ml-auto text-xs text-ink-800 hover:text-brand-600 font-semibold flex items-center gap-1.5 mr-4"><i class="fa-solid fa-file-import"></i>Importar propiedades</a>
+    <button id="statsLogout" class="text-xs text-ink-700 hover:text-red-600 font-semibold"><i class="fa-solid fa-right-from-bracket mr-1"></i>Cerrar sesión</button>
   </div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24">
@@ -1620,6 +1669,7 @@ function syncAgentRoute() {
   hideStatsPage();
   hideInvestPage();
   hideInvestDetail();
+  hideImportPage();
   document.body.style.overflow = '';
 
   if (mProfile) {
@@ -1637,6 +1687,9 @@ function syncAgentRoute() {
     showInvestPage();
   } else if (mInvest) {
     showInvestDetail(Number(mInvest[1]));
+  } else if (location.hash === '#/importar') {
+    if (!loggedIn) { location.hash = ''; return; } // ruta protegida: sin sesión, vuelve al home
+    showImportPage();
   }
 }
 function openAgent(id, returnTo) {
@@ -2340,7 +2393,7 @@ document.getElementById('statsLogout').addEventListener('click', () => {
 });
 document.getElementById('panelAgenteBtn').addEventListener('click', () => requireLogin(() => { location.hash = '#/estadisticas'; }, 'panel'));
 
-syncAgentRoute(); // soporta deep-link directo a #/agente/ID, #/agentes, #/ieduca, #/curso/ID o #/estadisticas al cargar la página
+// (la llamada inicial a syncAgentRoute() se hace más abajo, después de declarar todas las subpáginas del panel)
 
 /* ---------------- Panel de favoritos ---------------- */
 const favoritesModal = document.getElementById('favoritesModal');
@@ -2483,6 +2536,175 @@ function buildMap(containerId) {
 
 const leafletMaps = { desktop: buildMap('leafletMapDesktop'), mobile: buildMap('leafletMapMobile') };
 window.addEventListener('resize', () => { leafletMaps.desktop.map && leafletMaps.desktop.map.invalidateSize(); leafletMaps.mobile.map && leafletMaps.mobile.map.invalidateSize(); });
+
+function addPropertyToMaps(p) {
+  Object.values(leafletMaps).forEach(m => {
+    if (!m.map) return;
+    const marker = L.marker([p.lat, p.lng], { icon: pinIcon(p) }).addTo(m.map);
+    marker.bindPopup(popupContent(p), { maxWidth: 240, className: 'brand-popup' });
+    m.markersById[p.id] = marker;
+  });
+}
+
+/* ---------------- Importar propiedades desde otro sistema ---------------- */
+let nextImportedId = Math.max(...properties.map(p => p.id)) + 1;
+const NEUQUEN_CENTER = { lat: -38.9516, lng: -68.0591 };
+
+function commitImportedProperties(items) {
+  const created = items.map(raw => {
+    const id = nextImportedId++;
+    // dispersa un poco los pines nuevos alrededor del centro para que no queden todos apilados
+    const jitter = () => (Math.random() - 0.5) * 0.05;
+    const p = {
+      id,
+      title: raw.title,
+      priceAmount: raw.priceAmount,
+      currency: raw.currency || 'USD',
+      loc: raw.loc || 'Neuquén Capital',
+      badge: 'Importada', badgeColor: 'ink',
+      type: raw.type || 'house',
+      agentId: null,
+      positioning: 'basico',
+      specs: raw.specs || [['fa-ruler-combined', (raw.m2 || '—') + ' m²']],
+      photos: raw.photos && raw.photos.length ? raw.photos : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80'],
+      lat: raw.lat || (NEUQUEN_CENTER.lat + jitter()),
+      lng: raw.lng || (NEUQUEN_CENTER.lng + jitter()),
+      video: null, tour360: null,
+      desc: raw.desc || `Propiedad importada desde ${raw.source || 'sistema externo'}.`,
+    };
+    properties.push(p);
+    addPropertyToMaps(p);
+    return p;
+  });
+  renderCards(properties);
+  return created;
+}
+
+/* --- CSV: se procesa 100% en el navegador, sin backend --- */
+function parseCsv(text) {
+  const lines = text.trim().split(/\r?\n/);
+  const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+  return lines.slice(1).filter(l => l.trim()).map(line => {
+    const cells = line.split(',').map(c => c.trim());
+    const row = {};
+    headers.forEach((h, i) => { row[h] = cells[i]; });
+    return {
+      title: row.titulo || 'Propiedad importada',
+      priceAmount: Number(row.precio) || 0,
+      currency: (row.moneda || 'USD').toUpperCase(),
+      type: ['house', 'apt', 'land'].includes(row.tipo) ? row.tipo : 'house',
+      loc: row.ubicacion || 'Neuquén Capital',
+      desc: row.descripcion || '',
+      m2: row.m2,
+      specs: [
+        row.dormitorios ? ['fa-bed', row.dormitorios + ' dorms'] : null,
+        row.banos ? ['fa-bath', row.banos + ' baños'] : null,
+        row.m2 ? ['fa-ruler-combined', row.m2 + ' m²'] : null,
+      ].filter(Boolean),
+      source: 'CSV',
+    };
+  });
+}
+
+document.getElementById('importCsvFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const items = parseCsv(ev.target.result);
+      if (!items.length) { alert('No se encontraron filas para importar en el CSV.'); return; }
+      renderImportResults(items, 'CSV');
+    } catch (err) {
+      alert('No se pudo leer el archivo. Revisá que sea un CSV válido con la cabecera correcta.');
+    }
+  };
+  reader.readAsText(file);
+});
+
+const csvTemplate = 'titulo,precio,moneda,tipo,ubicacion,dormitorios,banos,m2,descripcion\nDuplex en Confluencia,120000,USD,house,Confluencia Urbana Neuquén,3,2,180,Duplex a nuevo con parrilla propia\nMonoambiente Centro,45000000,ARS,apt,Área Centro Neuquén,1,1,32,Monoambiente a estrenar cerca de la peatonal';
+document.getElementById('downloadCsvTemplate').addEventListener('click', (e) => {
+  e.preventDefault();
+  const blob = new Blob([csvTemplate], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'plantilla_iportal.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+/* --- Tokko / Feed: simulados en este prototipo (no hay backend ni credenciales reales) --- */
+function mockExternalResults(source) {
+  return [
+    { title: 'Casa a estrenar Bardas Norte', priceAmount: 155000, currency: 'USD', type: 'house', loc: 'Bardas Soleadas, Neuquén', m2: 195, specs: [['fa-bed', '3 dorms'], ['fa-bath', '2 baños'], ['fa-ruler-combined', '195 m²']], desc: 'Casa a estrenar con cochera doble y parque.', source },
+    { title: 'Depto con balcón corrido', priceAmount: 68000000, currency: 'ARS', type: 'apt', loc: 'Área Centro, Neuquén', m2: 58, specs: [['fa-bed', '2 dorms'], ['fa-bath', '1 baño'], ['fa-ruler-combined', '58 m²']], desc: 'Departamento con balcón corrido y vista abierta.', source },
+    { title: 'Lote esquina Confluencia', priceAmount: 38000, currency: 'USD', type: 'land', loc: 'Confluencia Rural, Neuquén', m2: 550, specs: [['fa-draw-polygon', 'Lote 550 m²']], desc: 'Lote esquina con todos los servicios.', source },
+  ];
+}
+document.getElementById('importTokkoSearch').addEventListener('click', () => {
+  const key = document.getElementById('importTokkoKey').value.trim();
+  if (!key) { alert('Ingresá una API Key para continuar.'); return; }
+  document.getElementById('importResults').innerHTML = '<p class="text-sm text-ink-700">Conectando con Tokko Broker...</p>';
+  setTimeout(() => renderImportResults(mockExternalResults('Tokko Broker'), 'Tokko Broker'), 900);
+});
+document.getElementById('importFeedSearch').addEventListener('click', () => {
+  const url = document.getElementById('importFeedUrl').value.trim();
+  if (!url) { alert('Ingresá la URL del feed para continuar.'); return; }
+  document.getElementById('importResults').innerHTML = '<p class="text-sm text-ink-700">Descargando y leyendo el feed...</p>';
+  setTimeout(() => renderImportResults(mockExternalResults('Feed propio'), 'tu feed'), 900);
+});
+
+function renderImportResults(items, sourceLabel) {
+  const box = document.getElementById('importResults');
+  box.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-display font-medium text-lg">Se encontraron ${items.length} propiedades en ${sourceLabel}</h2>
+      <button id="importSelectAll" class="text-xs text-brand-600 hover:text-brand-700 font-semibold underline underline-offset-2">Seleccionar todas</button>
+    </div>
+    <div class="space-y-2 mb-5">
+      ${items.map((it, i) => `
+        <label class="flex items-center gap-3 border border-black/[0.08] rounded-xl px-4 py-3 cursor-pointer hover:border-brand-600 transition-colors">
+          <input type="checkbox" class="import-check accent-brand-600" data-idx="${i}" checked>
+          <div class="min-w-0 flex-1">
+            <div class="text-sm font-semibold text-ink-900 truncate">${it.title}</div>
+            <div class="text-xs text-ink-700">${it.loc} · ${it.currency === 'USD' ? 'USD ' + it.priceAmount.toLocaleString('es-AR') : 'AR$ ' + it.priceAmount.toLocaleString('es-AR')}</div>
+          </div>
+        </label>`).join('')}
+    </div>
+    <button id="importCommitBtn" class="btn bg-brand-600 hover:bg-brand-700 text-white px-6 rounded-full text-sm font-semibold"><i class="fa-solid fa-download mr-1.5"></i>Importar seleccionadas</button>
+    <p id="importSuccessMsg" class="hidden text-sm text-brand-700 font-semibold mt-3"><i class="fa-solid fa-circle-check mr-1.5"></i></p>
+  `;
+  document.getElementById('importSelectAll').addEventListener('click', () => {
+    document.querySelectorAll('.import-check').forEach(c => c.checked = true);
+  });
+  document.getElementById('importCommitBtn').addEventListener('click', () => {
+    const selected = [...document.querySelectorAll('.import-check:checked')].map(c => items[Number(c.dataset.idx)]);
+    if (!selected.length) { alert('Seleccioná al menos una propiedad.'); return; }
+    const created = commitImportedProperties(selected);
+    const msg = document.getElementById('importSuccessMsg');
+    msg.textContent = `¡Listo! Se importaron ${created.length} propiedades y ya están publicadas en iPortal.`;
+    msg.classList.remove('hidden');
+    document.getElementById('importCommitBtn').disabled = true;
+    document.getElementById('importCommitBtn').classList.add('opacity-50');
+  });
+}
+
+document.querySelectorAll('.import-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.import-tab').forEach(b => { b.classList.remove('is-active', 'bg-ink-900', 'text-white'); b.classList.add('bg-paper', 'border', 'border-black/[0.1]', 'text-ink-800'); });
+    btn.classList.add('is-active', 'bg-ink-900', 'text-white'); btn.classList.remove('bg-paper', 'border', 'border-black/[0.1]', 'text-ink-800');
+    document.querySelectorAll('.import-pane').forEach(p => p.classList.add('hidden'));
+    document.getElementById('importPane' + btn.dataset.tab.charAt(0).toUpperCase() + btn.dataset.tab.slice(1)).classList.remove('hidden');
+    document.getElementById('importResults').innerHTML = '';
+  });
+});
+
+const importPage = document.getElementById('importPage');
+function showImportPage() { importPage.classList.remove('hidden'); importPage.scrollTop = 0; document.body.style.overflow = 'hidden'; }
+function hideImportPage() { importPage.classList.add('hidden'); }
+document.getElementById('importBack').addEventListener('click', () => { location.hash = '#/estadisticas'; });
+
+syncAgentRoute(); // soporta deep-link directo a #/agente/ID, #/agentes, #/ieduca, #/curso/ID, #/estadisticas o #/importar al cargar la página
 
 /* ---------------- Filtro por zona dibujada ---------------- */
 const zoneBanner = document.getElementById('zoneBanner');
