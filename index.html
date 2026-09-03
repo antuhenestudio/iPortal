@@ -180,7 +180,7 @@
 
   /* ---- Modal de detalle ---- */
   #detailModal, #compareModal { transition: opacity .2s ease, visibility .2s ease; }
-  #detailModal.hidden-modal, #compareModal.hidden-modal, #favoritesModal.hidden-modal, #loginModal.hidden-modal, #leadModal.hidden-modal { opacity: 0; visibility: hidden; pointer-events: none; }
+  #detailModal.hidden-modal, #compareModal.hidden-modal, #favoritesModal.hidden-modal, #loginModal.hidden-modal, #leadModal.hidden-modal, #destacarModal.hidden-modal { opacity: 0; visibility: hidden; pointer-events: none; }
   .media-tab.is-active { background: #111111; color: #fff; }
   .media-pane { display: none; }
   .media-pane.is-active { display: block; }
@@ -697,6 +697,33 @@
   </div>
 </div>
 
+<!-- SUBPÁGINA: Comprar posicionamiento (packs de créditos) -->
+<div id="packsPage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
+  <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
+    <button id="packsBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
+    <span class="text-sm text-ink-700 font-data">Panel Agente / Posicionamiento</span>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 pb-24">
+    <h1 class="font-display font-medium text-2xl sm:text-3xl mb-2">Comprar posicionamiento</h1>
+    <p class="text-ink-700 text-sm mb-2">Publicar es gratis. Estos packs son créditos para destacar las propiedades que ya cargaste — cada crédito te deja subir una publicación a Premium o Medio desde "Mis publicaciones".</p>
+    <div id="packsBalance" class="inline-flex items-center gap-4 bg-paper rounded-full px-5 py-2.5 text-sm font-semibold mb-8"></div>
+
+    <div id="packsGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-5"></div>
+  </div>
+</div>
+
+<!-- MODAL DE DESTACAR PROPIEDAD (consume un crédito) -->
+<div id="destacarModal" class="hidden-modal fixed inset-0 z-[95]">
+  <div class="absolute inset-0 bg-ink-900/70"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2.5xl w-full max-w-sm relative shadow-2xl p-6">
+      <button id="closeDestacarModal" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-paper flex items-center justify-center text-ink-900 hover:bg-black/5"><i class="fa-solid fa-xmark"></i></button>
+      <div id="destacarModalBody"></div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL DE LOGIN (necesario para comprar un curso) -->
 <div id="loginModal" class="hidden-modal fixed inset-0 z-[95]">
   <div class="absolute inset-0 bg-ink-900/70"></div>
@@ -725,6 +752,7 @@
     <button id="statsBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
     <span class="text-sm text-ink-700 font-data">Panel Agente / Estadísticas</span>
     <a href="#/importar" class="ml-auto text-xs text-ink-800 hover:text-brand-600 font-semibold flex items-center gap-1.5 mr-4"><i class="fa-solid fa-file-import"></i>Importar propiedades</a>
+    <a href="#/posicionamiento" class="text-xs text-ink-800 hover:text-[#D9A441] font-semibold flex items-center gap-1.5 mr-4"><i class="fa-solid fa-star"></i>Posicionamiento</a>
     <button id="statsLogout" class="text-xs text-ink-700 hover:text-red-600 font-semibold"><i class="fa-solid fa-right-from-bracket mr-1"></i>Cerrar sesión</button>
   </div>
 
@@ -797,6 +825,7 @@
                 <th class="text-right font-semibold px-4 py-3">Vistas</th>
                 <th class="text-right font-semibold px-4 py-3">WhatsApp</th>
                 <th class="text-right font-semibold px-4 py-3">Conversión</th>
+                <th class="text-right font-semibold px-4 py-3">Acción</th>
               </tr>
             </thead>
             <tbody id="statsByProperty"></tbody>
@@ -1012,6 +1041,13 @@ const courses = [
 ];
 
 /* ---------------- Inversiones inmobiliarias — libres y Premium (bajo suscripción) ---------------- */
+/* ---------------- Packs de posicionamiento (créditos para destacar publicaciones) ---------------- */
+const positioningPacks = [
+  { id:1, name:'Pack 5 Súper Destacados', price:'AR$ 482.921', priceNote:'/ mes', grants:{ premium:5, medio:0 }, desc:'Máxima visibilidad y rotación preferencial en los listados. El más elegido por inmobiliarias.' },
+  { id:2, name:'Pack 10 Destacados', price:'AR$ 412.085', priceNote:'/ mes', grants:{ premium:0, medio:10 }, desc:'Alta rotación con visibilidad destacada para volumen de cartera.' },
+  { id:3, name:'Pack 10 Mixto', price:'AR$ 243.941', priceNote:'/ mes', grants:{ premium:2, medio:8 }, desc:'2 créditos Premium y 8 Medio — para combinar tus propiedades más importantes con el resto de la cartera.' },
+];
+
 const investments = [
   { id:1, title:'Fideicomiso Confluencia Norte', category:'Residencial', premium:false, minInvestment:'USD 5.000', yieldRange:'12% – 15% anual', term:'24 meses', risk:'Medio',
     icon:'fa-building', color:'#16A34A',
@@ -1670,6 +1706,7 @@ function syncAgentRoute() {
   hideInvestPage();
   hideInvestDetail();
   hideImportPage();
+  hidePacksPage();
   document.body.style.overflow = '';
 
   if (mProfile) {
@@ -1690,6 +1727,9 @@ function syncAgentRoute() {
   } else if (location.hash === '#/importar') {
     if (!loggedIn) { location.hash = ''; return; } // ruta protegida: sin sesión, vuelve al home
     showImportPage();
+  } else if (location.hash === '#/posicionamiento') {
+    if (!loggedIn) { location.hash = ''; return; } // ruta protegida: sin sesión, vuelve al home
+    showPacksPage();
   }
 }
 function openAgent(id, returnTo) {
@@ -1859,6 +1899,7 @@ investmentsGrid.addEventListener('click', (e) => {
 function unlockPremiumInvestments() {
   currentUser.premiumInvestor = true;
   saveCurrentUser(currentUser);
+  saveAccountData();
   document.getElementById('investStatusPill').classList.remove('hidden');
   document.getElementById('investStatusPill').classList.add('flex');
   renderInvestments();
@@ -1944,10 +1985,15 @@ const LS_USER_KEY = 'iportal_current_user';
 const LS_EVENTS_KEY = 'iportal_analytics_events';
 function loadCurrentUser() { try { return JSON.parse(localStorage.getItem(LS_USER_KEY)) || null; } catch (err) { return null; } }
 function saveCurrentUser(u) { try { u ? localStorage.setItem(LS_USER_KEY, JSON.stringify(u)) : localStorage.removeItem(LS_USER_KEY); } catch (err) {} }
+// Datos "de cuenta" (créditos, suscripción a Inversiones Premium) — sobreviven al cierre de sesión, a diferencia de currentUser
+const LS_ACCOUNT_KEY = 'iportal_account_admin';
+function loadAccountData() { try { return JSON.parse(localStorage.getItem(LS_ACCOUNT_KEY)) || { credits: { premium: 0, medio: 0 }, premiumInvestor: false }; } catch (err) { return { credits: { premium: 0, medio: 0 }, premiumInvestor: false }; } }
+function saveAccountData() { if (!currentUser) return; try { localStorage.setItem(LS_ACCOUNT_KEY, JSON.stringify({ credits: currentUser.credits, premiumInvestor: currentUser.premiumInvestor })); } catch (err) {} }
 function loadEvents() { try { return JSON.parse(localStorage.getItem(LS_EVENTS_KEY)) || []; } catch (err) { return []; } }
 function saveEvents(list) { try { localStorage.setItem(LS_EVENTS_KEY, JSON.stringify(list)); } catch (err) {} }
 
-let currentUser = loadCurrentUser(); // { name, email } | null
+let currentUser = loadCurrentUser(); // { name, email, phone, credits, premiumInvestor } | null
+if (currentUser) currentUser = { ...currentUser, ...loadAccountData() }; // los créditos/suscripción siempre vienen de la cuenta, no de la sesión vieja
 let loggedIn = !!currentUser;
 let pendingPurchase = null;
 let analyticsEvents = loadEvents();
@@ -1964,6 +2010,9 @@ function requireLogin(action, context) {
   } else if (context === 'invest') {
     title.textContent = 'Iniciá sesión para desbloquear';
     subtitle.textContent = 'Necesitás una cuenta de iPortal para activar Inversiones Premium y ver el detalle financiero completo.';
+  } else if (context === 'packs') {
+    title.textContent = 'Iniciá sesión para comprar';
+    subtitle.textContent = 'Los créditos de posicionamiento quedan asociados a tu cuenta de agente.';
   } else {
     title.textContent = 'Iniciá sesión para comprar';
     subtitle.textContent = 'Necesitás una cuenta de iPortal para acceder a los cursos de iEduca y que queden guardados en tu perfil.';
@@ -1999,6 +2048,7 @@ document.getElementById('loginForm').addEventListener('submit', (e) => {
     name: document.getElementById('loginName').value.trim(),
     email: usuario,
     phone: document.getElementById('loginPhone').value.trim() || null,
+    ...loadAccountData(),
   };
   loggedIn = true;
   saveCurrentUser(currentUser);
@@ -2106,6 +2156,7 @@ function renderStatsPage() {
       <td class="px-4 py-3 text-right font-data">${v}</td>
       <td class="px-4 py-3 text-right font-data">${c}</td>
       <td class="px-4 py-3 text-right font-data font-semibold ${conv >= 20 ? 'text-brand-700' : 'text-ink-700'}">${conv}%</td>
+      <td class="px-4 py-3 text-right"><button class="destacar-btn text-xs font-semibold text-[#B45309] hover:text-ink-900 underline underline-offset-2" data-id="${p.id}">Destacar</button></td>
     </tr>`).join('');
 
   const sorted = [...filtered].sort((a, b) => b.ts - a.ts);
@@ -2704,6 +2755,86 @@ function showImportPage() { importPage.classList.remove('hidden'); importPage.sc
 function hideImportPage() { importPage.classList.add('hidden'); }
 document.getElementById('importBack').addEventListener('click', () => { location.hash = '#/estadisticas'; });
 
+/* ---------------- Packs de posicionamiento: compra de créditos y "Destacar" una publicación ---------------- */
+function creditsBadge(credits) {
+  return `<span><i class="fa-solid fa-star text-[#D9A441] mr-1"></i>${credits.premium} Premium</span> · <span><i class="fa-solid fa-bolt mr-1"></i>${credits.medio} Medio</span>`;
+}
+function renderPacksPage() {
+  const credits = (currentUser && currentUser.credits) || { premium: 0, medio: 0 };
+  document.getElementById('packsBalance').innerHTML = `<i class="fa-solid fa-wallet"></i> Tus créditos: ${creditsBadge(credits)}`;
+  document.getElementById('packsGrid').innerHTML = positioningPacks.map(pack => `
+    <div class="border border-black/[0.08] rounded-2.5xl p-5 flex flex-col">
+      <h3 class="font-display font-medium text-lg mb-1">${pack.name}</h3>
+      <p class="text-xs text-ink-700 mb-4 flex-1">${pack.desc}</p>
+      <div class="flex flex-wrap gap-1.5 mb-4">
+        ${pack.grants.premium ? `<span class="positioning-tag positioning-premium"><i class="fa-solid fa-star"></i>+${pack.grants.premium}</span>` : ''}
+        ${pack.grants.medio ? `<span class="positioning-tag positioning-medio"><i class="fa-solid fa-bolt"></i>+${pack.grants.medio}</span>` : ''}
+      </div>
+      <p class="font-display font-semibold text-2xl mb-0.5">${pack.price}</p>
+      <p class="text-xs text-ink-700 mb-4">${pack.priceNote}</p>
+      <button class="buy-pack-btn btn bg-ink-900 hover:bg-ink-800 text-white rounded-full text-sm font-semibold" data-pack="${pack.id}">Comprar pack</button>
+    </div>`).join('');
+}
+document.getElementById('packsGrid').addEventListener('click', (e) => {
+  const btn = e.target.closest('.buy-pack-btn');
+  if (!btn) return;
+  requireLogin(() => {
+    const pack = positioningPacks.find(p => p.id === Number(btn.dataset.pack));
+    currentUser.credits.premium = (currentUser.credits.premium || 0) + (pack.grants.premium || 0);
+    currentUser.credits.medio = (currentUser.credits.medio || 0) + (pack.grants.medio || 0);
+    saveCurrentUser(currentUser);
+    saveAccountData();
+    renderPacksPage();
+    alert(`¡Listo! Sumaste el "${pack.name}" a tu cuenta.\n\nEste es un prototipo: en la versión real acá se procesaría el pago con Mercado Pago antes de acreditar los créditos.`);
+  }, 'packs');
+});
+
+const packsPage = document.getElementById('packsPage');
+function showPacksPage() { renderPacksPage(); packsPage.classList.remove('hidden'); packsPage.scrollTop = 0; document.body.style.overflow = 'hidden'; }
+function hidePacksPage() { packsPage.classList.add('hidden'); }
+document.getElementById('packsBack').addEventListener('click', () => { location.hash = '#/estadisticas'; });
+
+const destacarModal = document.getElementById('destacarModal');
+function openDestacarModal(propertyId) {
+  const p = properties.find(pr => pr.id === propertyId);
+  const credits = (currentUser && currentUser.credits) || { premium: 0, medio: 0 };
+  document.getElementById('destacarModalBody').innerHTML = `
+    <h3 class="font-display font-medium text-lg mb-1">Destacar "${p.title}"</h3>
+    <p class="text-sm text-ink-700 mb-4">Elegí el nivel. Se consume 1 crédito de ese tipo — posicionamiento actual: ${positioningTag(p) || 'Básico'}</p>
+    <div class="space-y-2 mb-4">
+      <button class="destacar-tier-btn w-full flex items-center justify-between border border-black/[0.1] rounded-xl px-4 py-3 ${credits.premium > 0 ? 'hover:border-[#D9A441] cursor-pointer' : 'opacity-40 cursor-not-allowed'}" data-tier="premium" ${credits.premium <= 0 ? 'disabled' : ''}>
+        <span class="positioning-tag positioning-premium"><i class="fa-solid fa-star"></i>Premium</span>
+        <span class="text-xs font-data">${credits.premium} disponibles</span>
+      </button>
+      <button class="destacar-tier-btn w-full flex items-center justify-between border border-black/[0.1] rounded-xl px-4 py-3 ${credits.medio > 0 ? 'hover:border-ink-900 cursor-pointer' : 'opacity-40 cursor-not-allowed'}" data-tier="medio" ${credits.medio <= 0 ? 'disabled' : ''}>
+        <span class="positioning-tag positioning-medio"><i class="fa-solid fa-bolt"></i>Medio</span>
+        <span class="text-xs font-data">${credits.medio} disponibles</span>
+      </button>
+    </div>
+    ${(credits.premium <= 0 && credits.medio <= 0) ? `<a href="#/posicionamiento" class="text-xs text-brand-600 hover:text-brand-700 underline underline-offset-2 font-semibold">No te quedan créditos — comprar más</a>` : ''}
+  `;
+  document.querySelectorAll('.destacar-tier-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      if (b.disabled) return;
+      const tier = b.dataset.tier;
+      currentUser.credits[tier] -= 1;
+      saveCurrentUser(currentUser);
+      saveAccountData();
+      p.positioning = tier;
+      closeDestacarModal();
+      renderStatsPage();
+      renderCards(lastRenderedProperties || properties);
+    });
+  });
+  destacarModal.classList.remove('hidden-modal');
+}
+function closeDestacarModal() { destacarModal.classList.add('hidden-modal'); }
+document.getElementById('closeDestacarModal').addEventListener('click', closeDestacarModal);
+document.getElementById('statsByProperty').addEventListener('click', (e) => {
+  const btn = e.target.closest('.destacar-btn');
+  if (btn) openDestacarModal(Number(btn.dataset.id));
+});
+
 syncAgentRoute(); // soporta deep-link directo a #/agente/ID, #/agentes, #/ieduca, #/curso/ID, #/estadisticas o #/importar al cargar la página
 
 /* ---------------- Filtro por zona dibujada ---------------- */
@@ -2861,7 +2992,7 @@ function closeDetail() {
 }
 document.getElementById('closeDetail').addEventListener('click', closeDetail);
 document.getElementById('detailBackdrop').addEventListener('click', closeDetail);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); closeLoginModal(); closeMobileMap(); closeLeadModal(); if (/^#\/(agente|agentes|ieduca|curso)/.test(location.hash)) location.hash = ''; closeFavoritesPanel(); } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDetail(); closeCompareModal(); closeLoginModal(); closeMobileMap(); closeLeadModal(); closeDestacarModal(); if (/^#\/(agente|agentes|ieduca|curso)/.test(location.hash)) location.hash = ''; closeFavoritesPanel(); } });
 
 document.getElementById('mediaTabs').addEventListener('click', (e) => {
   const tab = e.target.closest('.media-tab');
