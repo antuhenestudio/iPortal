@@ -505,9 +505,17 @@
     <h2 class="font-display font-medium text-2xl sm:text-3xl mb-2">Recibí novedades a tu medida</h2>
     <p class="text-ink-700 text-sm mb-8">Contanos qué te interesa y te avisamos por mail cuando aparezca algo que coincida — nada de spam genérico.</p>
     <form id="newsletterForm" class="bg-paper rounded-2.5xl p-6 sm:p-8 text-left">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
         <input id="newsletterName" type="text" required placeholder="Nombre y apellido" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:border-brand-600">
         <input id="newsletterEmail" type="email" required placeholder="Email" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:border-brand-600">
+      </div>
+      <div class="mb-5">
+        <select id="newsletterZona" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white">
+          <option value="">Zona de interés (opcional)</option>
+          <option value="Neuquén Capital">Neuquén Capital</option>
+          <option value="Cipolletti">Cipolletti</option>
+          <option value="Buenos Aires">Buenos Aires</option>
+        </select>
       </div>
       <p class="text-xs font-semibold text-ink-800 mb-3">¿Qué te gustaría recibir?</p>
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-6">
@@ -710,7 +718,7 @@
     <!-- CSV: 100% funcional, se procesa en el navegador -->
     <div id="importPaneCsv" class="import-pane">
       <div class="bg-paper rounded-2xl p-5 mb-4">
-        <p class="text-sm text-ink-800 mb-3">Subí un CSV con columnas: <code class="bg-white px-1.5 py-0.5 rounded text-xs">titulo, precio, moneda, tipo, ubicacion, dormitorios, banos, m2, descripcion</code></p>
+        <p class="text-sm text-ink-800 mb-3">Subí un CSV con columnas: <code class="bg-white px-1.5 py-0.5 rounded text-xs">titulo, precio, moneda, tipo, ubicacion, barrio, dormitorios, banos, m2, descripcion</code> — <code class="bg-white px-1.5 py-0.5 rounded text-xs">ubicacion</code> es la ciudad (siempre se usa) y <code class="bg-white px-1.5 py-0.5 rounded text-xs">barrio</code> es opcional.</p>
         <a id="downloadCsvTemplate" href="#" class="text-xs text-brand-600 hover:text-brand-700 font-semibold underline underline-offset-2 mb-4 inline-block">Descargar plantilla de ejemplo</a>
         <input type="file" id="importCsvFile" accept=".csv" class="block w-full text-sm border border-black/[0.12] rounded-xl px-4 py-2.5 bg-white">
       </div>
@@ -793,9 +801,19 @@
             <label class="block text-xs font-semibold text-ink-700 mb-1.5">Título del aviso</label>
             <input id="publishTitulo" type="text" maxlength="100" placeholder="Ej: Casa moderna con pileta en Bardas Soleadas" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm">
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-ink-700 mb-1.5">Ubicación (barrio, ciudad)</label>
-            <input id="publishUbicacion" type="text" placeholder="Ej: Bardas Soleadas, Neuquén" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-ink-700 mb-1.5">Ciudad</label>
+              <select id="publishCiudad" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white">
+                <option value="Neuquén Capital">Neuquén Capital</option>
+                <option value="Cipolletti">Cipolletti</option>
+                <option value="Buenos Aires">Buenos Aires</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-ink-700 mb-1.5">Barrio (opcional)</label>
+              <input id="publishBarrio" type="text" placeholder="Ej: Bardas Soleadas" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm">
+            </div>
           </div>
         </div>
       </div>
@@ -844,6 +862,7 @@
               <p class="text-xs font-semibold text-ink-700 mb-1.5">Fotos (subilas directamente, hasta 15)</p>
               <input id="publishFotosInput" type="file" accept="image/*" multiple class="block w-full text-xs border border-black/[0.12] rounded-xl px-3 py-2 bg-white">
               <div id="publishFotosPreview" class="flex flex-wrap gap-2 mt-2"></div>
+              <p id="publishFotosStatus" class="text-[11px] text-[#B45309] mt-1"></p>
             </div>
             <div>
               <p class="text-xs font-semibold text-ink-700 mb-1.5">Plano (imagen o PDF — si no subís uno, generamos un plano genérico)</p>
@@ -885,6 +904,67 @@
       </div>
     </form>
     <p id="publishSuccessMsg" class="hidden text-sm text-brand-700 font-semibold mt-4 text-center"></p>
+  </div>
+</div>
+
+<!-- SUBPÁGINA: Notificaciones push segmentadas (pagas, requieren cliente validado) -->
+<div id="pushPage" class="hidden fixed inset-0 z-[90] bg-white overflow-y-auto">
+  <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 sm:px-6 py-3 flex items-center gap-3">
+    <button id="pushBack" class="btn w-10 h-10 rounded-full bg-paper hover:bg-black/5 flex items-center justify-center text-ink-900" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
+    <span class="text-sm text-ink-700 font-data">Panel Agente / Notificaciones push</span>
+  </div>
+
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24">
+    <h1 class="font-display font-medium text-2xl sm:text-3xl mb-2">Notificación push segmentada</h1>
+    <p class="text-ink-700 text-sm mb-6">Llega a las personas que ya pidieron que les avisen de algo puntual — no es un envío masivo genérico. Requiere tu cuenta validada y se paga según el tamaño del segmento.</p>
+
+    <div class="bg-paper rounded-2xl p-5 mb-6 space-y-4">
+      <p class="text-xs font-semibold text-ink-700">1. Elegí el segmento</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <select id="pushInteres" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white">
+          <option value="">Cualquier interés</option>
+          <option value="Loteos en cuotas">Loteos en cuotas</option>
+          <option value="Departamentos">Departamentos</option>
+          <option value="Casas">Casas</option>
+          <option value="Terrenos y quintas">Terrenos y quintas</option>
+          <option value="Alquileres">Alquileres</option>
+          <option value="Inversiones">Inversiones</option>
+        </select>
+        <select id="pushZona" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white">
+          <option value="">Cualquier zona</option>
+          <option value="Neuquén Capital">Neuquén Capital</option>
+          <option value="Cipolletti">Cipolletti</option>
+          <option value="Buenos Aires">Buenos Aires</option>
+        </select>
+      </div>
+      <div id="pushAudienceBox" class="flex items-center justify-between bg-white rounded-xl px-4 py-3 border border-black/[0.08]">
+        <span class="text-sm text-ink-800">Alcance de este segmento</span>
+        <span id="pushAudienceCount" class="font-display font-semibold text-lg">0 contactos</span>
+      </div>
+    </div>
+
+    <div class="bg-paper rounded-2xl p-5 mb-6 space-y-3">
+      <p class="text-xs font-semibold text-ink-700">2. Redactá la notificación</p>
+      <input id="pushTitulo" type="text" maxlength="60" placeholder="Título (ej: Nuevo loteo en cuotas cerca tuyo)" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white">
+      <textarea id="pushMensaje" rows="2" maxlength="140" placeholder="Mensaje breve (hasta 140 caracteres)" class="w-full border border-black/[0.12] rounded-xl px-4 py-2.5 text-sm bg-white"></textarea>
+    </div>
+
+    <div class="bg-ink-900 text-white rounded-2xl p-5 mb-6">
+      <p class="text-xs font-semibold text-ink-300 mb-1">3. Precio calculado</p>
+      <p class="text-[11px] text-ink-300 mb-3">AR$ 45.000 cada 1.000 contactos, mínimo AR$ 15.000 por envío — punto de partida sugerido, ajustable.</p>
+      <div class="flex items-center justify-between">
+        <span class="text-sm">Total a pagar</span>
+        <span id="pushPriceLabel" class="font-display font-semibold text-2xl">AR$ 0</span>
+      </div>
+    </div>
+
+    <button id="pushSendBtn" class="btn w-full bg-brand-600 hover:bg-brand-700 text-white rounded-full text-base font-semibold flex items-center justify-center gap-2 mb-8">
+      <i class="fa-solid fa-lock mr-1"></i> Pagar y enviar notificación
+    </button>
+    <p id="pushSuccessMsg" class="hidden text-sm text-brand-700 font-semibold text-center mb-8"></p>
+
+    <h2 class="font-display font-medium text-lg mb-3">Historial de envíos</h2>
+    <div id="pushHistory" class="space-y-2"></div>
   </div>
 </div>
 
@@ -945,6 +1025,7 @@
     <a href="#/publicar" class="ml-auto text-xs text-ink-800 hover:text-brand-600 font-semibold flex items-center gap-1.5 mr-4"><i class="fa-solid fa-plus"></i>Publicar propiedad</a>
     <a href="#/importar" class="text-xs text-ink-800 hover:text-brand-600 font-semibold flex items-center gap-1.5 mr-4"><i class="fa-solid fa-file-import"></i>Importar propiedades</a>
     <a href="#/posicionamiento" class="text-xs text-ink-800 hover:text-[#D9A441] font-semibold flex items-center gap-1.5 mr-4"><i class="fa-solid fa-star"></i>Posicionamiento</a>
+    <a href="#/notificaciones" class="text-xs text-ink-800 hover:text-brand-600 font-semibold flex items-center gap-1.5 mr-4"><i class="fa-solid fa-bullhorn"></i>Notificaciones push</a>
     <button id="statsLogout" class="text-xs text-ink-700 hover:text-red-600 font-semibold"><i class="fa-solid fa-right-from-bracket mr-1"></i>Cerrar sesión</button>
   </div>
 
@@ -1447,39 +1528,39 @@ const PROPERTY_TAXONOMY = {
 };
 
 const properties = [
-  { id:1, title:'Casa moderna con piscina', priceAmount:185000, currency:'USD', loc:'Bardas Soleadas, Neuquén', badge:'ACM Calificado', badgeColor:'ink', type:'house', category:'house', subtype:'Estándar', agentId:1, positioning:'premium', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', dorms:3, banos:2, m2:210, specs:[['fa-bed','3 dorms'],['fa-bath','2 baños'],['fa-ruler-combined','210 m²']],
+  { id:1, title:'Casa moderna con piscina', priceAmount:185000, currency:'USD', loc:'Bardas Soleadas, Neuquén', badge:'ACM Calificado', badgeColor:'ink', type:'house', category:'house', subtype:'Estándar', agentId:1, positioning:'premium', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', neighborhood:'Bardas Soleadas', dorms:3, banos:2, m2:210, specs:[['fa-bed','3 dorms'],['fa-bath','2 baños'],['fa-ruler-combined','210 m²']],
     photos:['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9298, lng:-68.0745,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/NjV1w?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'Casa de dos plantas con piscina y parquización completa, en una de las zonas más buscadas de la ciudad. Living-comedor integrado, cocina con isla y dormitorio en suite.' },
-  { id:2, title:'Departamento 2 ambientes centro', priceAmount:75000000, currency:'ARS', loc:'Área Centro, Neuquén Capital', badge:'Oportunidad', badgeColor:'brand', type:'apt', category:'apt', subtype:'Estándar', agentId:3, positioning:'medio', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', dorms:1, banos:1, m2:52, specs:[['fa-bed','1 dorm'],['fa-bath','1 baño'],['fa-ruler-combined','52 m²']],
+  { id:2, title:'Departamento 2 ambientes centro', priceAmount:75000000, currency:'ARS', loc:'Área Centro, Neuquén Capital', badge:'Oportunidad', badgeColor:'brand', type:'apt', category:'apt', subtype:'Estándar', agentId:3, positioning:'medio', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', neighborhood:'Área Centro', dorms:1, banos:1, m2:52, specs:[['fa-bed','1 dorm'],['fa-bath','1 baño'],['fa-ruler-combined','52 m²']],
     photos:['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9522, lng:-68.0591,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/5GssB?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'A metros de la peatonal, ideal para renta o primera vivienda. Balcón, cocina separada y excelente iluminación natural todo el día.',
     pets:['dog','cat'] },
-  { id:3, title:'Casa con vista al río', priceAmount:210000, currency:'USD', loc:'Terrazas del Neuquén', badge:'Vista premium', badgeColor:'ink', type:'house', category:'house', subtype:'Chalet', agentId:1, positioning:'premium', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', dorms:4, banos:3, m2:320, specs:[['fa-bed','4 dorms'],['fa-bath','3 baños'],['fa-ruler-combined','320 m²']],
+  { id:3, title:'Casa con vista al río', priceAmount:210000, currency:'USD', loc:'Terrazas del Neuquén', badge:'Vista premium', badgeColor:'ink', type:'house', category:'house', subtype:'Chalet', agentId:1, positioning:'premium', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', neighborhood:'Terrazas del Neuquén', dorms:4, banos:3, m2:320, specs:[['fa-bed','4 dorms'],['fa-bath','3 baños'],['fa-ruler-combined','320 m²']],
     photos:['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9245, lng:-68.0958,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/h5Hpv?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'En la meseta alta, con vista abierta al Río Neuquén. Living con ventanales de piso a techo, quincho cubierto y cochera para 2 autos.' },
-  { id:4, title:'Departamento a estrenar frente a la plaza', priceAmount:98000000, currency:'ARS', loc:'Confluencia Urbana, Neuquén', badge:'A estrenar', badgeColor:'brand', type:'apt', category:'apt', subtype:'Piso', agentId:2, positioning:'medio', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', dorms:2, banos:1, m2:64, specs:[['fa-bed','2 dorms'],['fa-bath','1 baño'],['fa-ruler-combined','64 m²']],
+  { id:4, title:'Departamento a estrenar frente a la plaza', priceAmount:98000000, currency:'ARS', loc:'Confluencia Urbana, Neuquén', badge:'A estrenar', badgeColor:'brand', type:'apt', category:'apt', subtype:'Piso', agentId:2, positioning:'medio', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', neighborhood:'Confluencia Urbana', dorms:2, banos:1, m2:64, specs:[['fa-bed','2 dorms'],['fa-bath','1 baño'],['fa-ruler-combined','64 m²']],
     photos:['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9581, lng:-68.0552,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:'https://kuula.co/share/5GssB?fs=1&vr=1&sd=1&thumbs=1&logo=1',
     desc:'Estrenar sin sorpresas: terminaciones a nuevo, amenities de edificio y frente a plaza arbolada. Apto crédito hipotecario.',
     pets:['dog'] },
-  { id:5, title:'Terreno con proyecto aprobado', priceAmount:42000, currency:'USD', loc:'Confluencia Rural, Neuquén', badge:'Apto crédito', badgeColor:'ink', type:'land', category:'land', subtype:'Urbano', agentId:4, positioning:'basico', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', dorms:0, banos:0, m2:600, specs:[['fa-draw-polygon','Lote 600 m²'],['fa-file-signature','Escritura lista'],['fa-road','Sobre ruta']],
+  { id:5, title:'Terreno con proyecto aprobado', priceAmount:42000, currency:'USD', loc:'Confluencia Rural, Neuquén', badge:'Apto crédito', badgeColor:'ink', type:'land', category:'land', subtype:'Urbano', agentId:4, positioning:'basico', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', neighborhood:'Confluencia Rural', dorms:0, banos:0, m2:600, specs:[['fa-draw-polygon','Lote 600 m²'],['fa-file-signature','Escritura lista'],['fa-road','Sobre ruta']],
     photos:['https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9812, lng:-68.0198,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
     tour360:null,
     desc:'Lote plano, esquina, con todos los servicios en la vereda y proyecto de vivienda ya aprobado por catastro municipal.' },
-  { id:6, title:'Casa quinta con parque', priceAmount:265000, currency:'USD', loc:'Valentina Sur Rural, Neuquén', badge:'Exclusiva', badgeColor:'ink', type:'house', category:'house', subtype:'Quinta', agentId:4, positioning:'basico', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', dorms:5, banos:4, m2:540, specs:[['fa-bed','5 dorms'],['fa-bath','4 baños'],['fa-ruler-combined','540 m²']],
+  { id:6, title:'Casa quinta con parque', priceAmount:265000, currency:'USD', loc:'Valentina Sur Rural, Neuquén', badge:'Exclusiva', badgeColor:'ink', type:'house', category:'house', subtype:'Quinta', agentId:4, positioning:'basico', country:'Argentina', province:'Neuquén', city:'Neuquén Capital', neighborhood:'Valentina Sur Rural', dorms:5, banos:4, m2:540, specs:[['fa-bed','5 dorms'],['fa-bath','4 baños'],['fa-ruler-combined','540 m²']],
     photos:['https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80','https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80'],
     lat:-38.9765, lng:-68.0865,
     video:'https://www.youtube.com/embed/82KejS_EpRc',
@@ -1923,6 +2004,7 @@ function syncAgentRoute() {
   const mProfile = location.hash.match(/^#\/agente\/(\d+)$/);
   const mCourse = location.hash.match(/^#\/curso\/(\d+)$/);
   const mInvest = location.hash.match(/^#\/inversion\/(\d+)$/);
+  const mPropiedad = location.hash.match(/^#\/propiedad\/(\d+)$/);
   hideAgentProfile();
   hideAgentsDirectory();
   hideIeducaPage();
@@ -1933,9 +2015,13 @@ function syncAgentRoute() {
   hideImportPage();
   hidePacksPage();
   hidePublishPage();
+  hidePushPage();
+  if (!mPropiedad) closeDetail(false); // si la ruta no es una propiedad, nos aseguramos de que el popup no quede abierto de una navegación anterior
   document.body.style.overflow = '';
 
-  if (mProfile) {
+  if (mPropiedad) {
+    openDetail(Number(mPropiedad[1]), false);
+  } else if (mProfile) {
     showAgentProfile(Number(mProfile[1]));
   } else if (location.hash === '#/agentes') {
     showAgentsDirectory();
@@ -1959,6 +2045,9 @@ function syncAgentRoute() {
   } else if (location.hash === '#/posicionamiento') {
     if (!loggedIn) { location.hash = ''; return; } // ruta protegida: sin sesión, vuelve al home
     showPacksPage();
+  } else if (location.hash === '#/notificaciones') {
+    if (!loggedIn) { location.hash = ''; return; } // ruta protegida: sin sesión, vuelve al home
+    showPushPage();
   }
 }
 function openAgent(id, returnTo) {
@@ -2242,6 +2331,9 @@ function requireLogin(action, context) {
   } else if (context === 'packs') {
     title.textContent = 'Iniciá sesión para comprar';
     subtitle.textContent = 'Los créditos de posicionamiento quedan asociados a tu cuenta de agente.';
+  } else if (context === 'push') {
+    title.textContent = 'Validá tu cuenta para enviar';
+    subtitle.textContent = 'Antes de pagar y enviar una notificación a otras personas, necesitamos que tu cuenta de agente esté identificada.';
   } else {
     title.textContent = 'Iniciá sesión para comprar';
     subtitle.textContent = 'Necesitás una cuenta de iPortal para acceder a los cursos de iEduca y que queden guardados en tu perfil.';
@@ -2662,11 +2754,34 @@ function downloadPdfReport() {
 window.addEventListener('afterprint', () => document.getElementById('printReport').classList.add('hidden'));
 document.getElementById('downloadPdfBtn').addEventListener('click', downloadPdfReport);
 
-/* ---------------- Suscripción a novedades (usuarios comunes) — para difusiones masivas futuras ---------------- */
+/* ---------------- Suscripción a novedades (usuarios comunes) — para difusiones masivas futuras y notificaciones push segmentadas ---------------- */
 const LS_NEWSLETTER_KEY = 'iportal_newsletter_signups';
 function loadNewsletterSignups() { try { return JSON.parse(localStorage.getItem(LS_NEWSLETTER_KEY)) || []; } catch (err) { return []; } }
 function saveNewsletterSignups(list) { try { localStorage.setItem(LS_NEWSLETTER_KEY, JSON.stringify(list)); } catch (err) {} }
 let newsletterSignups = loadNewsletterSignups();
+
+// Semilla de ejemplo para que el segmentador de notificaciones tenga volumen real para mostrar (solo la primera vez).
+function seedNewsletterIfEmpty() {
+  if (newsletterSignups.length) return;
+  const zonas = ['Neuquén Capital', 'Cipolletti', 'Buenos Aires'];
+  const interesesPosibles = ['Loteos en cuotas', 'Departamentos', 'Casas', 'Terrenos y quintas', 'Alquileres', 'Inversiones'];
+  const nombres = ['Marcelo Díaz', 'Julieta Núñez', 'Franco Herrera', 'Belén Castro', 'Ignacio Ramos', 'Sabrina Molina', 'Tomás Ibarra', 'Florencia Suárez'];
+  for (let i = 0; i < 3000; i++) {
+    const cantidadIntereses = 1 + Math.floor(Math.random() * 2);
+    const intereses = [...interesesPosibles].sort(() => Math.random() - 0.5).slice(0, cantidadIntereses);
+    // sesgamos para que "Loteos en cuotas" tenga buen volumen, como en el ejemplo de la consulta
+    if (Math.random() < 0.35 && !intereses.includes('Loteos en cuotas')) intereses.push('Loteos en cuotas');
+    newsletterSignups.push({
+      name: nombres[i % nombres.length] + ' ' + i,
+      email: `suscriptor${i}@mail.com`,
+      zona: zonas[Math.floor(Math.random() * zonas.length)],
+      interests: intereses,
+      ts: Date.now() - Math.floor(Math.random() * 60 * 86400000),
+    });
+  }
+  saveNewsletterSignups(newsletterSignups);
+}
+seedNewsletterIfEmpty();
 
 document.getElementById('newsletterForm').addEventListener('submit', (e) => {
   e.preventDefault();
@@ -2674,6 +2789,7 @@ document.getElementById('newsletterForm').addEventListener('submit', (e) => {
   newsletterSignups.push({
     name: document.getElementById('newsletterName').value.trim(),
     email: document.getElementById('newsletterEmail').value.trim(),
+    zona: document.getElementById('newsletterZona').value || null,
     interests,
     ts: Date.now(),
   });
@@ -2697,6 +2813,82 @@ function downloadNewsletterCSV() {
   URL.revokeObjectURL(url);
 }
 document.getElementById('downloadNewsletterBtn').addEventListener('click', downloadNewsletterCSV);
+
+/* ---------------- Notificaciones push segmentadas (pagas, requieren cliente validado) ---------------- */
+const PUSH_PRICE_PER_1000 = 45000; // AR$ — punto de partida sugerido, no una tarifa de mercado verificada
+const PUSH_MIN_PRICE = 15000;
+function calcularAudienciaPush() {
+  const interes = document.getElementById('pushInteres').value;
+  const zona = document.getElementById('pushZona').value;
+  return newsletterSignups.filter(s =>
+    (!interes || (s.interests || []).includes(interes)) &&
+    (!zona || s.zona === zona)
+  ).length;
+}
+function calcularPrecioPush(cantidad) {
+  if (cantidad === 0) return 0;
+  return Math.max(Math.ceil(cantidad / 1000) * PUSH_PRICE_PER_1000, PUSH_MIN_PRICE);
+}
+function refreshPushCalculator() {
+  const cantidad = calcularAudienciaPush();
+  document.getElementById('pushAudienceCount').textContent = `${cantidad.toLocaleString('es-AR')} contacto${cantidad === 1 ? '' : 's'}`;
+  document.getElementById('pushPriceLabel').textContent = `AR$ ${calcularPrecioPush(cantidad).toLocaleString('es-AR')}`;
+}
+['pushInteres', 'pushZona'].forEach(id => document.getElementById(id).addEventListener('change', refreshPushCalculator));
+
+const LS_PUSH_HISTORY_KEY = 'iportal_push_history';
+function loadPushHistory() { try { return JSON.parse(localStorage.getItem(LS_PUSH_HISTORY_KEY)) || []; } catch (err) { return []; } }
+function savePushHistory(list) { try { localStorage.setItem(LS_PUSH_HISTORY_KEY, JSON.stringify(list)); } catch (err) {} }
+let pushHistory = loadPushHistory();
+
+function renderPushHistory() {
+  const box = document.getElementById('pushHistory');
+  if (!pushHistory.length) { box.innerHTML = `<p class="text-sm text-ink-700 text-center py-6 border border-black/[0.08] rounded-xl">Todavía no enviaste ninguna notificación.</p>`; return; }
+  box.innerHTML = [...pushHistory].sort((a, b) => b.ts - a.ts).map(h => `
+    <div class="border border-black/[0.08] rounded-xl px-4 py-3">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-sm font-semibold text-ink-900">${h.titulo}</span>
+        <span class="text-xs font-data text-ink-700">${fmtFechaHora(h.ts)}</span>
+      </div>
+      <p class="text-xs text-ink-700 mb-1">${h.mensaje}</p>
+      <p class="text-xs text-ink-700">Segmento: ${h.interes || 'Cualquier interés'} · ${h.zona || 'Cualquier zona'} — ${h.cantidad.toLocaleString('es-AR')} contactos · <span class="font-semibold text-brand-700">AR$ ${h.precio.toLocaleString('es-AR')}</span></p>
+    </div>`).join('');
+}
+
+document.getElementById('pushSendBtn').addEventListener('click', () => {
+  const titulo = document.getElementById('pushTitulo').value.trim();
+  const mensaje = document.getElementById('pushMensaje').value.trim();
+  if (!titulo || !mensaje) { alert('Completá el título y el mensaje antes de enviar.'); return; }
+  const cantidad = calcularAudienciaPush();
+  if (cantidad === 0) { alert('No hay contactos en ese segmento — probá con un interés o zona más amplio.'); return; }
+  const precio = calcularPrecioPush(cantidad);
+
+  requireLogin(() => {
+    pushHistory.push({
+      titulo, mensaje, precio, cantidad,
+      interes: document.getElementById('pushInteres').value,
+      zona: document.getElementById('pushZona').value,
+      ts: Date.now(),
+    });
+    savePushHistory(pushHistory);
+    renderPushHistory();
+    document.getElementById('pushSuccessMsg').textContent = `¡Listo! Se "envió" la notificación a ${cantidad.toLocaleString('es-AR')} contactos (AR$ ${precio.toLocaleString('es-AR')}).`;
+    document.getElementById('pushSuccessMsg').classList.remove('hidden');
+    alert('Este es un prototipo de demostración: no existe infraestructura real de push (service worker, FCM/APNs) ni cobro real todavía — acá se simula el envío y el pago.');
+    document.getElementById('pushTitulo').value = '';
+    document.getElementById('pushMensaje').value = '';
+  }, 'push');
+});
+
+const pushPage = document.getElementById('pushPage');
+function showPushPage() {
+  renderPushHistory();
+  refreshPushCalculator();
+  document.getElementById('pushSuccessMsg').classList.add('hidden');
+  pushPage.classList.remove('hidden'); pushPage.scrollTop = 0; document.body.style.overflow = 'hidden';
+}
+function hidePushPage() { pushPage.classList.add('hidden'); }
+document.getElementById('pushBack').addEventListener('click', () => { location.hash = '#/estadisticas'; });
 
 const statsPage = document.getElementById('statsPage');
 function showStatsPage() { renderStatsPage(); statsPage.classList.remove('hidden'); statsPage.scrollTop = 0; document.body.style.overflow = 'hidden'; }
@@ -2882,6 +3074,58 @@ function refreshPublishSubtipo() {
 refreshPublishSubtipo();
 document.getElementById('publishTipo').addEventListener('change', refreshPublishSubtipo);
 
+/* ---------------- Compresión de imágenes y detección de duplicados (para que la app no se ponga lenta) ---------------- */
+function compressImage(file, maxDim = 1600, quality = 0.78) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+          else { width = Math.round(width * maxDim / height); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve({ dataUrl: canvas.toDataURL('image/jpeg', quality), width, height });
+      };
+      img.onerror = () => reject(new Error('No se pudo leer la imagen'));
+      img.src = ev.target.result;
+    };
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+    reader.readAsDataURL(file);
+  });
+}
+// Hash perceptual simple (aHash de 8x8): detecta que "es la misma foto" aunque cambie de formato o calidad,
+// no solo si el archivo es byte-por-byte idéntico.
+function computeImageHash(dataUrl) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const size = 8;
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      const data = ctx.getImageData(0, 0, size, size).data;
+      const gray = [];
+      for (let i = 0; i < data.length; i += 4) gray.push((data[i] + data[i + 1] + data[i + 2]) / 3);
+      const avg = gray.reduce((a, b) => a + b, 0) / gray.length;
+      resolve(gray.map(v => (v > avg ? '1' : '0')).join(''));
+    };
+    img.onerror = () => resolve(null);
+    img.src = dataUrl;
+  });
+}
+function hammingDistance(a, b) {
+  if (!a || !b || a.length !== b.length) return 999;
+  let d = 0;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) d++;
+  return d;
+}
+
 let publishStep = 1;
 let publishOperacion = 'Venta';
 let publishAmenitiesSelected = [];
@@ -2895,20 +3139,26 @@ function renderPublishFotosPreview() {
       <button type="button" class="remove-foto-btn absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/60 text-white text-[10px] flex items-center justify-center" data-idx="${i}"><i class="fa-solid fa-xmark"></i></button>
     </div>`).join('') + (publishPhotosData.length ? `<span class="text-[11px] text-ink-700 self-center">${publishPhotosData.length} foto${publishPhotosData.length === 1 ? '' : 's'} cargada${publishPhotosData.length === 1 ? '' : 's'}${publishPhotosData.length > 10 ? ' — suma a "Ficha completa"' : ''}</span>` : '');
 }
-document.getElementById('publishFotosInput').addEventListener('change', (e) => {
+document.getElementById('publishFotosInput').addEventListener('change', async (e) => {
   const files = [...e.target.files].slice(0, 15 - publishPhotosData.length);
-  if (!files.length) return;
-  let pending = files.length;
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      publishPhotosData.push({ dataUrl: ev.target.result, name: file.name });
-      pending--;
-      if (pending === 0) renderPublishFotosPreview();
-    };
-    reader.readAsDataURL(file);
-  });
   e.target.value = ''; // permite volver a elegir el mismo archivo si lo saca y lo repone
+  if (!files.length) return;
+
+  let duplicadas = 0;
+  document.getElementById('publishFotosStatus').textContent = 'Comprimiendo y revisando duplicados…';
+  for (const file of files) {
+    try {
+      const { dataUrl } = await compressImage(file, 1600, 0.78);
+      const hash = await computeImageHash(dataUrl);
+      const yaExiste = publishPhotosData.some(f => hammingDistance(f.hash, hash) <= 5); // muy parecidas = misma foto
+      if (yaExiste) { duplicadas++; continue; }
+      publishPhotosData.push({ dataUrl, hash, name: file.name });
+    } catch (err) { /* si una imagen falla al procesar, seguimos con el resto */ }
+  }
+  document.getElementById('publishFotosStatus').textContent = duplicadas
+    ? `Se omitieron ${duplicadas} foto${duplicadas === 1 ? '' : 's'} por estar repetida${duplicadas === 1 ? '' : 's'}.`
+    : '';
+  renderPublishFotosPreview();
 });
 document.getElementById('publishFotosPreview').addEventListener('click', (e) => {
   const btn = e.target.closest('.remove-foto-btn');
@@ -2917,20 +3167,18 @@ document.getElementById('publishFotosPreview').addEventListener('click', (e) => 
   renderPublishFotosPreview();
 });
 
-document.getElementById('publishPlanoInput').addEventListener('change', (e) => {
+document.getElementById('publishPlanoInput').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
   const isPdf = file.type === 'application/pdf';
   if (!isPdf && !file.type.startsWith('image/')) { alert('El plano tiene que ser una imagen o un PDF.'); e.target.value = ''; return; }
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    publishPlanoData = { dataUrl: ev.target.result, type: isPdf ? 'pdf' : 'image', name: file.name };
-    document.getElementById('publishPlanoPreview').innerHTML = isPdf
-      ? `<div class="flex items-center gap-2 text-xs text-ink-800 bg-white border border-black/[0.1] rounded-lg px-3 py-2 w-fit"><i class="fa-solid fa-file-pdf text-red-500"></i>${file.name}<button type="button" id="removePlanoBtn" class="text-ink-700 hover:text-red-600 ml-1"><i class="fa-solid fa-xmark"></i></button></div>`
-      : `<div class="relative w-20 h-20 rounded-lg overflow-hidden border border-black/[0.1]"><img src="${ev.target.result}" class="w-full h-full object-cover"><button type="button" id="removePlanoBtn" class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/60 text-white text-[10px] flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button></div>`;
-    document.getElementById('removePlanoBtn').addEventListener('click', () => { publishPlanoData = null; document.getElementById('publishPlanoPreview').innerHTML = ''; document.getElementById('publishPlanoInput').value = ''; });
-  };
-  reader.readAsDataURL(file);
+
+  const dataUrl = isPdf ? await new Promise(res => { const r = new FileReader(); r.onload = ev => res(ev.target.result); r.readAsDataURL(file); }) : (await compressImage(file, 1600, 0.82)).dataUrl;
+  publishPlanoData = { dataUrl, type: isPdf ? 'pdf' : 'image', name: file.name };
+  document.getElementById('publishPlanoPreview').innerHTML = isPdf
+    ? `<div class="flex items-center gap-2 text-xs text-ink-800 bg-white border border-black/[0.1] rounded-lg px-3 py-2 w-fit"><i class="fa-solid fa-file-pdf text-red-500"></i>${file.name}<button type="button" id="removePlanoBtn" class="text-ink-700 hover:text-red-600 ml-1"><i class="fa-solid fa-xmark"></i></button></div>`
+    : `<div class="relative w-20 h-20 rounded-lg overflow-hidden border border-black/[0.1]"><img src="${dataUrl}" class="w-full h-full object-cover"><button type="button" id="removePlanoBtn" class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/60 text-white text-[10px] flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button></div>`;
+  document.getElementById('removePlanoBtn').addEventListener('click', () => { publishPlanoData = null; document.getElementById('publishPlanoPreview').innerHTML = ''; document.getElementById('publishPlanoInput').value = ''; });
 });
 
 function goToPublishStep(n) {
@@ -2971,8 +3219,8 @@ document.getElementById('publishAmenities').addEventListener('click', (e) => {
 
 document.getElementById('publishNextBtn').addEventListener('click', () => {
   if (publishStep === 1) {
-    if (!document.getElementById('publishTitulo').value.trim() || !document.getElementById('publishUbicacion').value.trim()) {
-      alert('Completá el título y la ubicación para continuar.'); return;
+    if (!document.getElementById('publishTitulo').value.trim()) {
+      alert('Completá el título para continuar.'); return;
     }
   }
   goToPublishStep(publishStep + 1);
@@ -2985,7 +3233,7 @@ function renderPublishSummary() {
   const moneda = document.getElementById('publishMoneda').value;
   document.getElementById('publishSummary').innerHTML = `
     <p class="text-sm font-semibold text-ink-900 mb-2">${document.getElementById('publishTitulo').value || 'Sin título'}</p>
-    <p class="text-xs text-ink-700 mb-1">${publishOperacion} · ${tipoLabel} · ${document.getElementById('publishUbicacion').value || 'Sin ubicación'}</p>
+    <p class="text-xs text-ink-700 mb-1">${publishOperacion} · ${tipoLabel} · ${buildLocationLabel({ city: document.getElementById('publishCiudad').value, neighborhood: document.getElementById('publishBarrio').value.trim() })}</p>
     <p class="text-xs text-ink-700 mb-1">${document.getElementById('publishDorms').value} dorms · ${document.getElementById('publishBanos').value} baños · ${document.getElementById('publishM2').value || '—'} m²</p>
     <p class="font-data font-semibold text-lg mt-2">${precio ? formatMoney(precio, moneda) : 'Precio sin definir'}</p>
   `;
@@ -3010,6 +3258,8 @@ document.getElementById('publishForm').addEventListener('submit', (e) => {
     : [['fa-bed', dorms + ' dorms'], ['fa-bath', banos + ' baños'], ['fa-ruler-combined', (m2 || '—') + ' m²']];
   if (Number(cocheras) > 0) specs.push(['fa-square-parking', cocheras + ' cochera' + (cocheras > 1 ? 's' : '')]);
 
+  const ciudad = document.getElementById('publishCiudad').value;
+  const barrio = document.getElementById('publishBarrio').value.trim();
   const [created] = commitImportedProperties([{
     title: document.getElementById('publishTitulo').value.trim(),
     priceAmount: precio,
@@ -3017,7 +3267,9 @@ document.getElementById('publishForm').addEventListener('submit', (e) => {
     category: categoria,
     subtype: subtipo,
     type: tipo,
-    loc: document.getElementById('publishUbicacion').value.trim(),
+    city: ciudad,
+    neighborhood: barrio || null,
+    loc: barrio ? `${barrio}, ${ciudad}` : ciudad,
     desc: document.getElementById('publishDesc').value.trim() || `${publishOperacion} · ${document.getElementById('publishAntiguedad').value}.`,
     dorms, banos, m2,
     specs,
@@ -3069,6 +3321,7 @@ function commitImportedProperties(items) {
       agentId: null,
       positioning: 'basico',
       country: raw.country || 'Argentina', province: raw.province || 'Neuquén', city: raw.city || 'Neuquén Capital',
+      neighborhood: raw.neighborhood || null,
       dorms: Number(raw.dorms) || 0, banos: Number(raw.banos) || 0, m2: Number(raw.m2) || 0,
       specs: raw.specs || [['fa-ruler-combined', (raw.m2 || '—') + ' m²']],
       photos: raw.photos && raw.photos.length ? raw.photos : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80'],
@@ -3104,7 +3357,9 @@ function parseCsv(text) {
       category: categoria,
       subtype: PROPERTY_TAXONOMY[categoria].subtypes[0],
       type: PROPERTY_TAXONOMY[categoria].type,
-      loc: row.ubicacion || 'Neuquén Capital',
+      loc: row.barrio ? `${row.barrio}, ${row.ubicacion || 'Neuquén Capital'}` : (row.ubicacion || 'Neuquén Capital'),
+      city: row.ubicacion || 'Neuquén Capital',
+      neighborhood: row.barrio || null,
       desc: row.descripcion || '',
       m2: row.m2, dorms: row.dormitorios, banos: row.banos,
       specs: [
@@ -3133,7 +3388,7 @@ document.getElementById('importCsvFile').addEventListener('change', (e) => {
   reader.readAsText(file);
 });
 
-const csvTemplate = 'titulo,precio,moneda,tipo,ubicacion,dormitorios,banos,m2,descripcion\nDuplex en Confluencia,120000,USD,house,Confluencia Urbana Neuquén,3,2,180,Duplex a nuevo con parrilla propia\nMonoambiente Centro,45000000,ARS,apt,Área Centro Neuquén,1,1,32,Monoambiente a estrenar cerca de la peatonal';
+const csvTemplate = 'titulo,precio,moneda,tipo,ubicacion,barrio,dormitorios,banos,m2,descripcion\nDuplex en Confluencia,120000,USD,house,Neuquén Capital,Confluencia Urbana,3,2,180,Duplex a nuevo con parrilla propia\nMonoambiente Centro,45000000,ARS,apt,Neuquén Capital,Área Centro,1,1,32,Monoambiente a estrenar cerca de la peatonal';
 document.getElementById('downloadCsvTemplate').addEventListener('click', (e) => {
   e.preventDefault();
   const blob = new Blob([csvTemplate], { type: 'text/csv;charset=utf-8;' });
@@ -3295,7 +3550,7 @@ document.getElementById('statsByProperty').addEventListener('click', (e) => {
   if (btn) openDestacarModal(Number(btn.dataset.id));
 });
 
-syncAgentRoute(); // soporta deep-link directo a #/agente/ID, #/agentes, #/ieduca, #/curso/ID, #/estadisticas o #/importar al cargar la página
+// (la llamada inicial a syncAgentRoute() se hace más abajo, después de declarar detailModal/openDetail/closeDetail)
 
 /* ---------------- Filtros funcionales de propiedades (ubicación primero, luego categoría, precio, ambientes, baños, orden) ---------------- */
 document.getElementById('toggleMasFiltros').addEventListener('click', () => {
@@ -3511,12 +3766,50 @@ function setMediaTab(target) {
   document.querySelectorAll('.media-tab').forEach(t => t.classList.toggle('is-active', t.dataset.target === target));
 }
 
-function openDetail(id) {
+const DEFAULT_PAGE_TITLE = document.title;
+// Ciudad siempre se incluye; el barrio solo si la propiedad lo tiene cargado — así lo pediste.
+function buildLocationLabel(p) {
+  let label = `ciudad de ${p.city}`;
+  if (p.neighborhood) label += `, barrio ${p.neighborhood}`;
+  return label;
+}
+function updatePropertySeoMeta(p) {
+  const ubicacion = buildLocationLabel(p);
+  document.title = `${p.title} en ${ubicacion} | iPortal`;
+  let metaDesc = document.querySelector('meta[name="description"]');
+  if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = 'description'; document.head.appendChild(metaDesc); }
+  metaDesc.setAttribute('content', `${p.title} en ${ubicacion}. ${formatPrice(p)}. ${(p.desc || '').slice(0, 150)}`);
+
+  let ld = document.getElementById('propertyJsonLd');
+  if (!ld) { ld = document.createElement('script'); ld.type = 'application/ld+json'; ld.id = 'propertyJsonLd'; document.head.appendChild(ld); }
+  const realPhoto = (p.photos || []).find(u => u.startsWith('http'));
+  const address = { '@type': 'PostalAddress', addressLocality: p.city, addressRegion: p.province, addressCountry: p.country };
+  if (p.neighborhood) address.streetAddress = p.neighborhood; // Schema.org no tiene un campo "barrio" propio; streetAddress es lo más aceptado para esto
+  ld.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'RealEstateListing',
+    name: `${p.title} en ${ubicacion}`,
+    description: p.desc || '',
+    url: location.href.split('#')[0] + '#/propiedad/' + p.id,
+    image: realPhoto,
+    address,
+    offers: { '@type': 'Offer', price: p.priceAmount, priceCurrency: p.currency },
+  });
+}
+function clearPropertySeoMeta() {
+  document.title = DEFAULT_PAGE_TITLE;
+  const ld = document.getElementById('propertyJsonLd');
+  if (ld) ld.remove();
+}
+
+function openDetail(id, updateHash) {
   const p = properties.find(pr => pr.id === id);
   if (!p) return;
   currentDetailId = id;
   currentPhotoIdx = 0;
   trackEvent('view', p);
+  if (updateHash !== false && location.hash !== '#/propiedad/' + id) location.hash = '#/propiedad/' + id; // URL propia y compartible por propiedad
+  updatePropertySeoMeta(p);
 
   document.getElementById('detailTitle').textContent = p.title;
   const badgeEl = document.getElementById('detailBadge');
@@ -3557,13 +3850,15 @@ function openDetail(id) {
   startPhotoAutoplay();
 }
 
-function closeDetail() {
+function closeDetail(updateHash) {
   detailModal.classList.add('hidden-modal');
   document.getElementById('mediaVideoFrame').src = '';
   document.getElementById('mediaTourFrame').src = '';
   document.body.style.overflow = '';
   stopPhotoAutoplay();
   if (photoResumeTimer) { clearTimeout(photoResumeTimer); photoResumeTimer = null; }
+  clearPropertySeoMeta();
+  if (updateHash !== false && /^#\/propiedad\//.test(location.hash)) location.hash = '';
 }
 document.getElementById('closeDetail').addEventListener('click', closeDetail);
 document.getElementById('detailBackdrop').addEventListener('click', closeDetail);
@@ -3759,6 +4054,8 @@ new IntersectionObserver((entries) => {
     }
   });
 }, { threshold: 0.5 }).observe(counterEl);
+
+syncAgentRoute(); // soporta deep-link directo a #/agente/ID, #/agentes, #/ieduca, #/curso/ID, #/inversion/ID, #/propiedad/ID, #/estadisticas, #/importar, #/publicar, #/posicionamiento o #/notificaciones al cargar la página
 </script>
 </body>
 </html>
